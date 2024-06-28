@@ -4,6 +4,7 @@ import { corsMiddleware } from './middlewares/cors.js';
 import 'dotenv/config';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import axios from 'axios';
 
 export const createApp = ({ courseModel }) => {
   const app = express();
@@ -18,6 +19,12 @@ export const createApp = ({ courseModel }) => {
   app.set('view engine', 'ejs');
 
   app.use('/course', createCourseRouter({ courseModel }));
+
+  app.get('/', async (req, res) => {
+    const response = await axios.get('http://localhost:1234/course');
+    const courses = response.data;
+    res.render('index', {courses});
+  });
 
   const PORT = process.env.PORT ?? 1234;
 
