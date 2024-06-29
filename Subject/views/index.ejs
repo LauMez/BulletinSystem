@@ -21,8 +21,8 @@
 <body>
   <main></main>
 
-  <% if(courses.length > 1 ) { %>
-    <% courses.forEach(course => { %>
+  <% if(subjects.length > 1 ) { %>
+    <% subjects.forEach(course => { %>
       <article>
         <h1><%=course.year%>°-<%=course.division%>°</h1>
         <p>Turno: <%=course.entry_time%></p>
@@ -31,9 +31,9 @@
     <% }) %>
   <%} else {%>
     <article>
-      <h1><%=courses.year%>-<%=courses.division%></h1>
-      <p>Turno: <%=courses.entry_time%></p>
-      <p>Especialidad: <%=courses.specialty%></p>
+      <h1><%=subjects.year%>-<%=subjects.division%></h1>
+      <p>Turno: <%=subjects.entry_time%></p>
+      <p>Especialidad: <%=subjects.specialty%></p>
     </article>
   <%}%>
 </body>

@@ -115,8 +115,8 @@ export class SubjectModel {
       };
   
       return schedules.map(schedule => ({
-        scheduleID: schedule.scheduleIDID.toString('hex'),
-        subjectID: subject.subjectID.toString('hex'),
+        scheduleID: schedule.scheduleID.toString('hex'),
+        subjectID: schedule.subjectID.toString('hex'),
         day: schedule.day,
         schedule: schedule.schedule
       }));
@@ -182,12 +182,18 @@ export class SubjectModel {
         });
       });
 
-      return {
-        scheduleID: schedule.scheduleID.toString('hex'),
-        subjectID: schedule.subjectID.toString('hex'),
-        day: schedule.day,
-        schedule: schedule.schedule
-      };
+      console.log(schedule.day, schedule.schedule);
+
+      const scheduleObject = schedule.map(schedule => {
+        return {
+          scheduleID: schedule.scheduleID.toString('hex'),
+          subjectID: schedule.subjectID.toString('hex'),
+          day: schedule.day,
+          schedule: schedule.schedule
+        };
+      });
+
+      return scheduleObject;
     } catch (e) {
       console.error('Error processing schedule:', e);
       throw new Error('Internal server error');
@@ -203,10 +209,10 @@ export class SubjectModel {
     const [{ subjectID }] = uuidCourse;
 
     //TODO - Agregar courseID del microservicio de curso
-    const courseID = "827327327321";
+    const courseID = "d72cfe65-d715-47a3-b9ce-f3c45cf7f915";
 
     try {
-      await db.promise().execute(`INSERT INTO Subject (subjectID, courseID, name) VALUES (UUID_TO_BIN("${subjectID}"), (UUID_TO_BIN("${courseID}"), ?);`, [name]);
+      await db.promise().execute(`INSERT INTO Subject (subjectID, courseID, name) VALUES (UUID_TO_BIN("${subjectID}"), UUID_TO_BIN("${courseID}"), ?);`, [name]);
     } catch (e) {
       console.log(e)
       throw new Error('Error creating course: ');
@@ -232,4 +238,109 @@ export class SubjectModel {
       throw new Error('Internal server error');
     };
   };
+
+  static async createSchedule ({subjectID, input}) {
+    const {
+      day,
+      schedule
+    } = input;
+
+    const [uuidSchedule] = await db.promise().execute('SELECT UUID() scheduleID;');
+    const [{ scheduleID }] = uuidSchedule;
+
+    try {
+      await db.promise().execute(`INSERT INTO Subject_Schedule (scheduleID, subjectID, day, schedule) VALUES(UUID_TO_BIN("${scheduleID}"), UUID_TO_BIN("${subjectID}"), ?, ?);`, [day, schedule]);
+    } catch (e) {
+      console.log(e)
+      throw new Error('Error creating subject schedule');
+    }
+
+    try {
+      const schedules = await new Promise((resolve, reject) => {
+        db.query(`SELECT * FROM Subject_Schedule WHERE subjectID = UUID_TO_BIN("${subjectID}")`, (err, groups) => {
+          if (err) reject(err);
+          resolve(groups);
+        });
+      });
+
+      if (!schedules) {
+        console.error('Schedules not found with ID:', subjectID);
+        return [];
+      };
+
+      const scheduleObjects = schedules.map(schedule => {
+        return {
+          scheduleID: schedule.scheduleID.toString('hex'),
+          subjectID: schedule.subjectID.toString('hex'),
+          day: schedule.day,
+          schedule: schedule.schedule
+        };
+      });
+
+      return scheduleObjects;
+    } catch (error) {
+      console.error('Error processing schedules:', error);
+      throw new Error('Internal server error');
+    };
+  };
+
+  static async delete ({subjectID}) {
+    try {
+      await db.promise().execute(`DELETE FROM Subject_Schedule WHERE subjectID = UUID_TO_BIN("${subjectID}")`);
+    } catch (e) {
+      console.log(e);
+      throw new Error('Error deleting subject schedules');
+    }
+
+    try {
+      await db.promise().execute(`DELETE FROM Impartition WHERE subjectID = UUID_TO_BIN("${subjectID}")`);
+    } catch (e) {
+      console.log(e);
+      throw new Error('Error deleting impartitions');
+    }
+    
+    try {
+      await db.promise().execute(`DELETE FROM Subject WHERE subjectID = UUID_TO_BIN("${subjectID}")`);
+    } catch (e) {
+      console.log(e);
+      throw new Error('Error deleting subject');
+    }
+
+    return;
+  }
+
+  static async deleteSchedule ({subjectID, scheduleID}) {
+    try {
+      await db.promise().execute(`DELETE FROM Subject_Schedule WHERE scheduleID = UUID_TO_BIN("${scheduleID}") AND subjectID = UUID_TO_BIN("${subjectID}")`);
+    }  catch(e) {
+      console.log(e);
+      throw new Error('Error deleting schedule');
+    };
+  };
+
+  static async update ({subjectID, input}) {
+    const {
+      name
+    } = input;
+
+    const courseID = "d72cfe65-d715-47a3-b9ce-f3c45cf7f915";
+
+    try {
+      await db.promise().execute(`UPDATE Subject SET courseID = UUID_TO_BIN("${courseID}"), name = ? WHERE subjectID = UUID_TO_BIN("${subjectID}")`, [name]);
+    } catch(e) {
+      console.log(e);
+      throw new Error('Error updating subject');
+    };
+  };
+
+  static async updateSchedule ({subjectID, scheduleID, input}) {
+    const {day, schedule} = input;
+
+    try {
+      await db.promise().execute(`UPDATE Subject_Schedule SET day = ?, schedule = ? WHERE subjectID = UUID_TO_BIN("${subjectID}") AND scheduleID = UUID_TO_BIN("${scheduleID}")`, [day, schedule]);
+    } catch(e) {
+      console.log(e);
+      throw new Error('Error updating subject schedule');
+    };
+  }
 };

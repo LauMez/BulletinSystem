@@ -1,3 +1,5 @@
+import { validateSubject, validatePartialSubject, validateSchedule, validatePartialSchedule } from "../schemas/subject.js";
+
 export class SubjectController {
   constructor ({ subjectModel }) {
     this.subjectModel = subjectModel;
@@ -87,9 +89,11 @@ export class SubjectController {
   createSchedule = async(req, res) => {
     const result = validateSchedule(req.body);
 
+    const { subjectID } = req.params;
+
     if (!result.success) return res.status(400).json({ error: JSON.parse(result.error.message) });
     
-    const newSchedule = await this.subjectModel.createSchedule({ input: result.data });
+    const newSchedule = await this.subjectModel.createSchedule({ subjectID, input: result.data });
 
     res.status(201).json({message: 'Schedule created'});
   };
@@ -133,7 +137,7 @@ export class SubjectController {
 
     const { subjectID, scheduleID } = req.params;
 
-    const updatedSchedule = await this.subjectModel.update({ subjectID, scheduleID, input: result.data });
+    const updatedSchedule = await this.subjectModel.updateSchedule({ subjectID, scheduleID, input: result.data });
 
     return res.json({message: 'Schedule updated'});
   }
