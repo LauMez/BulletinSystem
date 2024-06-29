@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Probar API Rest</title>
+  <style>
+    article {
+      border: 1px solid #ccc;
+      padding: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    img {
+      height: auto;
+      width: 320px;
+      max-width: 100%;
+    }
+  </style>
+</head>
+<body>
+  <main></main>
+
+  <% if(courses.length > 1 ) { %>
+    <% courses.forEach(course => { %>
+      <article>
+        <h1><%=course.year%>°-<%=course.division%>°</h1>
+        <p>Turno: <%=course.entry_time%></p>
+        <p>Especialidad: <%=course.specialty%></p>
+      </article>
+    <% }) %>
+  <%} else {%>
+    <article>
+      <h1><%=courses.year%>-<%=courses.division%></h1>
+      <p>Turno: <%=courses.entry_time%></p>
+      <p>Especialidad: <%=courses.specialty%></p>
+    </article>
+  <%}%>
+</body>
+</html>
