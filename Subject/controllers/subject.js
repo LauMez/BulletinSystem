@@ -9,7 +9,7 @@ export class SubjectController {
     try {
       const subjects = await this.subjectModel.getAll();
 
-      if (subjects.length === 0) return res.status(404).json({ message: 'Subjects not found' });
+      if (!subjects) return res.status(404).json({ message: 'Subjects not found' });
 
       return res.json(subjects);
     } catch (error) {
