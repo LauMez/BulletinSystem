@@ -1,6 +1,5 @@
 import mysql from 'mysql2';
 import axios from 'axios';
-// import grpcClient from '../../protos_clients/course.js';
 
 const DEFAULT_CONFIG = {
     host: 'localhost',
@@ -14,382 +13,412 @@ const db = mysql.createConnection(connectionString);
 
 db.connect(err => {
     if (err) {
-        console.error('Subject database connection failed:', err.stack);
+        console.error('Bulletin database connection failed:', err.stack);
         return;
     }
-    console.log('Connected to subject database.');
+    console.log('Connected to bulletin database.');
 });
 
-// async function getCourseDetails(courseID) {
-//   return new Promise((resolve, reject) => {
-//     const details = [];
-//     const call = grpcClient.GetByID({ courseID });
-
-//     call.on('data', (response) => {
-//       details.push(response);
-//     });
-
-//     call.on('end', () => {
-//       resolve(details);
-//     });
-
-//     call.on('error', (error) => {
-//       console.error('Error calling gRPC GetByID:', error);
-//       reject(new Error('gRPC call failed'));
-//     });
-//   });
-// }
-
+const formatDate = (dateString) => {
+  const date = new Date(dateString);
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+};
 export class BulletinModel {
   static async getAll () {
       try{
-          const subjects = await new Promise((resolve, reject) => {
-            db.query('SELECT * FROM Subject', (err, subjects) => {
-              if (err) reject(err);
-              resolve(subjects);
+        const bulletins = await new Promise((resolve, reject) => {
+          db.query('SELECT * FROM Bulletin', (err, bulletins) => {
+            if(err) reject(err);
+            resolve(bulletins);
+          });
+        })
+
+        if (bulletins.length === 0) {
+          console.error('Bulletins not found');
+          return [];
+        };
+
+        const bulletinPromises = bulletins.map(async (bulletin) => {
+          const periods = await new Promise((resolve, reject) => {
+            db.query('SELECT * FROM Period WHERE bulletinID = ?', [bulletin.bulletinID], (err, periods) => {
+              if(err) reject(err);
+              resolve(periods);
             });
           });
-    
-          if (subjects.length === 0) {
-            console.error('Subjects not found');
+
+          if (periods.length === 0) {
+            console.error('Periods not found');
             return [];
           };
 
-          // const subjectObject = subjects.map(subject => {
-          //   const courseID = subject.courseID.toString('hex');
-
-          //   const course = await axios.get(`http://localhost:1234/course/${(courseID)}`);
-
-          //   console.log(course);
-
-          //   return {
-          //     subjectID: subject.subjectID.toString('hex'),
-          //     courseID: subject.courseID.toString('hex'),
-          //     name: subject.name
-          //   };
-          // });
-          const subjectObject = [];
-          for (const subject of subjects) {
-            const courseID = subject.courseID.toString('hex');
-            try {
-              const courseAxio = await axios.get(`http://localhost:1234/course/${courseID}`);
-
-              const course = courseAxio.data;
-
-              subjectObject.push({
-                subjectID: subject.subjectID.toString('hex'),
-                courseID: subject.courseID.toString('hex'),
-                name: subject.name,
-                course: course
+          const periodPromises = periods.map(async (period) => {
+            const assessments = await new Promise((resolve, reject) => {
+              db.query('SELECT * FROM Assessment WHERE periodID = ?', [period.periodID], (err, assessments) => {
+                if(err) reject(err);
+                resolve(assessments);
               });
-            } catch (courseError) {
-              console.error(`Error fetching course with ID ${courseID}:`, courseError);
+            });
+
+            const Assessments = assessments.map(assessment => ({
+              assessmentID: assessment.assessmentID.toString('hex'),
+              assessment_tpye: assessment.assessment_type,
+              qualification: assessment.qualification
+            }));
+
+            return {
+              periodID: period.periodID.toString('hex'),
+              subjectID: period.subjectID.toString('hex'),
+              observations: period.observations,
+              period_type: period.period_type,
+              init_date: formatDate(period.init_date),
+              due_date: formatDate(period.due_date),
+              assessments: Assessments
             }
+          });
+
+          const periodObjects = await Promise.all(periodPromises);
+          const flattenedperiodObjects = periodObjects.flat();
+
+          return {
+            bulletinID: bulletin.bulletinID.toString('hex'),
+            CUIL: bulletin.CUIL,
+            periods: flattenedperiodObjects
           }
+        });
 
-          return subjectObject;
+        const bulletinObjects = await Promise.all(bulletinPromises);
+        const flattenedBulletinObjects = bulletinObjects.flat();
+        const response = { 
+          responses: flattenedBulletinObjects
+        };
 
-          // return subjects.map(subject => ({
-
-          
-
-
-          //   subjectID: subject.subjectID.toString('hex'),
-          //   courseID: subject.courseID.toString('hex'),
-          //   name: subject.name
-          // }));
-    
-          // const subjectPromises = subjects.map(async (subject) => {
-          //   const schedules = await new Promise((resolve, reject) => {
-          //     db.query('SELECT day, schedule FROM Subject_Schedule WHERE subjectID = ?', [subject.subjectID], (err, schedules) => {
-          //       if(err) reject(err);
-    
-          //       resolve(schedules);
-          //     });
-          //   });
-    
-          //   if (schedules.length === 0) {
-          //     console.error('Schedules not found:');
-          //     return [];
-          //   };
-
-          //   const courseID = subject.courseID;
-
-          //   // const courseDetails = await getCourseDetails(courseID);
-    
-          //   return schedules.map(schedule => ({
-          //     name: subject.name,
-          //     day: schedule.day,
-          //     schedule: schedule.schedule/*,
-          //     courseDetails: courseDetails*/
-          //   }));
-          // });
-    
-          // const subjectObjects = await Promise.all(subjectPromises);
-          // const flattenedSubjectObjects = subjectObjects.flat();
-          // const response = { 
-          //   responses: flattenedSubjectObjects
-          // };
-
-          // return response.responses;
+        return response.responses;
       } catch (error) {
           console.error('Error processing subjects:', error);
           throw new Error('Internal server error');
       };
   };
 
-  static async getAllSchedules () {
+  static async getByID ({ bulletinID }) {
     try {
-      const schedules = await new Promise((resolve, reject) => {
-        db.query('SELECT * FROM Subject_Schedule', (err, schedules) => {
+      const [Bulletin] = await db.promise().execute(`SELECT * FROM Bulletin WHERE bulletinID = UUID_TO_BIN("${bulletinID}")`);
+
+      const bulletin = Bulletin[0];
+
+      if (!bulletin) {
+        console.error('Bulletin not found with ID:', bulletinID);
+        return [];
+      };
+
+      const periods = await new Promise((resolve, reject) => {
+        db.query('SELECT * FROM Period WHERE bulletinID = ?', [bulletin.bulletinID], (err, periods) => {
           if(err) reject(err);
+          resolve(periods);
+        });
+      });
 
-          resolve(schedules);
-        })
-      })
-
-      if (!schedules) {
-        console.error('Schedules not found:');
-        return [];
-      };
-  
-      return schedules.map(schedule => ({
-        scheduleID: schedule.scheduleID.toString('hex'),
-        subjectID: schedule.subjectID.toString('hex'),
-        day: schedule.day,
-        schedule: schedule.schedule
-      }));
-    } catch(e) {
-      console.log(e);
-      throw new Error('Internal server error');
-    }
-  };
-
-  static async getByID ({ subjectID }) {
-    try {
-      const [Subject] = await db.promise().execute(`SELECT * FROM Subject WHERE subjectID = UUID_TO_BIN("${subjectID}")`);
-
-      const subject = Subject[0];
-
-      if (!subject) {
-        console.error('Subject not found with ID:', subjectID);
+      if (periods.length === 0) {
+        console.error('Periods not found');
         return [];
       };
 
-      const courseID = subject.courseID.toString('hex');
-      const courseAxio = await axios.get(`http://localhost:1234/course/${(courseID)}`);
-      const course = courseAxio.data;
+      const periodPromises = periods.map(async (period) => {
+        const assessments = await new Promise((resolve, reject) => {
+          db.query('SELECT * FROM Assessment WHERE periodID = ?', [period.periodID], (err, assessments) => {
+            if(err) reject(err);
+            resolve(assessments);
+          });
+        });
 
-      //TODO - manejar errores que llegan del axios
+        const Assessments = assessments.map(assessment => ({
+          assessmentID: assessment.assessmentID.toString('hex'),
+          assessment_tpye: assessment.assessment_type,
+          qualification: assessment.qualification
+        }));
+
+        return {
+          periodID: period.periodID.toString('hex'),
+          subjectID: period.subjectID.toString('hex'),
+          observations: period.observations,
+          period_type: period.period_type,
+          init_date: formatDate(period.init_date),
+          due_date: formatDate(period.due_date),
+          assessments: Assessments
+        }
+      });
+
+      const periodObjects = await Promise.all(periodPromises);
+      const flattenedperiodObjects = periodObjects.flat();
 
       return {
-        subjectID: subject.subjectID.toString('hex'),
-        courseID: subject.courseID.toString('hex'),
-        name: subject.name,
-        courseYear: course.year,
-        courseDivision: course.division,
-        courseEntry: course.entry_time,
-        courseSpecialty: course.specialty
-      };
+        bulletinID: bulletin.bulletinID.toString('hex'),
+        CUIL: bulletin.CUIL,
+        periods: flattenedperiodObjects
+      }
     } catch(e) {
       console.log(e);
       throw new Error('Internal server error');
     };
   };
 
-  static async getSchedulesByID ({subjectID}) {
+  static async getByCUIL ({ CUIL }) {
     try {
-      const schedules = await new Promise((resolve, reject) => {
-        db.query(`SELECT * FROM Subject_Schedule WHERE subjectID = UUID_TO_BIN("${subjectID}")`, (err, groups) => {
-          if (err) reject(err);
-          resolve(groups);
-        });
-      });
+      const [Bulletin] = await db.promise().execute(`SELECT * FROM Bulletin WHERE CUIL = ?`, [CUIL]);
 
-      const scheduleObjects = schedules.map(schedule => {
-        return {
-          scheduleID: schedule.scheduleID.toString('hex'),
-          subjectID: schedule.subjectID.toString('hex'),
-          day: schedule.day,
-          schedule: schedule.schedule
-        };
-      });
+      const bulletin = Bulletin[0];
 
-      return scheduleObjects;
-    } catch(e) {
-      console.log(e);
-      throw new Error('Internal server error');
-    }
-  };
-
-  static async getByScheduleID ({subjectID, scheduleID}) {
-    try {
-      const schedule = await new Promise((resolve, reject) => {
-        db.query(`SELECT * FROM Subject_Schedule WHERE subjectID = UUID_TO_BIN("${subjectID}") AND scheduleID = UUID_TO_BIN("${scheduleID}")`, (err, groups) => {
-          if (err) reject(err);
-          resolve(groups);
-        });
-      });
-
-      console.log(schedule.day, schedule.schedule);
-
-      const scheduleObject = schedule.map(schedule => {
-        return {
-          scheduleID: schedule.scheduleID.toString('hex'),
-          subjectID: schedule.subjectID.toString('hex'),
-          day: schedule.day,
-          schedule: schedule.schedule
-        };
-      });
-
-      return scheduleObject;
-    } catch (e) {
-      console.error('Error processing schedule:', e);
-      throw new Error('Internal server error');
-    };
-  };
-
-  static async create ({input}) {
-    const {
-      name
-    } = input;
-
-    const [uuidCourse] = await db.promise().execute('SELECT UUID() subjectID;')
-    const [{ subjectID }] = uuidCourse;
-
-    //TODO - Agregar courseID del microservicio de curso
-    const courseID = "d72cfe65-d715-47a3-b9ce-f3c45cf7f915";
-
-    try {
-      await db.promise().execute(`INSERT INTO Subject (subjectID, courseID, name) VALUES (UUID_TO_BIN("${subjectID}"), UUID_TO_BIN("${courseID}"), ?);`, [name]);
-    } catch (e) {
-      console.log(e)
-      throw new Error('Error creating course: ');
-    }
-
-    try {
-      const [Subject] = await db.promise().execute(`SELECT * FROM Subject WHERE subjectID = UUID_TO_BIN("${subjectID}")`);
-
-      const subject = Subject[0];
-
-      if (!subject) {
-        console.error('Subject not found with ID:', courseID);
+      if (!bulletin) {
+        console.error('Bulletin not found with CUIL:', CUIL);
         return [];
       };
+
+      const periods = await new Promise((resolve, reject) => {
+        db.query('SELECT * FROM Period WHERE bulletinID = ?', [bulletin.bulletinID], (err, periods) => {
+          if(err) reject(err);
+          resolve(periods);
+        });
+      });
+
+      if (periods.length === 0) {
+        console.error('Periods not found');
+        return [];
+      };
+
+      const periodPromises = periods.map(async (period) => {
+        const assessments = await new Promise((resolve, reject) => {
+          db.query('SELECT * FROM Assessment WHERE periodID = ?', [period.periodID], (err, assessments) => {
+            if(err) reject(err);
+            resolve(assessments);
+          });
+        });
+
+        const Assessments = assessments.map(assessment => ({
+          assessmentID: assessment.assessmentID.toString('hex'),
+          assessment_tpye: assessment.assessment_type,
+          qualification: assessment.qualification
+        }));
+
+        return {
+          periodID: period.periodID.toString('hex'),
+          subjectID: period.subjectID.toString('hex'),
+          observations: period.observations,
+          period_type: period.period_type,
+          init_date: formatDate(period.init_date),
+          due_date: formatDate(period.due_date),
+          assessments: Assessments
+        }
+      });
+
+      const periodObjects = await Promise.all(periodPromises);
+      const flattenedperiodObjects = periodObjects.flat();
 
       return {
-        subjectID: subject.subjectID.toString('hex'),
-        courseID: subject.courseID.toString('hex'),
-        name: subject.name
-      };
-    } catch (error) {
-      console.error('Error processing subject:', error);
+        bulletinID: bulletin.bulletinID.toString('hex'),
+        CUIL: bulletin.CUIL,
+        periods: flattenedperiodObjects
+      }
+    } catch(e) {
+      console.log(e);
       throw new Error('Internal server error');
     };
   };
 
-  static async createSchedule ({subjectID, input}) {
-    const {
-      day,
-      schedule
-    } = input;
-
-    const [uuidSchedule] = await db.promise().execute('SELECT UUID() scheduleID;');
-    const [{ scheduleID }] = uuidSchedule;
-
+  static async getBySubjectID ({ subjectID }) {
     try {
-      await db.promise().execute(`INSERT INTO Subject_Schedule (scheduleID, subjectID, day, schedule) VALUES(UUID_TO_BIN("${scheduleID}"), UUID_TO_BIN("${subjectID}"), ?, ?);`, [day, schedule]);
-    } catch (e) {
-      console.log(e)
-      throw new Error('Error creating subject schedule');
-    }
-
-    try {
-      const schedules = await new Promise((resolve, reject) => {
-        db.query(`SELECT * FROM Subject_Schedule WHERE subjectID = UUID_TO_BIN("${subjectID}")`, (err, groups) => {
-          if (err) reject(err);
-          resolve(groups);
+      const periods = await new Promise((resolve, reject) => {
+        db.query(`SELECT * FROM Period WHERE subjectID = UUID_TO_BIN("${subjectID}")`, (err, periods) => {
+          if(err) reject(err);
+          resolve(periods);
         });
       });
 
-      if (!schedules) {
-        console.error('Schedules not found with ID:', subjectID);
+      if (periods.length === 0) {
+        console.error('Periods not found');
         return [];
       };
 
-      const scheduleObjects = schedules.map(schedule => {
+      const periodPromises = periods.map(async (period) => {
+        const assessments = await new Promise((resolve, reject) => {
+          db.query('SELECT * FROM Assessment WHERE periodID = ?', [period.periodID], (err, assessments) => {
+            if(err) reject(err);
+            resolve(assessments);
+          });
+        });
+
+        const Assessments = assessments.map(assessment => ({
+          assessmentID: assessment.assessmentID.toString('hex'),
+          assessment_tpye: assessment.assessment_type,
+          qualification: assessment.qualification
+        }));
+
         return {
-          scheduleID: schedule.scheduleID.toString('hex'),
-          subjectID: schedule.subjectID.toString('hex'),
-          day: schedule.day,
-          schedule: schedule.schedule
-        };
+          subjectID: period.subjectID.toString('hex'),
+          observations: period.observations,
+          period_type: period.period_type,
+          init_date: formatDate(period.init_date),
+          due_date: formatDate(period.due_date),
+          assessments: Assessments
+        }
       });
 
-      return scheduleObjects;
-    } catch (error) {
-      console.error('Error processing schedules:', error);
+      const periodObjects = await Promise.all(periodPromises);
+      const flattenedperiodObjects = periodObjects.flat();
+
+      const response = { 
+        responses: flattenedperiodObjects
+      };
+
+      return response.responses;
+    } catch(e) {
+      console.log(e);
       throw new Error('Internal server error');
     };
-  };
-
-  static async delete ({subjectID}) {
-    try {
-      await db.promise().execute(`DELETE FROM Subject_Schedule WHERE subjectID = UUID_TO_BIN("${subjectID}")`);
-    } catch (e) {
-      console.log(e);
-      throw new Error('Error deleting subject schedules');
-    }
-
-    try {
-      await db.promise().execute(`DELETE FROM Impartition WHERE subjectID = UUID_TO_BIN("${subjectID}")`);
-    } catch (e) {
-      console.log(e);
-      throw new Error('Error deleting impartitions');
-    }
-    
-    try {
-      await db.promise().execute(`DELETE FROM Subject WHERE subjectID = UUID_TO_BIN("${subjectID}")`);
-    } catch (e) {
-      console.log(e);
-      throw new Error('Error deleting subject');
-    }
-
-    return;
   }
 
-  static async deleteSchedule ({subjectID, scheduleID}) {
-    try {
-      await db.promise().execute(`DELETE FROM Subject_Schedule WHERE scheduleID = UUID_TO_BIN("${scheduleID}") AND subjectID = UUID_TO_BIN("${subjectID}")`);
-    }  catch(e) {
-      console.log(e);
-      throw new Error('Error deleting schedule');
+  
+  static async create ({CUIL}) {
+    const generateUUIDs = async (count) => {
+      const uuids = [];
+      for (let i = 0; i < count; i++) {
+        const [result] = await db.promise().execute('SELECT UUID() AS uuid;');
+        uuids.push(result[0].uuid);
+      }
+      return uuids;
     };
+
+    const periods = [
+      { type: 'first advance', init_date: '2024-03-01', due_date: '2024-05-31' },
+      { type: 'first period', init_date: '2024-06-01', due_date: '2024-07-31' },
+      { type: 'second advance', init_date: '2024-08-01', due_date: '2024-10-31' },
+      { type: 'second period', init_date: '2024-11-01', due_date: '2024-12-15' },
+      { type: 'anual closure', init_date: '2024-12-01', due_date: '2024-12-15' },
+      { type: 'december intensification', init_date: '2024-12-15', due_date: '2024-12-31' },
+      { type: 'fabruary intensification', init_date: '2025-02-01', due_date: '2025-02-28' },
+      { type: 'march intensification', init_date: '2025-03-01', due_date: '2025-03-31' },
+      { type: 'final report', init_date: '2025-05-01', due_date: '2025-05-31' },
+    ];
+
+    const assessments = [
+      ['pedagogical assessment', 'final exam'],
+      ['pedagogical assessment', 'midterm exam'],
+      ['pedagogical assessment', 'project'],
+      ['pedagogical assessment intensification', 'quiz'],
+      ['pedagogical assessment', 'oral exam'],
+      ['pedagogical assessment', 'final project'],
+      ['pedagogical assessment', 'lab work'],
+      ['pedagogical assessment', 'presentation'],
+      ['pedagogical assessment', 'final report'],
+    ];
+
+    try {
+      //TODO: call stdudent microservice to get the course data
+      const courseID = 'e5ec422a358c11efb07bd03957a8a7aa';
+      //TODO: Make the gRPC of subject microservice to do the call
+      const response = await axios.get(`http://localhost:4321/subject/course/${courseID}`);
+      const subjects = response.data;
+      console.log('subjects', subjects);
+
+      await db.promise().beginTransaction();
+
+      for (const subject of subjects) {
+        const [bulletinID] = await generateUUIDs(1);
+        const periodIDs = await generateUUIDs(periods.length);
+        const totalAssessments = assessments.flat().length;
+        const assessmentIDs = await generateUUIDs(totalAssessments);
+        console.log(assessmentIDs);
+
+        const bulletinSQL = `
+          INSERT INTO Bulletin(bulletinID, CUIL)
+          VALUES (UUID_TO_BIN('${bulletinID}'), ${CUIL});
+        `;
+        await db.promise().query(bulletinSQL);
+
+        let assessmentIndex = 0;
+        for (let i = 0; i < periods.length; i++) {
+          const periodSQL = `
+            INSERT INTO Period(periodID, subjectID, bulletinID, observations, period_type, init_date, due_date)
+            VALUES (UUID_TO_BIN('${periodIDs[i]}'), UUID_TO_BIN('${subject.subjectID}'), UUID_TO_BIN('${bulletinID}'), '', '${periods[i].type}', '${periods[i].init_date}', '${periods[i].due_date}');
+          `;
+          await db.promise().query(periodSQL);
+
+          for (let j = 0; j < assessments[i].length; j++) {
+            const assessmentSQL = `
+              INSERT INTO Assessment(assessmentID, periodID, assessment_type, qualification)
+              VALUES (UUID_TO_BIN('${assessmentIDs[assessmentIndex]}'), UUID_TO_BIN('${periodIDs[i]}'), '${assessments[i][j]}', '');
+            `;
+            await db.promise().query(assessmentSQL);
+            assessmentIndex++;
+          }
+        }
+      }
+
+      await db.promise().commit();
+      console.log('Transaction Completed Successfully.');
+    } catch (error) {
+      await db.promise().rollback();
+      console.error('Transaction Failed:', error);
+    } finally {
+      await db.promise().end();
+    }
   };
 
-  static async update ({subjectID, input}) {
+  static async createAssessment ({periodID, input}) {
     const {
-      name
+      assessment_type,
+      qualification
     } = input;
 
-    const courseID = "326efd0b358c11efb07bd03957a8a7aa";
+    const [assessmentUUID] = await db.promise().execute('SELECT UUID() assessmentID;');
+    const [{ assessmentID }] = assessmentUUID;
 
     try {
-      await db.promise().execute(`UPDATE Subject SET courseID = UUID_TO_BIN("${courseID}"), name = ? WHERE subjectID = UUID_TO_BIN("${subjectID}")`, [name]);
+      const [Assessment] = await db.promise().execute(`SELECT * FROM Assessment WHERE periodID = UUID_TO_BIN("${periodID}") AND assessment_type = ?`, [assessment_type]);
+
+      const assessment = Assessment[0];
+
+      if(assessment || assessment >= 1) {
+        console.error('The assessment currently exist');
+        return { errorMessage: 'The assessment currently exist.'};
+      } else {
+        try {
+          await db.promise().execute(`INSERT INTO Assessment (assessmentID, periodID, assessment_type, qualification) VALUES(UUID_TO_BIN("${assessmentID}"), UUID_TO_BIN("${periodID}"), ?, ?);`, [assessment_type, qualification]);
+          return { message: 'Assessment created.'};
+        } catch (e) {
+          console.log(e)
+          throw new Error('Error creating assessment');
+        }
+
+      }
+    } catch (e) {
+      console.log(e);
+      throw new Error('Error searching assessment');
+    }
+  };
+
+
+  static async updatePeriod ({periodID, input}) {
+    const {observations} = input;
+
+    try {
+      await db.promise().execute(`UPDATE Period SET observations = ? WHERE periodID = UUID_TO_BIN("${periodID}")`, [observations]);
     } catch(e) {
       console.log(e);
-      throw new Error('Error updating subject');
+      throw new Error('Error updating period');
     };
   };
 
-  static async updateSchedule ({subjectID, scheduleID, input}) {
-    const {day, schedule} = input;
+  static async updateAssessment ({assessmentID, input}) {
+    const {qualification} = input;
 
     try {
-      await db.promise().execute(`UPDATE Subject_Schedule SET day = ?, schedule = ? WHERE subjectID = UUID_TO_BIN("${subjectID}") AND scheduleID = UUID_TO_BIN("${scheduleID}")`, [day, schedule]);
+      const a = await db.promise().execute(`UPDATE Assessment SET qualification = ? WHERE assessmentID = UUID_TO_BIN("${assessmentID}")`, [qualification]);
+      return { message: 'Assessment updated' };
     } catch(e) {
       console.log(e);
-      throw new Error('Error updating subject schedule');
+      throw new Error('Error updating assessment');
     };
   }
 };

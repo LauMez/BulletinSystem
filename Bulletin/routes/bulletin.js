@@ -7,20 +7,19 @@ export const createBulletinRouter = ({ bulletinModel }) => {
   const bulletinController = new BulletinController({ bulletinModel });
 
   bulletinRouter.get('/', bulletinController.getAll);
-  bulletinRouter.get('/schedules', bulletinController.getAllSchedules);
 
-  bulletinRouter.get('/:subjectID', bulletinController.getByID);
-  bulletinRouter.get('/:subjectID/schedules', bulletinController.getSchedulesByID);
-  bulletinRouter.get('/:subjectID/schedule/:scheduleID', bulletinController.getByScheduleID);
+  bulletinRouter.get('/:bulletinID', bulletinController.getByID);
+  bulletinRouter.get('/CUIL/:CUIL', bulletinController.getByCUIL);
+  bulletinRouter.get('/subject/:subjectID', bulletinController.getBySubjectID);
 
-  bulletinRouter.post('/', bulletinController.create);
-  bulletinRouter.post('/:subjectID/schedule', bulletinController.createSchedule);
+  bulletinRouter.post('/:CUIL', bulletinController.create);
+  bulletinRouter.post('/:periodID/assessment', bulletinController.createAssessment);
 
-  bulletinRouter.delete('/:subjectID', bulletinController.delete);
-  bulletinRouter.delete('/:subjectID/schedule/:scheduleID', bulletinController.deleteSchedule);
+  // bulletinRouter.delete('/:subjectID', bulletinController.delete);
+  // bulletinRouter.delete('/:subjectID/schedule/:scheduleID', bulletinController.deleteSchedule);
 
-  bulletinRouter.patch('/:subjectID', bulletinController.update);
-  bulletinRouter.patch('/:subjectID/schedule/:scheduleID', bulletinController.updateSchedule);
+  bulletinRouter.patch('/period/:periodID', bulletinController.updatePeriod);
+  bulletinRouter.patch('/assessment/:assessmentID', bulletinController.updateAssessment);
 
   return bulletinRouter;
 }

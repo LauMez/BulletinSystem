@@ -1,34 +1,38 @@
 import z from 'zod';
 
-const subjectSchema = z.object({
-  name: z.string({
-    invalid_type_error: 'Subject name must be a string',
-    required_error: 'Subject name is required'
-  }),
-});
-
-const scheduleScheme = z.object({
-  day: z.string({
-    invalid_type_error: 'Schedule day must be a string',
-    required_error: 'Schedule day name is required'
-  }),
-  schedule: z.string({
-    invalid_type_error: 'Schedule must be a string',
-    required_error: 'Schedule is required'
+const bulletinSchema = z.object({
+  observations: z.string({
+    invalid_type_error: 'Period observations must be a string',
+    required_error: 'Period observations is required'
   })
 });
-export function validateSchedule (input) {
-  return scheduleScheme.safeParse(input);
+
+const assessmentScheme = z.object({
+  qualification: z.string({
+    invalid_type_error: 'Assessment qualification must be a string',
+    required_error: 'Assessment qualification is required'
+  }),
+  assessment_type: z.string({
+    invalid_type_error: 'Assessment type must be a string',
+    required_error: 'Assessment type is required'
+  })
+});
+
+const assessmentPartialScheme = z.object({
+  qualification: z.string({
+    invalid_type_error: 'Assessment qualification must be a string',
+    required_error: 'Assessment qualification is required'
+  })
+});
+
+export function validateAssessment (input) {
+  return assessmentScheme.safeParse(input);
 };
 
-export function validatePartialSchedule (input) {
-  return scheduleScheme.partial().safeParse(input);
+export function validatePartialAssessment (input) {
+  return assessmentPartialScheme.partial().safeParse(input);
 };
 
-export function validateSubject (input) {
-  return subjectSchema.safeParse(input);
-};
-
-export function validatePartialSubject (input) {
-  return subjectSchema.partial().safeParse(input);
+export function validatePartialPeriod (input) {
+  return bulletinSchema.partial().safeParse(input);
 };

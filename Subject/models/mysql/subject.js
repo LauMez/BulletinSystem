@@ -72,15 +72,15 @@ export class SubjectModel {
           for (const subject of subjects) {
             const courseID = subject.courseID.toString('hex');
             try {
-              const courseAxio = await axios.get(`http://localhost:1234/course/${courseID}`);
+              // const courseAxio = await axios.get(`http://localhost:1234/course/${courseID}`);
 
-              const course = courseAxio.data;
+              // const course = courseAxio.data;
 
               subjectObject.push({
                 subjectID: subject.subjectID.toString('hex'),
                 courseID: subject.courseID.toString('hex'),
                 name: subject.name,
-                course: course
+                // course: course
               });
             } catch (courseError) {
               console.error(`Error fetching course with ID ${courseID}:`, courseError);
@@ -196,6 +196,35 @@ export class SubjectModel {
       throw new Error('Internal server error');
     };
   };
+
+  static async getByCourseID ({courseID}) {
+    try {
+      const subjects = await new Promise((resolve, reject) => {
+        db.query(`SELECT * FROM Subject WHERE courseID = UUID_TO_BIN("${courseID}")`, (err, subjects) => {
+          if(err) reject(err);
+          resolve(subjects);
+        });
+      });
+
+      if (!subjects) {
+        console.error('Subject not found with course ID:', courseID);
+        return [];
+      };
+
+      const subjectObjects = subjects.map(subject => {
+        return {
+          subjectID: subject.subjectID.toString('hex'),
+          courseID: subject.courseID.toString('hex'),
+          name: subject.name
+        };
+      });
+
+      return subjectObjects;
+    } catch(e) {
+      console.log(e);
+      throw new Error('Internal server error');
+    };
+  }
 
   static async getSchedulesByID ({subjectID}) {
     try {

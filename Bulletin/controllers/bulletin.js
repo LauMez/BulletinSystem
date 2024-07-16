@@ -1,4 +1,4 @@
-import { validateSubject, validatePartialSubject, validateSchedule, validatePartialSchedule } from "../schemas/bulletin.js";
+import { validateAssessment, validatePartialAssessment, validatePartialPeriod } from "../schemas/bulletin.js";
 
 export class BulletinController {
   constructor ({ bulletinModel }) {
@@ -7,138 +7,103 @@ export class BulletinController {
 
   getAll = async (req, res) => {
     try {
-      const subjects = await this.subjectModel.getAll();
+      const bulletins = await this.bulletinModel.getAll();
 
-      if (!subjects) return res.status(404).json({ message: 'Subjects not found' });
+      if (!bulletins) return res.status(404).json({ message: 'Bulletins not found' });
 
-      return res.json(subjects);
+      return res.json(bulletins);
     } catch (error) {
-      console.error('Error occurred while fetching subjects:', error);
+      console.error('Error occurred while fetching bulletins:', error);
       return res.status(500).json({ message: 'Internal server error' });
     };
   };
-
-  getAllSchedules = async(req, res) => {
-    try {
-      const schedules = await this.subjectModel.getAllSchedules();
-
-      if (schedules.length === 0) return res.status(404).json({ message: 'Schedules not found' });
-
-      return res.json(schedules);
-    } catch (error) {
-      console.error('Error occurred while fetching schedules:', error);
-      return res.status(500).json({ message: 'Internal server error' });
-    };
-  }
 
   getByID = async (req, res) => {
-    const { subjectID } = req.params;
+    const { bulletinID } = req.params;
 
     try {
-      const subject = await this.subjectModel.getByID({ subjectID });
+      const bulletin = await this.bulletinModel.getByID({ bulletinID });
 
-      if (subject.length === 0) return res.status(404).json({ message: 'Subject not found' });
+      if (bulletin.length === 0) return res.status(404).json({ message: 'Bulletin not found' });
 
-      return res.json(subject);
+      return res.json(bulletin);
     } catch (error) {
-      console.error('Error occurred while fetching subject:', error);
+      console.error('Error occurred while fetching bulletin:', error);
       return res.status(500).json({ message: 'Internal server error' });
     };
   };
 
-  getSchedulesByID = async(req, res) => {
-    const { subjectID } = req.params;
+  getByCUIL = async(req, res) => {
+    const { CUIL } = req.params;
 
     try {
-      const schedules = await this.subjectModel.getSchedulesByID({ subjectID });
+      const bulletin = await this.bulletinModel.getByCUIL({ CUIL });
 
-      if (schedules.length === 0) return res.status(404).json({ message: 'Schedules not found' });
+      if (bulletin.length === 0) return res.status(404).json({ message: 'Bulletin not found' });
 
-      return res.json(schedules);
+      return res.json(bulletin);
     } catch (error) {
-      console.error('Error occurred while fetching schedules:', error);
+      console.error('Error occurred while fetching bulletin:', error);
       return res.status(500).json({ message: 'Internal server error' });
     };
   };
 
-  getByScheduleID = async(req, res) => {
-    const { subjectID, scheduleID } = req.params;
+  getBySubjectID = async(req, res) => {
+    const { subjectID } = req.params;
 
     try {
-      const schedules = await this.subjectModel.getByScheduleID({ subjectID, scheduleID });
+      const bulletin = await this.bulletinModel.getBySubjectID({ subjectID });
 
-      if (schedules.length === 0) return res.status(404).json({ message: 'Schedules not found' });
+      if (bulletin.length === 0) return res.status(404).json({ message: 'Bulletin not found' });
 
-      return res.json(schedules);
+      return res.json(bulletin);
     } catch (error) {
-      console.error('Error occurred while fetching schedules:', error);
+      console.error('Error occurred while fetching bulletin:', error);
       return res.status(500).json({ message: 'Internal server error' });
     };
   };
 
   create = async (req, res) => {
-    const result = validateSubject(req.body);
+    const { CUIL } = req.params;
+    
+    await this.bulletinModel.create({ CUIL });
+
+    res.status(201).json({message: 'Bulletin created'});
+  };
+
+  createAssessment = async(req, res) => {
+    const result = validateAssessment(req.body);
+
+    const { periodID } = req.params;
 
     if (!result.success) return res.status(400).json({ error: JSON.parse(result.error.message) });
     
-    const newSubject = await this.subjectModel.create({ input: result.data });
+    const newAssessment = await this.bulletinModel.createAssessment({ periodID, input: result.data });
 
-    res.status(201).json({message: 'Subject created'});
+    res.status(201).json(newAssessment);
   };
 
-  createSchedule = async(req, res) => {
-    const result = validateSchedule(req.body);
-
-    const { subjectID } = req.params;
-
-    if (!result.success) return res.status(400).json({ error: JSON.parse(result.error.message) });
-    
-    const newSchedule = await this.subjectModel.createSchedule({ subjectID, input: result.data });
-
-    res.status(201).json({message: 'Schedule created'});
-  };
-
-  delete = async (req, res) => {
-    const { subjectID } = req.params;
-
-    const result = await this.subjectModel.delete({ subjectID });
-
-    if (result === false) return res.status(404).json({ message: 'Subject not found' });
-    
-    return res.json({ message: 'Subject deleted' });
-  };
-
-  deleteSchedule = async(req, res) => {
-    const { subjectID, scheduleID } = req.params;
-
-    const result = await this.subjectModel.deleteSchedule({ subjectID, scheduleID });
-
-    if (result === false) return res.status(404).json({ message: 'Schedule not found' });
-    
-    return res.json({ message: 'Schedule deleted' });
-  };
-
-  update = async(req, res) => {
-    const result = validatePartialSubject(req.body);
+  updatePeriod = async(req, res) => {
+    const result = validatePartialPeriod(req.body);
 
     if (!result.success) return res.status(400).json({ error: JSON.parse(result.error.message) });
 
-    const { subjectID } = req.params;
+    const { periodID } = req.params;
 
-    const updatedSubject = await this.subjectModel.update({ subjectID, input: result.data });
+    await this.bulletinModel.updatePeriod({ periodID, input: result.data });
 
-    return res.json({message: 'Subject updated'});
+    return res.json({message: 'Period updated'});
   };
 
-  updateSchedule = async(req, res) => {
-    const result = validatePartialSchedule(req.body);
+  updateAssessment = async(req, res) => {
+    const result = validatePartialAssessment(req.body);
 
     if (!result.success) return res.status(400).json({ error: JSON.parse(result.error.message) });
 
-    const { subjectID, scheduleID } = req.params;
+    const { assessmentID } = req.params;
 
-    const updatedSchedule = await this.subjectModel.updateSchedule({ subjectID, scheduleID, input: result.data });
+    const updatedAssessment = await this.bulletinModel.updateAssessment({ assessmentID, input: result.data });
 
-    return res.json({message: 'Schedule updated'});
-  }
+    return res.json(updatedAssessment);
+  };
 };
