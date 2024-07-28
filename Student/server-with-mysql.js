@@ -1,5 +1,5 @@
 import { createApp } from './app.js';
 
-import { CourseModel } from './models/mysql/course.js';
+import { StudentModel } from './models/mysql/student.js';
 
-createApp({ courseModel: CourseModel });
+createApp({ studentModel: StudentModel });
