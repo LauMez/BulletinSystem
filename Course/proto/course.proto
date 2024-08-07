@@ -11,7 +11,9 @@ message GetByCourseGroupRequest {
 }
 
 message GetByCourseGroupResponses {
-  int32 year = 1;
-  int32 division = 2;
-  string group = 3;
+  string courseID = 1;
+  int32 year = 2;
+  int32 division = 3;
+  string entry_time = 4;
+  string speciality = 5;
 };

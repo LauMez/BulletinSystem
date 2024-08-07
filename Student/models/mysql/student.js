@@ -23,12 +23,12 @@ db.connect(err => {
 
 async function getCourseByCourseGroupID(courseGroupID) {
   return new Promise((resolve, reject) => {
-    courseClient.GetByCourseGroupID({courseGroupID}, (err, response) => {
+    courseClient.GetByCourseGroupID({courseGroupID}, (err, course) => {
       if (err) {
         console.error('Failed to fetch course:', err);
         reject(err);
       } else {
-        resolve(response.course);
+        resolve(course);
       }
     })
   });
@@ -245,9 +245,9 @@ export class StudentModel {
   };
 
   static async getByCourseGroupID({ courseGroupID }) {
-    //Select course with courseGroupID is...
     try {
       const course = await getCourseByCourseGroupID(courseGroupID);
+      console.log('course', course);
 
       const students = await new Promise((resolve, reject) => {
         db.query(`SELECT * FROM Impartition WHERE courseID = UUID_TO_BIN('${course.courseID}') `, (err, students) => {
@@ -307,7 +307,7 @@ export class StudentModel {
             blood_type: studentInformation.blood_type,
             social_work: studentInformation.social_work
           },
-          impartition: student.courseID
+          impartition: student.courseID.toString('hex')
         }
       }));
 

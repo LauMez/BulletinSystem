@@ -10,7 +10,7 @@ export const createStudentRouter = ({ studentModel }) => {
 
   studentRouter.get('/:CUIL', studentController.getByCUIL); //
   studentRouter.get('/course/:courseID', studentController.getByCourseID); //
-  studentRouter.get('/course/group/:courseGroupID', studentController.getByCourseGroupID); //TODO: communication with course
+  studentRouter.get('/course/group/:courseGroupID', studentController.getByCourseGroupID); //
   studentRouter.get('/subject/:subjectID', studentController.getBySubjectID); //TODO: communication with course
 
   studentRouter.get('/:CUIL/account', studentController.getAccount); //

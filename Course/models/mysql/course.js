@@ -1,5 +1,4 @@
 import mysql from 'mysql2';
-import subjectClient from '../../../Subject/clients/subject.js';
 
 const DEFAULT_CONFIG = {
   host: 'localhost',
@@ -21,32 +20,6 @@ db.connect(err => {
   console.log('Connected to course database.');
 });
 
-async function getAllSubjects() {
-  return new Promise((resolve, reject) => {
-    subjectClient.GetAll({}, (err, response) => {
-      if (err) {
-        console.error('Failed to fetch subjects:', err);
-        reject(err);
-      } else {
-        resolve(response.subjects);
-      }
-    });
-  });
-}
-
-async function getSubjectsByCourse(courseID) {
-  return new Promise((resolve, reject) => {
-    subjectClient.GetByCourseID({courseID}, (err, response) => {
-      if (err) {
-        console.error('Failed to fetch subject:', err);
-        reject(err);
-      } else {
-        resolve(response.subjects);
-      }
-    })
-  });
-};
-
 export class CourseModel {
   static async getAll () {
     try {
@@ -61,17 +34,13 @@ export class CourseModel {
           console.error('Courses not found');
           return [];
         };
-
-        const subjects = await getAllSubjects();
-        console.log('getAll()', subjects);
     
         return courses.map(course => ({
           courseID: course.courseID.toString('hex'),
           year: course.year,
           division: course.division,
           entry_time: course.entry_time,
-          specialty: course.specialty,
-          subjects: subjects
+          specialty: course.specialty
         }));
     } catch (error) {
         console.error('Error processing courses:', error);
@@ -115,9 +84,6 @@ export class CourseModel {
         return [];
       };
 
-      const subjects = await getSubjectsByCourse(courseID);
-      console.log('getByCourseID()', subjects);
-
       return {
         courseID: course.courseID.toString('hex'),
         year: course.year,
@@ -141,16 +107,18 @@ export class CourseModel {
         return [];
       };
 
-      const [Course] = await db.promise().execute(`SELECT * FROM Course WHERE courseID = UUID_TO_BIN('${group.courseID}')`);
+      const courseID = group.courseID.toString('hex');
+
+      const [Course] = await db.promise().execute(`SELECT * FROM Course WHERE courseID = UUID_TO_BIN('${courseID}')`);
       const course = Course[0];
 
       if (!group) {
-        console.error('Course not found with ID:', course.courseID);
+        console.error('Course not found with ID:', courseID);
         return [];
       };
 
       return {
-        courseID: course.courseID.toString('hex'),
+        courseID: courseID,
         year: course.year,
         division: course.division,
         entry_time: course.entry_time,
