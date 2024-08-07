@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { CourseController } from '../controllers/course.js';
+import course from '../clients/course.js';
 
 export const createCourseRouter = ({ courseModel }) => {
   const courseRouter = Router();
@@ -8,6 +9,7 @@ export const createCourseRouter = ({ courseModel }) => {
 
   courseRouter.get('/', courseController.getAll);
   courseRouter.get('/groups', courseController.getAllGroups);
+  courseRouter.get('/group/:courseGroupID', courseController.getByCourseGroupID);
 
   courseRouter.get('/:courseID', courseController.getByID);
   courseRouter.get('/:courseID/groups', courseController.getGroupsByID);

@@ -1,7 +1,7 @@
 import grpc from '@grpc/grpc-js';
 import protoLoader from '@grpc/proto-loader';
 
-const packageDefinition = protoLoader.loadSync('protos/course.proto', {
+const packageDefinition = protoLoader.loadSync('../Course/proto/course.proto', {
     keepCase: true,
     longs: String,
     enums: String,
@@ -11,4 +11,5 @@ const packageDefinition = protoLoader.loadSync('protos/course.proto', {
 
 const courseservice = grpc.loadPackageDefinition(packageDefinition).courseservice;
 
-export default new courseservice.CourseService('localhost:50053', grpc.credentials.createInsecure());
+const port = process.env.RPC_PORT || '50061';
+export default new courseservice.CourseService(`localhost:${port}`, grpc.credentials.createInsecure());

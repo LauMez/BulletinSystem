@@ -1,6 +1,4 @@
 import mysql from 'mysql2';
-import axios from 'axios';
-// import grpcClient from '../../protos_clients/course.js';
 
 const DEFAULT_CONFIG = {
     host: 'localhost',
@@ -19,119 +17,26 @@ db.connect(err => {
     }
     console.log('Connected to subject database.');
 });
-
-// async function getCourseDetails(courseID) {
-//   return new Promise((resolve, reject) => {
-//     const details = [];
-//     const call = grpcClient.GetByID({ courseID });
-
-//     call.on('data', (response) => {
-//       details.push(response);
-//     });
-
-//     call.on('end', () => {
-//       resolve(details);
-//     });
-
-//     call.on('error', (error) => {
-//       console.error('Error calling gRPC GetByID:', error);
-//       reject(new Error('gRPC call failed'));
-//     });
-//   });
-// }
-
 export class SubjectModel {
   static async getAll () {
       try{
-          const subjects = await new Promise((resolve, reject) => {
-            db.query('SELECT * FROM Subject', (err, subjects) => {
-              if (err) reject(err);
-              resolve(subjects);
-            });
+        const subjects = await new Promise((resolve, reject) => {
+          db.query('SELECT * FROM Subject', (err, subjects) => {
+            if (err) reject(err);
+            resolve(subjects);
           });
-    
-          if (subjects.length === 0) {
-            console.error('Subjects not found');
-            return [];
-          };
+        });
+  
+        if (subjects.length === 0) {
+          console.error('Subjects not found');
+          return [];
+        };
 
-          // const subjectObject = subjects.map(subject => {
-          //   const courseID = subject.courseID.toString('hex');
-
-          //   const course = await axios.get(`http://localhost:1234/course/${(courseID)}`);
-
-          //   console.log(course);
-
-          //   return {
-          //     subjectID: subject.subjectID.toString('hex'),
-          //     courseID: subject.courseID.toString('hex'),
-          //     name: subject.name
-          //   };
-          // });
-          const subjectObject = [];
-          for (const subject of subjects) {
-            const courseID = subject.courseID.toString('hex');
-            try {
-              // const courseAxio = await axios.get(`http://localhost:1234/course/${courseID}`);
-
-              // const course = courseAxio.data;
-
-              subjectObject.push({
-                subjectID: subject.subjectID.toString('hex'),
-                courseID: subject.courseID.toString('hex'),
-                name: subject.name,
-                // course: course
-              });
-            } catch (courseError) {
-              console.error(`Error fetching course with ID ${courseID}:`, courseError);
-            }
-          }
-
-          return subjectObject;
-
-          // return subjects.map(subject => ({
-
-          
-
-
-          //   subjectID: subject.subjectID.toString('hex'),
-          //   courseID: subject.courseID.toString('hex'),
-          //   name: subject.name
-          // }));
-    
-          // const subjectPromises = subjects.map(async (subject) => {
-          //   const schedules = await new Promise((resolve, reject) => {
-          //     db.query('SELECT day, schedule FROM Subject_Schedule WHERE subjectID = ?', [subject.subjectID], (err, schedules) => {
-          //       if(err) reject(err);
-    
-          //       resolve(schedules);
-          //     });
-          //   });
-    
-          //   if (schedules.length === 0) {
-          //     console.error('Schedules not found:');
-          //     return [];
-          //   };
-
-          //   const courseID = subject.courseID;
-
-          //   // const courseDetails = await getCourseDetails(courseID);
-    
-          //   return schedules.map(schedule => ({
-          //     name: subject.name,
-          //     day: schedule.day,
-          //     schedule: schedule.schedule/*,
-          //     courseDetails: courseDetails*/
-          //   }));
-          // });
-    
-          // const subjectObjects = await Promise.all(subjectPromises);
-          // const flattenedSubjectObjects = subjectObjects.flat();
-          // const response = { 
-          //   responses: flattenedSubjectObjects
-          // };
-
-          // return response.responses;
+        return subjects.map(subject => ({
+          subjectID: subject.subjectID.toString('hex'),
+          courseID: subject.courseID.toString('hex'),
+          name: subject.name
+        }));
       } catch (error) {
           console.error('Error processing subjects:', error);
           throw new Error('Internal server error');

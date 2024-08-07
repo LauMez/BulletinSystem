@@ -46,6 +46,21 @@ export class CourseController {
     };
   };
 
+  getByCourseGroupID = async (req, res) => {
+    const { courseGroupID } =  req.params;
+
+    try {
+      const course = await this.courseModel.getByCourseGroupID({ courseGroupID });
+
+      if(course.length === 0) return res.status(404).json({message: 'Course not found'});
+
+      return res.json(course);
+    } catch(e) {
+      console.log(e);
+      return res.status(500).json({ nessage: 'Internal server error' });
+    }
+  };
+
   getGroupsByID = async (req, res) => {
     const { courseID } =  req.params;
 

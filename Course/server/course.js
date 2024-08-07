@@ -1,8 +1,8 @@
 import grpc from '@grpc/grpc-js';
 import protoLoader from '@grpc/proto-loader';
-import { CourseModel } from '../models/gRPC/course.js';
+import { CourseModel } from '../models/mysql/course.js';
 
-const packageDefinition = protoLoader.loadSync('../protos/course.proto', {
+const packageDefinition = protoLoader.loadSync('../proto/course.proto', {
   keepCase: true,
   longs: String,
   enums: String,
@@ -14,29 +14,19 @@ const courseservice = grpc.loadPackageDefinition(packageDefinition).courseservic
 const server = new grpc.Server();
 
 server.addService(courseservice.CourseService.service, {
-  GetAll: async(call, callback) => {
+  GetByCourseGroupID: async(call, callback) => {
+    const { courseGroupID } = call.request;
     try{
-      const courses = await CourseModel.getAll();
-      callback(null, courses);
-    } catch (error) {
-      console.error('Error processing courses:', error);
-      callback({ code: grpc.status.INTERNAL, details: "Internal error" });
-    };
-  },
-  GetByID: async(call, callback) => {
-    const { courseID } = call.request;
-    try {
-      const course = await CourseModel.getByID({ courseID });
-      course.forEach(courseDetail => call.write(courseDetail));
-      call.end();
+      const course = await CourseModel.getByCourseGroupID({courseGroupID});
+      callback(null, course);
     } catch (error) {
       console.error('Error processing course:', error);
-      call.emit('error', { code: grpc.status.INTERNAL, details: "Internal error" });
-    }
+      callback({ code: grpc.status.INTERNAL, details: "Internal error" });
+    };
   }
 });
 
-const port = '50053';
+const port = process.env.RPC_PORT || '50061';
 server.bindAsync(`0.0.0.0:${port}`, grpc.ServerCredentials.createInsecure(), () => {
   console.log(`Item service running at http://0.0.0.0:${port}`);
 });
