@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bienvenido</title>
+    <link rel="stylesheet" href="../public/css/index.css">
+</head>
+<body>
+    <div class="welcome-container">
+        <h2>Bienvenido, <%= user.username %></h2>
+        <p>Te has autenticado exitosamente.</p>
+    </div>
+    <form action="/logout" method="POST">
+        <button type="submit">Salir</button>
+    </form>
+</body>
+</html>

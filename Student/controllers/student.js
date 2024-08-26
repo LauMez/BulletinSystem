@@ -1,4 +1,15 @@
-import { validateStudent, validatePartialStudent, validatePartialAccount } from "../schemas/student.js";
+import { validateStudent, validatePartialStudent } from "../schemas/student.js";
+import axios from 'axios';
+
+const convertEmptyStringsToNull = (obj) => {
+  const result = {};
+  for (const key in obj) {
+      if (obj.hasOwnProperty(key)) {
+          result[key] = obj[key].trim() === '' ? null : obj[key].trim();
+      }
+  }
+  return result;
+};
 
 export class StudentController {
   constructor ({ studentModel }) {
@@ -9,13 +20,13 @@ export class StudentController {
     try {
       const students = await this.studentModel.getAll();
 
-      if (students.length === 0 || !students) return res.status(404).json({ message: 'Students not found' });
+      if (!students || students.length === 0) return res.status(404).json({ message: 'Students not found' });
 
       return res.json(students);
     } catch (error) {
       console.error('Error occurred while fetching students:', error);
       return res.status(500).json({ message: 'Internal server error' });
-    };
+    }
   };
 
   getByCUIL = async (req, res) => {
@@ -23,59 +34,15 @@ export class StudentController {
     try {
       const student = await this.studentModel.getByCUIL({ CUIL });
 
-      if (student.length === 0) return res.status(404).json({ message: 'Student not found' });
+      if (!student || student.length === 0) return res.status(404).json({ message: 'Student not found' });
 
       return res.json(student);
     } catch (error) {
       console.error('Error occurred while fetching student:', error);
       return res.status(500).json({ message: 'Internal server error' });
-    };
+    }
   }
 
-  getByCourseID = async (req, res) => {
-    const { courseID } = req.params
-
-    try {
-      const students = await this.studentModel.getByCourseID({ courseID });
-
-      if (students.length === 0) return res.status(404).json({ message: 'Students not found' });
-
-      return res.json(students);
-    } catch (error) {
-        console.error('Error occurred while fetching students:', error);
-        return res.status(500).json({ message: 'Internal server error' });
-    };
-  };
-
-  getByCourseGroupID = async (req, res) => {
-    const { courseGroupID } =  req.params;
-
-    try {
-      const students = await this.studentModel.getByCourseGroupID({ courseGroupID });
-
-      if(students.length === 0) return res.status(404).json({message: 'Students not found'});
-
-      return res.json(students);
-    } catch(error) {
-      console.error('Error occurred while fetching students:', error);
-      return res.status(500).json({ nessage: 'Internal server error' });
-    }
-  };
-
-  getBySubjectID = async (req, res) => {
-    const { subjectID } =  req.params;
-
-    try {
-      const students = await this.studentModel.getBySubjectID({ subjectID });
-
-      if(students.length === 0) return res.status(404).json({message: 'Students not found'});
-
-      return res.json(students);
-    } catch(error) {
-      console.error('Error occurred while fetching students:', error);
-      return res.status(500).json({ nessage: 'Internal server error' });
-    }
-  };
 
   getAccount = async (req, res) => {
     const { CUIL } =  req.params;
@@ -92,109 +59,80 @@ export class StudentController {
     }
   };
 
-  getCard = async (req, res) => {
-    const { CUIL } =  req.params;
 
+  getCreate = async(req, res, errorMessage = null) => {
     try {
-      const studentCard = await this.studentModel.getCard({ CUIL });
-
-      if(studentCard.length === 0) return res.status(404).json({message: 'Student card not found'});
-
-      return res.json(studentCard);
-    } catch(error) {
-      console.error('Error occurred while fetching student card:', error);
-      return res.status(500).json({ nessage: 'Internal server error' });
+      const courses = await axios.get('http://localhost:1234/course');
+      return res.render('register', { courses: courses.data, errorMessage });
+    } catch (error) {
+        return res.status(500).render('register', { courses: [], errorMessage: 'Error fetching courses' });
     }
-  };
-
-  create = async (req, res) => {
-    const result = validateStudent(req.body);
-
-    if (!result.success) return res.status(400).json({ error: JSON.parse(result.error.message) });
-    
-    await this.studentModel.create({ input: result.data });
-
-    res.status(201).json({message: 'Student created'});
   }
 
-  createCard = async (req, res) => {
-    const { CUIL } = req.params;
+  create = async (req, res) => {
+    const student = validateStudent(req.body);
+    if (!student.success) {
+      const firstError = student.error.issues[0].message;
+      return { errorMessage: firstError }
+      // return this.getCreate(req, res, firstError);
+    }
 
-    const { cardID } = req.body;
+    const processedData = convertEmptyStringsToNull(student.data);
+    const existingStudent = await this.studentModel.findOne({ CUIL: student.data.CUIL });
 
-    if (!cardID) return res.status(400).json({ error: `Card doesn't exists` });
+    if (existingStudent) {
+      return { errorMessage: "Ya hay un usuario registrado con ese CUIL." }
+      // return this.getCreate(req, res, 'Ya hay un usuario registrado con ese CUIL.');
+    }
 
-    const newCard = await this.studentModel.createCard({ CUIL, cardID });
+    const newStudent = await this.studentModel.create({ input: processedData });
+    return res.status(201).json(newStudent);
+  }
 
-    res.status(201).json(newCard);
-  };
-
-  createImpartition = async (req, res) => {
-    const { CUIL } = req.params;
-
-    const { courseID } = req.body;
-
-    if (!courseID) return res.status(400).json({ error: `Course doesn't exists` });
-
-    await this.studentModel.createImpartition({ CUIL, courseID });
-
-    res.status(201).json({message: 'Student imparted in course'});
-  };
 
   delete = async (req, res) => {
     const { CUIL } = req.params;
 
-    const result = await this.studentModel.delete({ CUIL });
+    try {
+      const student = await this.studentModel.delete({ CUIL });
 
-    if (result === false) return res.status(404).json({ message: 'Student not found' });
-    
-    return res.json({ message: 'Student deleted' });
+      if (!student || student.length === 0) return res.status(404).json({ message: 'Students not found' });
+
+      return res.json({ message: 'Student deleted' });
+    } catch (error) {
+      console.error('Error occurred while deleting student:', error);
+      return res.status(500).json({ message: 'Internal server error' });
+    }
   };
 
   update = async (req, res) => {
-    const result = validatePartialStudent(req.body);
+    try {
+      const result = validatePartialStudent(req.body);
 
-    if (!result.success) return res.status(400).json({ error: JSON.parse(result.error.message) });
+      if (!result.success) return res.status(400).json({ error: JSON.parse(result.error.message) });
 
-    const { courseID } = req.params;
+      await this.studentModel.update({ CUIL, input: result.data });
 
-    const updatedCourse = await this.studentModel.update({ courseID, input: result.data });
-
-    return res.json({message: 'Student updated'});
+      return res.json({message: 'Student updated'});;
+    } catch (error) {
+      console.error('Error occurred while updating student:', error);
+      return res.status(500).json({ message: 'Internal server error' });
+    }
   };
 
   updateAccount = async (req, res) => {
     const { CUIL } = req.params;
-    const result = validatePartialAccount(req.body, CUIL);
+    const { password } = req.body
 
-    if(!result.success) return res.status(400).json({ error: JSON.parse(result.error.message) });
+    try {
+      const account = await this.studentModel.updateAccount({ CUIL, password });
 
-    await this.studentModel.updateAccount({ CUIL, input: result.data });
+      if (!account || account.length === 0) return res.status(404).json({ message: 'Account not found' });
 
-    return res.json({message: 'Account updated'})
-  };
-
-  updateCard = async (req, res) => {
-    const { cardID } = req.body;
-
-    if (!cardID) return res.status(400).json({ error: `Card doesn't exists` });
-
-    const { CUIL } = req.params;
-
-    await this.studentModel.updateCard({ CUIL, cardID });
-
-    return res.json({message: 'Card updated'})
-  };
-
-  updateImpartition = async (req, res) => {
-    const { courseID } = req.body;
-
-    if (!courseID) return res.status(400).json({ error: `Course doesn't exists` });
-
-    const { CUIL } = req.params;
-
-    await this.studentModel.updateImpartition({ CUIL, courseID });
-
-    return res.json({message: 'Impartition updated'})
+      await this.studentModel.updateAccount({ CUIL, password });
+    } catch (error) {
+      console.error('Error occurred while updating account:', error);
+      return res.status(500).json({ message: 'Internal server error' });
+    }
   };
 };

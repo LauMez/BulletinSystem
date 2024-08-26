@@ -1,0 +1,41 @@
+CREATE DATABASE professorDB;
+
+USE professorDB;
+
+DELIMITER $$
+
+CREATE FUNCTION UUID_TO_BIN(uuid CHAR(36))
+RETURNS BINARY(16)
+DETERMINISTIC
+BEGIN
+    RETURN UNHEX(REPLACE(uuid, '-', ''));
+END $$
+
+DELIMITER ;
+
+CREATE TABLE Professor (
+    CUIL VARCHAR(11) PRIMARY KEY NOT NULL
+);
+
+CREATE TABLE Personal_Information (
+    DNI VARCHAR(8) PRIMARY KEY,
+    CUIL VARCHAR(11) NOT NULL,
+    first_name VARCHAR(255) NOT NULL,
+    second_name VARCHAR(255),
+    last_name1 VARCHAR(255) NOT NULL,
+    last_name2 VARCHAR(255),
+    phone_number VARCHAR(255) NOT NULL,
+    landline_phone_number VARCHAR(255),
+    direction VARCHAR(255) NOT NULL
+);
+
+CREATE TABLE Account (
+    accountID BINARY(16) PRIMARY KEY,
+    CUIL VARCHAR(11) NOT NULL
+);
+
+CREATE TABLE Impartition (
+    impartitionID BINARY(16) PRIMARY KEY,
+    CUIL VARCHAR(11) NOT NULL,
+    subjectID BINARY(16) NOT NULL
+);

@@ -1,40 +1,18 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Probar API Rest</title>
-  <style>
-    article {
-      border: 1px solid #ccc;
-      padding: 1rem;
-      margin-bottom: 1rem;
-    }
-
-    img {
-      height: auto;
-      width: 320px;
-      max-width: 100%;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bienvenido</title>
+    <link rel="stylesheet" href="../public/css/index.css">
 </head>
 <body>
-  <main></main>
-
-  <% if(courses.length > 1 ) { %>
-    <% courses.forEach(course => { %>
-      <article>
-        <h1><%=course.year%>°-<%=course.division%>°</h1>
-        <p>Turno: <%=course.entry_time%></p>
-        <p>Especialidad: <%=course.specialty%></p>
-      </article>
-    <% }) %>
-  <%} else {%>
-    <article>
-      <h1><%=courses.year%>-<%=courses.division%></h1>
-      <p>Turno: <%=courses.entry_time%></p>
-      <p>Especialidad: <%=courses.specialty%></p>
-    </article>
-  <%}%>
+    <div class="welcome-container">
+        <h2>Bienvenido</h2>
+        <p>Te has autenticado exitosamente.</p>
+    </div>
+    <form action="/logout" method="POST">
+        <button type="submit">Salir</button>
+    </form>
 </body>
 </html>

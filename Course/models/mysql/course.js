@@ -1,16 +1,4 @@
-import mysql from 'mysql2';
-import subjectClient from '../../../Subject/clients/subject.js';
-
-const DEFAULT_CONFIG = {
-  host: 'localhost',
-  user: 'root',
-  password: '',
-  database: 'courseDB'
-};
-
-const connectionString = process.env.DATABASE_URL ?? DEFAULT_CONFIG;
-
-const db = mysql.createConnection(connectionString);
+import { db } from '../../config.js';
 
 db.connect(err => {
   if (err) {
@@ -21,345 +9,240 @@ db.connect(err => {
   console.log('Connected to course database.');
 });
 
-async function getAllSubjects() {
-  return new Promise((resolve, reject) => {
-    subjectClient.GetAll({}, (err, response) => {
-      if (err) {
-        console.error('Failed to fetch subjects:', err);
-        reject(err);
-      } else {
-        resolve(response.subjects);
-      }
-    });
-  });
-}
-
-async function getSubjectsByCourse(courseID) {
-  return new Promise((resolve, reject) => {
-    subjectClient.GetByCourseID({courseID}, (err, response) => {
-      if (err) {
-        console.error('Failed to fetch subject:', err);
-        reject(err);
-      } else {
-        resolve(response.subjects);
-      }
-    })
-  });
-};
 
 export class CourseModel {
   static async getAll () {
     try {
-        const courses = await new Promise((resolve, reject) => {
-          db.query('SELECT * FROM Course', (err, courses) => {
-            if (err) reject(err);
-            resolve(courses);
-          });
-        });
+      const [courses] = await db.promise().execute('SELECT * FROM Course');
   
-        if (!courses) {
+      if (!courses || courses.length === 0) {
           console.error('Courses not found');
           return [];
-        };
+      }
 
-        const subjects = await getAllSubjects();
-        console.log('getAll()', subjects);
-    
-        return courses.map(course => ({
+      return courses.map(course => ({
           courseID: course.courseID.toString('hex'),
           year: course.year,
           division: course.division,
           entry_time: course.entry_time,
-          specialty: course.specialty,
-          subjects: subjects
-        }));
-    } catch (error) {
-        console.error('Error processing courses:', error);
-        throw new Error('Internal server error');
-    };
+          specialty: course.specialty
+      }));
+  } catch (error) {
+      console.error('Error processing courses:', error);
+      throw new Error('Internal server error');
+  }
   };
 
   static async getAllGroups () {
     try {
-      const groups = await new Promise((resolve, reject) => {
-        db.query('SELECT * FROM Course_Group', (err, groups) => {
-          if (err) reject(err);
+      const [groups] = await db.promise().execute('SELECT * FROM Course_Group');
   
-          resolve(groups);
-        });
-      });
-  
-      if (!groups) {
-        console.error('Groups not found:');
+      if (groups.length === 0) {
+        console.error('Groups not found');
         return [];
-      };
+      }
   
       return groups.map(group => ({
         courseGroupID: group.courseGroupID.toString('hex'),
         courseID: group.courseID.toString('hex'),
         group: group.courseGroup,
       }));
-    } catch(e) {
-      console.log(e);
+    } catch (error) {
+      console.error('Error processing groups:', error);
       throw new Error('Internal server error');
     }
   };
 
   static async getByID ({ courseID }) {
     try {
-      const [Course] = await db.promise().execute(`SELECT * FROM Course WHERE courseID = UUID_TO_BIN("${courseID}")`);
-      const course = Course[0];
-
+      const [[course]] = await db.promise().execute(
+        'SELECT * FROM Course WHERE courseID = UUID_TO_BIN(?)',
+        [courseID]
+      );
+  
       if (!course) {
         console.error('Course not found with ID:', courseID);
-        return [];
-      };
-
-      const subjects = await getSubjectsByCourse(courseID);
-      console.log('getByCourseID()', subjects);
-
+        return { message: "Course dosent exist" };
+      }
+  
       return {
         courseID: course.courseID.toString('hex'),
         year: course.year,
         division: course.division,
         entry_time: course.entry_time,
         specialty: course.specialty
-      }
+      };
     } catch (error) {
       console.error('Error processing course:', error);
       throw new Error('Internal server error');
-    };
-  };
-
-  static async getByCourseGroupID ({courseGroupID}) {
-    try {
-      const [Group] = await db.promise().execute(`SELECT * FROM Course_Group WHERE courseGroupID = UUID_TO_BIN("${courseGroupID}")`);
-      const group = Group[0];
-
-      if (!group) {
-        console.error('Group not found with ID:', courseGroupID);
-        return [];
-      };
-
-      const [Course] = await db.promise().execute(`SELECT * FROM Course WHERE courseID = UUID_TO_BIN('${group.courseID}')`);
-      const course = Course[0];
-
-      if (!group) {
-        console.error('Course not found with ID:', course.courseID);
-        return [];
-      };
-
-      return {
-        courseID: course.courseID.toString('hex'),
-        year: course.year,
-        division: course.division,
-        entry_time: course.entry_time,
-        specialty: course.specialty
-      }
-
-    } catch(error) {
-      console.error('Error processing course:', error);
-      throw new Error('Internal server error');
     }
-  }
+  };
 
   static async getGroupsByID ({courseID}) {
-    console.log(courseID);
     try {
-      const groups = await new Promise((resolve, reject) => {
-        db.query(`SELECT * FROM Course_Group WHERE courseID = UUID_TO_BIN("${courseID}")`, (err, groups) => {
-          if (err) reject(err);
-          resolve(groups);
-        });
-      });
-
-      console.log(groups);
-
-      const groupsObjects = groups.map(group => {
-        return {
-          courseGroupID: group.courseGroupID.toString('hex'),
-          courseID: group.courseID.toString('hex'),
-          group: group.courseGroup
-        };
-      });
-
-      console.log(groupsObjects);
-
-      return groupsObjects;
-    } catch(e) {
-      console.error('Error processing groups:', e);
+      const [groups] = await db.promise().execute(
+        'SELECT * FROM Course_Group WHERE courseID = UUID_TO_BIN(?)',
+        [courseID]
+      );
+  
+      return groups.map(group => ({
+        courseGroupID: group.courseGroupID.toString('hex'),
+        courseID: group.courseID.toString('hex'),
+        group: group.courseGroup
+      }));
+    } catch (error) {
+      console.error('Error processing groups:', error);
       throw new Error('Internal server error');
     }
   }
 
-  static async getByGroupID ({courseID, courseGroupID}) {
-    try {
-      const groups = await new Promise((resolve, reject) => {
-        db.query(`SELECT * FROM Course_Group WHERE courseID = UUID_TO_BIN("${courseID}") AND courseGroupID = UUID_TO_BIN("${courseGroupID}")`, (err, groups) => {
-          if (err) reject(err);
-          resolve(groups);
-        });
-      });
-
-      const groupsObjects = groups.map(group => {
-        return {
-          courseGroupID: group.courseGroupID.toString('hex'),
-          courseID: group.courseID.toString('hex'),
-          group: group.courseGroup
-        };
-      });
-
-      return groupsObjects;
-    } catch (e) {
-      console.error('Error processing groups:', e);
-      throw new Error('Internal server error');
-    }
-  };
-
   static async create ({input}) {
-    const {
-      year,
-      division,
-      entry_time,
-      specialty
-    } = input;
-
-    const [uuidCourse] = await db.promise().execute('SELECT UUID() courseID;')
-    const [{ courseID }] = uuidCourse;
-
-    console.log(courseID, year, division, entry_time, specialty);
+    const { year, division, entry_time, specialty } = input;
 
     try {
-      await db.promise().execute(`INSERT INTO Course (courseID, year, division, entry_time, specialty) VALUES (UUID_TO_BIN("${courseID}"), ?, ?, ?, ?);`, [year, division, entry_time, specialty]);
-    } catch (e) {
-      console.log(e)
-      throw new Error('Error creating course: ');
-    }
+      const [[{ courseID }]] = await db.promise().execute('SELECT UUID() AS courseID');
 
-    try {
-      const [Course] = await db.promise().execute(`SELECT * FROM Course WHERE courseID = UUID_TO_BIN("${courseID}")`);
+      await db.promise().execute(
+        `INSERT INTO Course (courseID, year, division, entry_time, specialty) 
+        VALUES (UUID_TO_BIN(?), ?, ?, ?, ?)`,
+        [courseID, year, division, entry_time, specialty]
+      );
 
-      const course = Course[0];
-
-      if (!course) {
-        console.error('Course not found with ID:', courseID);
-        return [];
-      };
-
-      return {
-        courseID: course.courseID.toString('hex'),
-        year: course.year,
-        division: course.division,
-        entry_time: course.entry_time,
-        specialty: course.specialty
-      };
+      return { message: "Course created" };
     } catch (error) {
-      console.error('Error processing course:', error);
-      throw new Error('Internal server error');
-    };
+      console.error('Error creating course:', error);
+      throw new Error('Error creating course');
+    }
   };
 
   static async createGroup ({courseID, input}) {
-    const {
-      group
-    } = input;
-
-    const [uuidGroup] = await db.promise().execute('SELECT UUID() courseGroupID;');
-    const [{ courseGroupID }] = uuidGroup;
+    const { group } = input;
 
     try {
-      await db.promise().execute(`INSERT INTO Course_Group (courseGroupID, courseID, courseGroup) VALUES(UUID_TO_BIN("${courseGroupID}"), UUID_TO_BIN("${courseID}"), ?);`, [group]);
+      const [[{ courseGroupID }]] = await db.promise().execute('SELECT UUID() AS courseGroupID');
+  
+      await db.promise().execute(
+        `INSERT INTO Course_Group (courseGroupID, courseID, courseGroup) 
+         VALUES (UUID_TO_BIN(?), UUID_TO_BIN(?), ?)`,
+        [courseGroupID, courseID, group]
+      );
+  
+      return { message: 'Group created' };
     } catch (e) {
-      console.log(e)
+      console.error('Error creating course group:', e);
       throw new Error('Error creating course group');
     }
-
-    try {
-      const groups = await new Promise((resolve, reject) => {
-        db.query(`SELECT * FROM Course_Group WHERE courseGroupID = UUID_TO_BIN("${courseGroupID}")`, (err, groups) => {
-          if (err) reject(err);
-          resolve(groups);
-        });
-      });
-
-      if (!groups) {
-        console.error('Groups not found with ID:', courseID);
-        return [];
-      };
-
-      const groupsObjects = groups.map(group => {
-        return {
-          courseGroupID: group.courseGroupID.toString('hex'),
-          courseID: group.courseID.toString('hex'),
-          group: group.courseGroup
-        };
-      });
-
-      return groupsObjects;
-    } catch (error) {
-      console.error('Error processing course:', error);
-      throw new Error('Internal server error');
-    };
   };
 
   static async delete ({courseID}) {
     try {
-      await db.promise().execute(`DELETE FROM Course_Group WHERE courseID = UUID_TO_BIN("${courseID}")`);
+      await db.promise().execute(
+        `DELETE FROM Course_Group WHERE courseID = UUID_TO_BIN(?)`, 
+        [courseID]
+      );
+  
+      await db.promise().execute(
+        `DELETE FROM Course WHERE courseID = UUID_TO_BIN(?)`, 
+        [courseID]
+      );
+  
+      return { message: 'Course and related data deleted successfully' };
     } catch (e) {
-      console.log(e);
-      throw new Error('Error deleting course groups');
+      console.error('Error deleting course and related data:', e);
+      throw new Error('Error deleting course and related data');
     }
-
-    try {
-      await db.promise().execute(`DELETE FROM Inscription WHERE courseID = UUID_TO_BIN("${courseID}")`);
-    } catch (e) {
-      console.log(e);
-      throw new Error('Error deleting inscriptions');
-    }
-    
-    try {
-      await db.promise().execute(`DELETE FROM Course WHERE courseID = UUID_TO_BIN("${courseID}")`);
-    } catch (e) {
-      console.log(e);
-      throw new Error('Error deleting course');
-    }
-
-    return;
   };
 
-  static async deleteGroup ({courseID, courseGroupID}) {
+  static async deleteGroup ({courseGroupID}) {
     try {
-      await db.promise().execute(`DELETE FROM Course_Group WHERE courseID = UUID_TO_BIN("${courseID}") AND courseGroupID = UUID_TO_BIN("${courseGroupID}")`);
-    }  catch(e) {
-      console.log(e);
+      await db.promise().execute(
+        `DELETE FROM Course_Group WHERE courseGroupID = UUID_TO_BIN(?)`,
+        [courseGroupID]
+      );
+  
+      return { message: 'Group deleted successfully' };
+    } catch (e) {
+      console.error('Error deleting group:', e);
       throw new Error('Error deleting group');
     }
   };
 
   static async update ({courseID, input}) {
-    const {
-      year,
-      division,
-      entry_time,
-      specialty
-    } = input;
+    const { year, division, entry_time, specialty } = input;
 
     try {
-      await db.promise().execute(`UPDATE Course SET year = ?, division = ?, entry_time = ?, specialty = ? WHERE courseID = UUID_TO_BIN("${courseID}")`, [year, division, entry_time, specialty]);
-    } catch(e) {
-      console.log(e);
+      await db.promise().execute(
+        `UPDATE Course SET year = ?, division = ?, entry_time = ?, specialty = ? WHERE courseID = UUID_TO_BIN(?)`,
+        [year, division, entry_time, specialty, courseID]
+      );
+
+      return { message: 'Course updated successfully' };
+    } catch (e) {
+      console.error('Error updating course:', e);
       throw new Error('Error updating course');
     }
   };
 
-  static async updateGroup ({courseID, courseGroupID, input}) {
-    const {group} = input;
+  static async updateGroup ({ courseGroupID, input}) {
+    const { group } = input;
 
     try {
-      await db.promise().execute(`UPDATE Course_Group SET courseGroup = ? WHERE courseID = UUID_TO_BIN("${courseID}") AND courseGroupID = UUID_TO_BIN("${courseGroupID}")`, [group]);
-    } catch(e) {
-      console.log(e);
+      await db.promise().execute(
+        `UPDATE Course_Group SET courseGroup = ? WHERE courseGroupID = UUID_TO_BIN(?)`,
+        [group, courseGroupID]
+      );
+
+      return { message: 'Course group updated successfully' };
+    } catch (e) {
+      console.error('Error updating course group:', e);
       throw new Error('Error updating course group');
-    };
+    }
   };
+
+  static async getInscriptions({ courseID }) {
+    try {
+      const [inscriptions] = await db.promise().execute('SELECT * FROM Inscription WHERE courseID = UUID_TO_BIN(?)', 
+        [courseID]
+      )
+
+      if(!inscriptions || inscriptions.length === 0) return { message: "Inscriptions not found" }
+
+      return inscriptions.map(inscription => ({
+        inscriptionID: inscription.inscriptionID.toString('hex'),
+        courseID: inscription.courseID.toString('hex'),
+        CUIL: inscription.CUIL
+      }));
+    } catch(e) {
+      console.log('Error fetching course inscriptions', e)
+      throw new Error('Error geting course inscriptions')
+    }
+  }
+
+  static async createInscription({ courseID, CUIL }) {
+    try {
+      const [[{inscriptionID}]] = await db.promise().execute('SELECT UUID() AS inscriptionID')
+
+      await db.promise().execute('INSERT INTO Inscription (inscriptionID, courseID, CUIL) VALUES (UUID_TO_BIN(?), UUID_TO_BIN(?), ?)', [inscriptionID, courseID, CUIL]
+      )
+
+      return { message: "Course inscription created successfully" }
+    } catch(e) {
+      console.log('Error fetching course inscriptions', e)
+      throw new Error('Error geting course inscriptions')
+    }
+  }
+
+  static async deleteInscription({ inscriptionID }) {
+    try {
+
+      await db.promise().execute('DELETE FROM Inscription WHERE inscriptionID = UUID_TO_BIN(?)',
+        [inscriptionID]
+      )
+
+      return { message: "Course inscription deleted successfully" }
+    } catch(e) {
+      console.log('Error fetching course inscriptions', e)
+      throw new Error('Error geting course inscriptions')
+    }
+  }
 };

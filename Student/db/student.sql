@@ -18,14 +18,15 @@ CREATE TABLE Student (
 );
 
 CREATE TABLE Student_Information (
-    CUIL VARCHAR(11) PRIMARY KEY NOT NULL,
+    studentID BINARY(16) PRIMARY KEY,
+    CUIL VARCHAR(11) NOT NULL,
     blood_type VARCHAR(2) NOT NULL,
     social_work VARCHAR(20) NOT NULL
 );
 
 CREATE TABLE Personal_Information (
-    CUIL VARCHAR(11) PRIMARY KEY NOT NULL,
-    DNI VARCHAR(8) NOT NULL,
+    DNI VARCHAR(8) PRIMARY KEY,
+    CUIL VARCHAR(11) NOT NULL,
     first_name VARCHAR(255) NOT NULL,
     second_name VARCHAR(255),
     last_name1 VARCHAR(255) NOT NULL,
@@ -36,21 +37,13 @@ CREATE TABLE Personal_Information (
 );
 
 CREATE TABLE Account (
-    CUIL VARCHAR(11) PRIMARY KEY NOT NULL,
-    DNI VARCHAR(8) NOT NULL,
-    password VARCHAR(20) NOT NULL
+    accountID BINARY(16) PRIMARY KEY,
+    CUIL VARCHAR(11) NOT NULL
 );
 
 CREATE TABLE Student_Card (
     CUIL VARCHAR(11) PRIMARY KEY NOT NULL,
     cardID VARCHAR(50) NOT NULL
-);
-
-CREATE TABLE Impartition (
-    impartitionID BINARY(16) PRIMARY KEY NOT NULL,
-    CUIL VARCHAR(11) NOT NULL,
-    courseID BINARY(16) NOT NULL,
-    FOREIGN KEY(CUIL) REFERENCES Student(CUIL)
 );
 
 INSERT INTO Student (CUIL)
@@ -63,8 +56,6 @@ INSERT INTO Student_Information (CUIL, blood_type, social_work)
 VALUES ('20472561562', 'B', 'Galeno');
 INSERT INTO Student_Card (studentCardID, CUIL, cardID)
 VALUES (UUID_TO_BIN('d0ff036c-1497-4bc1-995f-bfd848086fcf'), '20472561562', 'SUBE1');
-INSERT INTO Impartition (impartitionID, CUIL, courseID)
-VALUES (UUID_TO_BIN('b4c70f10-1ac9-490f-8747-1a7e964ff7b4'), '20472561562', UUID_TO_BIN('326efd0b358c11efb07bd03957a8a7aa'));
 
 INSERT INTO Student (CUIL)
 VALUES ('20482561562');
@@ -76,8 +67,6 @@ INSERT INTO Student_Information (CUIL, blood_type, social_work)
 VALUES ('20482561562', 'A', 'SAMI');
 INSERT INTO Student_Card (studentCardID, CUIL, cardID)
 VALUES (UUID_TO_BIN('e131a19f-9274-425e-9302-10d6c911994e'), '20482561562', 'SUBE2');
-INSERT INTO Impartition (impartitionID, CUIL, courseID)
-VALUES (UUID_TO_BIN('ed184bc9-8340-494b-ad69-b67b2a44d4a0'), '20482561562', UUID_TO_BIN('e5ec422a358c11efb07bd03957a8a7aa'));
 
 INSERT INTO Student (CUIL)
 VALUES ('20492561562');
@@ -89,8 +78,6 @@ INSERT INTO Student_Information (CUIL, blood_type, social_work)
 VALUES ('20492561562', 'B', 'Osde');
 INSERT INTO Student_Card (studentCardID, CUIL, cardID)
 VALUES (UUID_TO_BIN('00fa28fe-13db-448d-9cd2-9013ef024dd7'), '20492561562', 'SUBE3');
-INSERT INTO Impartition (impartitionID, CUIL, courseID)
-VALUES (UUID_TO_BIN('93cdab8d-0c85-48ee-9761-8f629cf1ff52'), '20492561562', UUID_TO_BIN('326efd0b358c11efb07bd03957a8a7aa'));
 
 INSERT INTO Student (CUIL)
 VALUES ('20502561562');
@@ -102,8 +89,6 @@ INSERT INTO Student_Information (CUIL, blood_type, social_work)
 VALUES ('20502561562', 'AB', 'Osde');
 INSERT INTO Student_Card (studentCardID, CUIL, cardID)
 VALUES (UUID_TO_BIN('1305ab3b-497e-4344-9e5f-96482995296c'), '20502561562', 'SUBE4');
-INSERT INTO Impartition (impartitionID, CUIL, courseID)
-VALUES (UUID_TO_BIN('ec6d4cf6-83aa-43b6-bc8b-6cde73a756e8'), '20502561562', UUID_TO_BIN('d72cfe65d71547a3b9cef3c45cf7f915'));
 
 INSERT INTO Student (CUIL)
 VALUES ('20512561562');
@@ -115,5 +100,3 @@ INSERT INTO Student_Information (CUIL, blood_type, social_work)
 VALUES ('20512561562', 'O', 'Medicum');
 INSERT INTO Student_Card (studentCardID, CUIL, cardID)
 VALUES (UUID_TO_BIN('5c181d34-a74d-42ac-b78e-2d19d2779de2'), '20512561562', 'SUBE5');
-INSERT INTO Impartition (impartitionID, CUIL, courseID)
-VALUES (UUID_TO_BIN('fdc5be90-4d9a-443d-9e45-ae487fe4bc5b'), '20512561562', UUID_TO_BIN('e5ec422a358c11efb07bd03957a8a7aa'));

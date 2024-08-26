@@ -12,16 +12,15 @@ export const createSubjectRouter = ({ subjectModel }) => {
   subjectRouter.get('/:subjectID', subjectController.getByID);
   subjectRouter.get('/course/:courseID', subjectController.getByCourseID);
   subjectRouter.get('/:subjectID/schedules', subjectController.getSchedulesByID);
-  subjectRouter.get('/:subjectID/schedule/:scheduleID', subjectController.getByScheduleID);
 
   subjectRouter.post('/', subjectController.create);
   subjectRouter.post('/:subjectID/schedule', subjectController.createSchedule);
 
   subjectRouter.delete('/:subjectID', subjectController.delete);
-  subjectRouter.delete('/:subjectID/schedule/:scheduleID', subjectController.deleteSchedule);
+  subjectRouter.delete('/schedule/:scheduleID', subjectController.deleteSchedule);
 
   subjectRouter.patch('/:subjectID', subjectController.update);
-  subjectRouter.patch('/:subjectID/schedule/:scheduleID', subjectController.updateSchedule);
+  subjectRouter.patch('/schedule/:scheduleID', subjectController.updateSchedule);
 
   return subjectRouter;
 }
