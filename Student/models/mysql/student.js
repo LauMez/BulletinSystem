@@ -118,6 +118,79 @@ export class StudentModel {
     return result[0];
   }
 
+  static async getByCourseID({ courseID }) {
+    try {
+      const students = await new Promise((resolve, reject) => {
+        db.query(`SELECT CUIL FROM Impartition WHERE courseID = UUID_TO_BIN("${courseID}")`, (err, students) => {
+          if (err) reject(err);
+          resolve(students);
+        });
+      });
+
+      if (!students) {
+        console.error('Students not found');
+        return [];
+      };
+
+      const studentsGroup = await Promise.all(students.map(async (student) => {
+        const [Account] = await db.promise().execute('SELECT * FROM Account WHERE CUIL = ?', [student.CUIL]);
+
+        const account = Account[0];
+
+        if(!account) return { errorMessage: `The student with CUIL ${student.CUIL} have not an account.` };
+
+        const [Card] = await db.promise().execute('SELECT * FROM Student_Card WHERE CUIL = ?', [student.CUIL]);
+
+        const card = Card[0];
+
+        if(!card) return { errorMessage: `The student with CUIL ${student.CUIL} have not a card.` };
+
+        const [Personal_Information] = await db.promise().execute('SELECT * FROM Personal_Information WHERE CUIL = ?', [student.CUIL]);
+
+        const personalInformation = Personal_Information[0];
+
+        if(!personalInformation) return { errorMessage: `The student with CUIL ${student.CUIL} have not personal information.` };
+
+        const [Student_Information] = await db.promise().execute('SELECT * FROM Student_Information WHERE CUIL = ?', [student.CUIL]);
+
+        const studentInformation = Student_Information[0];
+
+        if(!studentInformation) return { errorMessage: `The student with CUIL ${student.CUIL} have not student information.` };
+
+        return {
+          CUIL: student.CUIL,
+          account: {
+            username: account.DNI,
+            password: account.password
+          },
+          card: card.cardID,
+          personalInformation: {
+            DNI: personalInformation.DNI,
+            first_name: personalInformation.first_name,
+            second_name: personalInformation.second_name,
+            last_name1: personalInformation.last_name1,
+            last_name2: personalInformation.last_name2,
+            phone_number: personalInformation.phone_number,
+            landline_phone_number: personalInformation.landline_phone_number,
+            direction: personalInformation.direction
+          },
+          studentInformation: {
+            blood_type: studentInformation.blood_type,
+            social_work: studentInformation.social_work
+          },
+          impartition: courseID
+        }
+      }));
+
+      return studentsGroup;
+    } catch (error) {
+        console.error('Error processing students:', error);
+        throw new Error('Internal server error');
+    };
+  };
+
+  
+
   static async getAccount({ CUIL }) {
     try {
       const [[account]] = await db.promise().execute('SELECT * FROM Account WHERE CUIL = ?', [CUIL])

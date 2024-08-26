@@ -8,29 +8,27 @@ db.connect(err => {
 
   console.log('Connected to course database.');
 });
-
-
 export class CourseModel {
   static async getAll () {
     try {
       const [courses] = await db.promise().execute('SELECT * FROM Course');
   
       if (!courses || courses.length === 0) {
-          console.error('Courses not found');
-          return [];
+        console.error('Courses not found');
+        return [];
       }
-
+    
       return courses.map(course => ({
-          courseID: course.courseID.toString('hex'),
-          year: course.year,
-          division: course.division,
-          entry_time: course.entry_time,
-          specialty: course.specialty
+        courseID: course.courseID.toString('hex'),
+        year: course.year,
+        division: course.division,
+        entry_time: course.entry_time,
+        specialty: course.specialty
       }));
-  } catch (error) {
+    } catch (error) {
       console.error('Error processing courses:', error);
       throw new Error('Internal server error');
-  }
+    }
   };
 
   static async getAllGroups () {
@@ -64,7 +62,7 @@ export class CourseModel {
         console.error('Course not found with ID:', courseID);
         return { message: "Course dosent exist" };
       }
-  
+
       return {
         courseID: course.courseID.toString('hex'),
         year: course.year,
@@ -73,6 +71,40 @@ export class CourseModel {
         specialty: course.specialty
       };
     } catch (error) {
+      console.error('Error processing course:', error);
+      throw new Error('Internal server error');
+    };
+  };
+
+  static async getByCourseGroupID ({courseGroupID}) {
+    try {
+      const [Group] = await db.promise().execute(`SELECT * FROM Course_Group WHERE courseGroupID = UUID_TO_BIN("${courseGroupID}")`);
+      const group = Group[0];
+
+      if (!group) {
+        console.error('Group not found with ID:', courseGroupID);
+        return [];
+      };
+
+      const courseID = group.courseID.toString('hex');
+
+      const [Course] = await db.promise().execute(`SELECT * FROM Course WHERE courseID = UUID_TO_BIN('${courseID}')`);
+      const course = Course[0];
+
+      if (!group) {
+        console.error('Course not found with ID:', courseID);
+        return [];
+      };
+
+      return {
+        courseID: courseID,
+        year: course.year,
+        division: course.division,
+        entry_time: course.entry_time,
+        specialty: course.specialty
+      }
+
+    } catch(error) {
       console.error('Error processing course:', error);
       throw new Error('Internal server error');
     }

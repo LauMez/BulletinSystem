@@ -42,7 +42,8 @@ CREATE TABLE Account (
 );
 
 CREATE TABLE Student_Card (
-    CUIL VARCHAR(11) PRIMARY KEY NOT NULL,
+    studentCardID BINARY(16) PRIMARY KEY NOT NULL,
+    CUIL VARCHAR(11) NOT NULL,
     cardID VARCHAR(50) NOT NULL
 );
 
@@ -56,6 +57,7 @@ INSERT INTO Student_Information (CUIL, blood_type, social_work)
 VALUES ('20472561562', 'B', 'Galeno');
 INSERT INTO Student_Card (studentCardID, CUIL, cardID)
 VALUES (UUID_TO_BIN('d0ff036c-1497-4bc1-995f-bfd848086fcf'), '20472561562', 'SUBE1');
+
 
 INSERT INTO Student (CUIL)
 VALUES ('20482561562');

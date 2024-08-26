@@ -15,6 +15,17 @@ export const createStudentRouter = ({ studentModel }) => {
 
   studentRouter.delete('/:CUIL', studentController.delete); 
 
+  studentRouter.get('/:CUIL', studentController.getByCUIL); //
+
+  studentRouter.get('/:CUIL/account', studentController.getAccount); //
+
+  studentRouter.post('/', studentController.create); //
+
+  studentRouter.delete('/:CUIL', studentController.delete); //
+
+  studentRouter.patch('/:CUIL', studentController.update); //
+  studentRouter.patch('/:CUIL/account', studentController.updateAccount); //
+
   studentRouter.patch('/:CUIL', studentController.update); 
   studentRouter.patch('/:CUIL/account', studentController.updateAccount); 
   return studentRouter;
