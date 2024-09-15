@@ -1,53 +1,134 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
-    <link rel="stylesheet" href="../public/css/login.css">
+    <link rel="stylesheet" href="/css/login.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
 </head>
 <body>
-    <div class="login-container">
-        <h2>Iniciar Sesión</h2>
-        <form action="/login" method="POST" id="login-form">
-            <div class="input-group">
-                <label for="username">Usuario:</label>
-                <input type="text" id="username" name="username" required>
+    <div class="container_principal">
+        <div class="info_app">
+            <div class="info_app_content">
+                <H1>SABV</H1>
+                <h2>Sistema de asistencia y boletin virtual</h2>
+                <p class="parrafo parrafo-1">El sistema se basa en poder visualizar
+                    el boletin y la asistencia de una forma
+                    mas rapida y eficiente ya sea para alumnos,
+                    profesor, preceptos y los responsables.
+                    Ademas es una forma mas moderna, la cual los
+                    alumnos "toman" su asistencia, y esta queda resgistrada
+                    en la app, a la cual cada alumno tiene su perfil, y los
+                    responsables de casa alumno, van a poder ver su boletin
+                    y su respectiva asistencia.
+                </p>
+                <p class="parrafo parrafo-2"> Esta aplicacion fue desarrollada por estudiantes
+                    de Septimo año de la escuela Tecnica 2
+                </p>
             </div>
-            <div class="input-group">
-                <label for="password">Contraseña:</label>
-                <input type="password" id="password" name="password" required>
+        </div>
+        <div class="login__container">
+            <div class="login__content">
+
+                <div class="login__header_container">
+                    <h1 class="login__header">Iniciar sesion</h1>
+                </div>
+
+            
+                <div class="login__form">
+                    <form class="login__form_container" id="login__form_container" action="/login" method="POST">
+
+                        <div class="nombre">
+                            <h1 class="documento_etiqueta">Documento:</h1>
+                            <input type="text" id="login__documento" placeholder="" name="dni" required>
+                        </div>
+
+                        <div class="contrasenia">
+                            <h1 class="contra_etiqueta">Contraseña:</h1>
+                            <input type="password" id="login__contrasenia" name="password" required>
+                        </div>
+
+                        <input type="submit" value="ENVIAR" class="login__enviar">
+                        
+                    </form>
+                    <div class="login__crear_cuenta">
+                        <h1>¿No tienes cuenta?<a href="/register"> Resgistrarse</a></h1>
+                        <a href="">Olvide mi contraseña</a>
+                    </div>
+                </div>
+
             </div>
-            <button type="submit">Entrar</button>
-        </form>
+        </div>
+
     </div>
 
-
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
     <script>
-        const loginForm = document.getElementById('login-form')
+        const loginForm = document.getElementById('login__form_container')
 
-        loginForm.addEventListener('submit', e => {
+        loginForm.addEventListener('submit', async e => {
             e.preventDefault()
-            const username = document.getElementById('username').value
-            const password = document.getElementById('password').value
+            const dni = document.getElementById('login__documento').value
+            const password = document.getElementById('login__contrasenia').value
 
-            fetch('/login', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ username, password })
-            })
-            .then(res => {
-                if(res.ok) {
-                    window.location.href = '/'
-                } else {
-                    console.error('Login failed')
+            try {
+                const response = await fetch('/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ dni, password })
+                })
+
+                console.log(response)
+
+                if(response.ok) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Éxito',
+                        text: 'Inicio de sesión exitoso',
+                        timer: 2000,
+                        willClose: () => {
+                            window.location.href = '/'
+                        }
+                    })
+                } else if (response.status === 403) {
+                    const data = await response.json();
+                    console.log(data)
+                    Swal.fire({
+                        icon: 'info',
+                        title: 'Error',
+                        text: `${data.error}`,
+                        timer: 2000,
+                        willClose: () => {
+                            window.location.href = `/account/${data.accountID}`;
+                        }
+                    });
+                } else if(response.status === 404) {
+                    const data = await response.json();
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: `Error al iniciar sesión: ${data.error || 'Datos incorrectos'}`,
+                        timer: 2000,
+                        willClose: () => {
+                            window.location.href = '/login'
+                        }
+                    })
                 }
-            })
-            .catch(err => {
-                console.error('An error occurred:', err)
-            })
+            } catch (err) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error de red',
+                    text: 'No se pudo completar la solicitud. Inténtalo más tarde.',
+                    timer: 2000,
+                    willClose: () => {
+                        window.location.href = '/login' 
+                    }
+                })
+            }
         })
     </script>
 </body>

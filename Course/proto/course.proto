@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package courseservice;
+
+service CourseService {
+  rpc GetByCourseGroupID (GetByCourseGroupRequest) returns (GetByCourseGroupResponses) {}
+};
+
+message GetByCourseGroupRequest {
+  string courseGroupID = 1;
+}
+
+message GetByCourseGroupResponses {
+  string courseID = 1;
+  int32 year = 2;
+  int32 division = 3;
+  string entry_time = 4;
+  string speciality = 5;
+};

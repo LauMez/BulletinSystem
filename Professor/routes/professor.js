@@ -8,6 +8,10 @@ export const createProfessorRouter = ({ professorModel }) => {
 
   professorRouter.get('/', professorController.getAll);
   professorRouter.get('/:CUIL', professorController.getByCUIL);
+  professorRouter.get('/dni/:DNI', professorController.getByDNI)
+
+  professorRouter.get('/:CUIL/subjects', professorController.getSubjects);
+
   professorRouter.get('/:CUIL/account', professorController.getAccount); 
   professorRouter.get('/register', professorController.getCreate);
   

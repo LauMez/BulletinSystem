@@ -8,6 +8,10 @@ export const createPreceptorRouter = ({ preceptorModel }) => {
 
   preceptorRouter.get('/', preceptorController.getAll);
   preceptorRouter.get('/:CUIL', preceptorController.getByCUIL);
+  preceptorRouter.get('/dni/:DNI', preceptorController.getByDNI);
+
+  preceptorRouter.get('/course/:courseID', preceptorController.getByCourse);
+
   preceptorRouter.get('/:CUIL/account', preceptorController.getAccount); 
   preceptorRouter.get('/register', preceptorController.getCreate);
   

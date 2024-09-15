@@ -43,6 +43,19 @@ export class DirectiveController {
     }
   }
 
+  getByDNI = async(req, res) => {
+    const { DNI } = req.params
+    try {
+      const directive = await this.directiveModel.getByDNI({ DNI })
+
+      if (!directive || directive.length === 0) return res.status(404).json({ message: 'Directive not found' })
+
+      return res.json(directive)
+    } catch( error) {
+      console.log('Error ocurred while fetching directive: ', error)
+      return res.status(500).json({ message: 'Internal server error' })
+    }
+  }
 
   getAccount = async (req, res) => {
     const { CUIL } =  req.params;

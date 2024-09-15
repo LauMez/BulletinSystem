@@ -1,5 +1,4 @@
 import { validateProfessor, validatePartialProfessor } from "../schemas/professor.js";
-import axios from 'axios';
 
 const convertEmptyStringsToNull = (obj) => {
   const result = {};
@@ -43,6 +42,34 @@ export class ProfessorController {
     }
   }
 
+  getByDNI = async(req, res) => {
+    const { DNI } = req.params
+    try {
+      const professor = await this.professorModel.getByDNI({ DNI })
+
+      if (!professor || professor.length === 0) return res.status(404).json({ message: 'Professor not found' })
+
+      return res.json(professor)
+    } catch( error) {
+      console.log('Error ocurred while fetching professor: ', error)
+      return res.status(500).json({ message: 'Internal server error' })
+    }
+  }
+
+  getSubjects = async(req, res) => {
+    const { CUIL } = req.params;
+
+    try {
+      const subjects = await this.professorModel.getSubjects({ CUIL });
+
+      if(subjects.length === 0 || !subjects) return res.status(404).json({message: 'Professor subjects not found'});
+
+      return res.json(subjects);
+    } catch(error) {
+      console.error('Error occurred while fetching professor subjects:', error);
+      return res.status(500).json({ nessage: 'Internal server error' });
+    };
+  }
 
   getAccount = async (req, res) => {
     const { CUIL } =  req.params;
@@ -62,8 +89,9 @@ export class ProfessorController {
 
   getCreate = async(req, res, errorMessage = null) => {
     try {
-      const courses = await axios.get('http://localhost:1234/course');
-      return res.render('register', { courses: courses.data, errorMessage });
+      const response = await fetch('http://localhost:1234/course');
+      const courses = await response.json();
+      return res.render('register', { courses, errorMessage });
     } catch (error) {
         return res.status(500).render('register', { courses: [], errorMessage: 'Error fetching courses' });
     }
@@ -77,7 +105,6 @@ export class ProfessorController {
     }
 
     const processedData = convertEmptyStringsToNull(professor.data);
-    console.log(professor.data.CUIL)
     const existingProfessor = await this.professorModel.findOne({ CUIL: professor.data.CUIL });
 
     if (existingProfessor) return this.getCreate(req, res, 'Ya hay un usuario registrado con ese CUIL.');

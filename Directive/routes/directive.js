@@ -8,6 +8,8 @@ export const createDirectiveRouter = ({ directiveModel }) => {
 
   directiveRouter.get('/', directiveController.getAll);
   directiveRouter.get('/:CUIL', directiveController.getByCUIL);
+  directiveRouter.get('/dni/:DNI', directiveController.getByDNI);
+
   directiveRouter.get('/:CUIL/account', directiveController.getAccount); 
   directiveRouter.get('/register', directiveController.getCreate);
   

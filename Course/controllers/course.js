@@ -61,6 +61,34 @@ export class CourseController {
     }
   };
 
+  getByStudent = async(req, res) => {
+    const { CUIL } = req.params
+    try {
+      const course = await this.courseModel.getByStudent({ CUIL });
+
+      if (!course || course.length === 0) return res.status(404).json({ message: 'No course found for the given CUIL' });
+
+      return res.json(course)
+    } catch (error) {
+      console.error('Error occurred while fetching course:', error);
+      return res.status(500).json({ message: 'Internal server error' });
+    }
+  };
+
+  getStudents = async(req, res) => {
+    const { courseGroupID } = req.params
+    try {
+      const students = await this.courseModel.getStudents({ courseGroupID });
+
+      if (!students || students.length === 0) return res.status(404).json({ message: 'No students found for the given courseGroupID' });
+
+      return res.json(students)
+    } catch (error) {
+      console.error('Error occurred while fetching students:', error);
+      return res.status(500).json({ message: 'Internal server error' });
+    }
+  };
+
   create = async (req, res) => {
     const result = validateCourse(req.body);
 

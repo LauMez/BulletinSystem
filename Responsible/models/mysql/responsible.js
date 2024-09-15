@@ -44,13 +44,14 @@ export class ResponsibleModel {
         const personalInformation = await this.fetchSingleRecord('Personal_Information', CUIL);
         if (!personalInformation) return { errorMessage: `The responsible with CUIL ${CUIL} does not have personal information.` };
 
-        const [responsiblesOf] = await db.promise().execute('SELECT studentCUIL FROM ResponsibleOf WHERE CUIL = ?', [CUIL]) 
+        const [responsiblesOf] = await db.promise().execute('SELECT * FROM ResponsibleOf WHERE CUIL = ?', [CUIL]) 
 
         if(responsiblesOf.length === 0) return { errorMessage: `The responsible with CUIL ${CUIL} is not responsable of anyone.` };
 
         const responsibleOfGroup = await Promise.all(responsiblesOf.map(async (responsibleOf) => {
           return {
-            CUIL: responsibleOf.studentCUIL
+            CUIL: responsibleOf.studentCUIL,
+            responsability: responsibleOf.responsability
           }
         }))
   
@@ -86,13 +87,14 @@ export class ResponsibleModel {
       const personalInformation = await this.fetchSingleRecord('Personal_Information', CUIL);
       if (!personalInformation) return { errorMessage: 'This responsible does not have personal information.' };
 
-      const [responsiblesOf] = await db.promise().execute('SELECT studentCUIL FROM ResponsibleOf WHERE CUIL = ?', [CUIL]) 
+      const [responsiblesOf] = await db.promise().execute('SELECT * FROM ResponsibleOf WHERE CUIL = ?', [CUIL]) 
 
       if(responsiblesOf.length === 0) return { errorMessage: `The responsible with CUIL ${CUIL} is not responsable of anyone.` };
 
       const responsibleOfGroup = await Promise.all(responsiblesOf.map(async (responsibleOf) => {
         return {
-          CUIL: responsibleOf.studentCUIL
+          CUIL: responsibleOf.studentCUIL,
+          responsability: responsibleOf.responsability
         }
       }))
   
@@ -120,6 +122,44 @@ export class ResponsibleModel {
   static async fetchSingleRecord(table, CUIL) {
     const [result] = await db.promise().execute(`SELECT * FROM ${table} WHERE CUIL = ?`, [CUIL]);
     return result[0];
+  }
+
+  static async getByDNI({ DNI }) {
+    try {
+      const [[responsible]] = await db.promise().execute('SELECT * FROM Personal_Information WHERE DNI = ?', [DNI])
+
+      if(!responsible) return { errorMessage: 'This responsible have not an account.' }
+
+      return {
+        CUIL: responsible.CUIL,
+        DNI: responsible.DNI
+      }
+    } catch(error) {
+      console.error('Error processing responsible:', error);
+      throw new Error('Internal server error');
+    }
+  }
+
+  static async getByStudentCUIL({studentCUIL}) {
+    try {
+      const [responsibleOf] = await db.promise().execute('SELECT * FROM ResponsibleOf WHERE studentCUIL = ?', [studentCUIL])
+
+      if(responsibleOf.length === 0) return { errorMessage: `The responsibles with student CUIL ${studentCUIL} not exist.` };
+  
+      const responsibles = await Promise.all(responsibleOf.map(async (responsible) => {
+        const studentResponsible = await this.getByCUIL({ CUIL: responsible.CUIL });
+        return {
+          responsible: studentResponsible,
+          responsability: responsible.responsability
+        }
+      }));
+  
+      return responsibles;
+    } catch (error) {
+      console.error('Error processing responsibles:', error);
+      throw new Error('Internal server error');
+    }
+
   }
 
   static async getAccount({ CUIL }) {

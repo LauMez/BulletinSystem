@@ -1,62 +1,239 @@
-body {
-    font-family: Arial, sans-serif;
-    background-color: #f0f0f0;
+*{
+    margin: 0 auto;
+    padding: 0 auto;
+    box-sizing: border-box;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+.profesor__contenedor{
+    width: 100%;
+    height: 100vh;
+    background-color: rgb(69, 81, 247);
+}
+.perfil{
+    position: fixed;
+    top: 10px;
+    right: 20px;
+    display: flex;
+}
+.perfil a{
+    text-decoration: none;
+    padding: 5px;
+    margin: 5px;
+    transition: all 0.4s ease;
+
+}
+.perfil i{
+    color:rgb(61, 61, 185);
+    font-size: 25px;
+    transition: all 0.4s ease;
+}
+.log-out:hover{
+    transform: scale(1.1);
+}
+.perfil_redireccion:hover{
+    transform: scale(1.1);
+}
+.log-out{
+    margin: 5px;
+    display: flex;
+    background: linear-gradient(45deg, #5e57b4, #6959c5, #7a7aad); /* Degradado lineal */
+    padding: 5px;
+    border: 2px solid rgb(110, 117, 219); /* Borde transparente para que solo el gradiente sea visible */
+    border-radius: 30px;
+    color: white;
+    font-weight: 600;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    transition: all 0.4s ease;
+
+}
+.log-out i{
+    color: white;
+    font-size: 15px;
+    margin: 5px;
+}
+/*
+
+ ANIMACION PROFESOR
+
+*/
+.profesor__animacion{
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    background-color: white;
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    animation: ANIMACION__PROFESOR 3s ease;
+}
+.bienvenido{
+    width: 80%;
+    height: 50px;
+    background-color: rgb(255, 255, 255);
+    margin-right: 0;
+    display: flex;
+    align-items: center;
+    font-size: 30px;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+.bienvenido h1{
+    font-weight: 250;
+    margin-right: 20%;
+}
+.divisor_contenedor{
+    width: 20%;
+    height: 90%;
+    background-color: white;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+}
+.divisor_animacion{
+    margin-left: 10px;
+    height: 70%;
+    width: 5px;
+    border: none;
+    background-color: rgb(0, 0, 0);
+    border-radius: 50px;
+}
+
+
+
+.oculto {
+    display: none;
+}
+
+@keyframes ANIMACION__PROFESOR {
+    0% {
+      /* Estilo inicial */
+      transform: scale(1);
+    }
+    20%{
+        transform: scale(1.05);
+    }
+    35%{
+        transform: scale(1);
+    }
+    70%{
+        width: 100%;
+        color: black;
+    }
+    80%{
+        color: white;
+    }
+    100% {
+        color: white;
+        width: 0px;
+    }
+  }
+  
+
+/*
+        FIN
+ ANIMACION PROFESOR
+
+*/
+
+/*
+
+ ESTILOS CURSOS PROFESOR
+
+*/
+
+.profesor__contenedor_cursos{
+    width: 100%;
+    height: 100vh;
+    background-color: white;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+}
+
+
+.tarjeta__curso{
+    margin: 20px;
+    width: 25%;
+    height: 30vh;
+    background-color: rgb(255, 255, 255);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: blue;
+    font-size: 15px;
+    font-weight: 500;
+    font-family: monospace;
+    border: 2px solid rgb(185, 185, 185);
+    border-radius: 5px;
+    transition: all 0.4s ease;
+    cursor: pointer;
+}
+.tarjeta__curso:hover{
+    transform: scale(1.1);
+    box-shadow: 0px 0px 2px 2px rgb(109, 109, 109);
+    border: none;
+}
+
+.anio_curso{
+    width: 100%;
+    height: 20%;
+    background-color: white;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding: 10px;
+    border-radius: 5px 5px 0px 0px;
+}
+.anio_curso h1{
+    margin-right: 0px;
+    padding: 5px;
+    font-size: 11px;
+    width: 15%;
+    background-color: rgb(15, 49, 112);
+    color: white;
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
-    margin: 0;
+    border-radius: 5px;
 }
-
-.login-container,
-.welcome-container {
-    background-color: #fff;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    width: 300px;
-    text-align: center;
-}
-
-h2 {
-    margin-bottom: 20px;
-    color: #333;
-}
-
-.input-group {
-    margin-bottom: 15px;
-    text-align: left;
-}
-
-label {
-    display: block;
-    margin-bottom: 5px;
-    color: #333;
-}
-
-input[type="text"],
-input[type="password"] {
+.imagen_curso{
     width: 100%;
-    padding: 8px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
+    height: 60%;
+    background-color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
-
-button {
+.imagen_curso i{
+    color: rgb(69, 58, 167);
+    font-size: 14vh;
+}
+.preceptor_curso{
+    height: 20%;
     width: 100%;
-    padding: 10px;
-    background-color: #4CAF50;
+    padding: 5px;
     color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
 }
 
-button:hover {
-    background-color: #45a049;
+.preceptor_curso h1{
+    width: 31%;
+    background-color: rgb(62, 128, 216);
+    font-size: 11px;
+    margin-left: 10px;
+    padding: 5px;
+    border-radius: 5px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
+/*
+        FIN
+ ESTILOS CURSOS PROFESOR
 
-p {
-    color: #555;
-}
+*/

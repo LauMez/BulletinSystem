@@ -37,5 +37,6 @@ CREATE TABLE Account (
 CREATE TABLE ResponsibleOf (
     responsibleDBID BINARY(16) PRIMARY KEY,
     CUIL VARCHAR(11) NOT NULL,
-    studentCUIL VARCHAR(11) NOT NULL
+    studentCUIL VARCHAR(11) NOT NULL,
+    responsability VARCHAR(50) NOT NULL
 );

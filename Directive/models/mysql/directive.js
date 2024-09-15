@@ -71,6 +71,22 @@ export class DirectiveModel {
     }
   };
 
+  static async getByDNI({ DNI }) {
+    try {
+      const [[directive]] = await db.promise().execute('SELECT * FROM Personal_Information WHERE DNI = ?', [DNI])
+
+      if(!directive) return { errorMessage: 'This directive have not an account.' }
+
+      return {
+        CUIL: directive.CUIL,
+        DNI: directive.DNI
+      }
+    } catch(error) {
+      console.error('Error processing directive:', error);
+      throw new Error('Internal server error');
+    }
+  };
+
   static async getByCUIL({ CUIL }) {
     try {
       const account = await this.fetchSingleRecord('Account', CUIL);

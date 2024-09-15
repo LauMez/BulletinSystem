@@ -58,11 +58,15 @@ export class SubjectModel {
         console.error('Subject not found with ID:', subjectID);
         return null;
       }
+
+      const schedules = await this.getSchedulesByID({ subjectID })
   
       return {
         subjectID: subject.subjectID.toString('hex'),
         courseID: subject.courseID.toString('hex'),
+        courseGroupID: subject.courseGroupID.toString('hex'), 
         name: subject.name,
+        schedules
       };
     } catch (error) {
       console.error('Error processing subject:', error);
@@ -72,19 +76,19 @@ export class SubjectModel {
 
   static async getByCourseID ({courseID}) {
     try {
-      const [subjects] = await db.promise().execute(
+      const [subjectIDs] = await db.promise().execute(
         'SELECT * FROM Subject WHERE courseID = UUID_TO_BIN(?)', [courseID]);
   
-      if (subjects.length === 0) {
+      if (subjectIDs.length === 0) {
         console.error('No subjects found for course ID:', courseID);
         return [];
       }
-  
-      return subjects.map(subject => ({
-        subjectID: subject.subjectID.toString('hex'),
-        courseID: subject.courseID.toString('hex'),
-        name: subject.name,
+
+      const subjects = await Promise.all(subjectIDs.map(async (subject) => {
+        return await this.getByID({ subjectID: subject.subjectID.toString('hex') });
       }));
+  
+      return subjects
     } catch (error) {
       console.error('Error processing subjects by course ID:', error);
       throw new Error('Internal server error');
@@ -103,9 +107,9 @@ export class SubjectModel {
   
       return schedules.map(schedule => ({
         scheduleID: schedule.scheduleID.toString('hex'),
-        subjectID: schedule.subjectID.toString('hex'),
         day: schedule.day,
-        schedule: schedule.schedule,
+        entry_schedule: schedule.entry_schedule,
+        finish_schedule: schedule.finish_schedule
       }));
     } catch (error) {
       console.error('Error processing schedules by subject ID:', error);

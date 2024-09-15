@@ -119,6 +119,38 @@ export class PreceptorModel {
     }
   };
 
+  static async getByDNI({ DNI }) {
+    try {
+      const [[preceptor]] = await db.promise().execute('SELECT * FROM Personal_Information WHERE DNI = ?', [DNI])
+
+      if(!preceptor) return { errorMessage: 'This preceptor have not an account.' }
+
+      return {
+        CUIL: preceptor.CUIL,
+        DNI: preceptor.DNI
+      }
+    } catch(error) {
+      console.error('Error processing preceptor:', error);
+      throw new Error('Internal server error');
+    }
+  };
+
+  static async getByCourse({ courseID }) {
+    try {
+      const [[impartition]] = await db.promise().execute(`SELECT * FROM Impartition WHERE courseID = UUID_TO_BIN("${courseID}")`);
+
+      if(!impartition) return null;
+
+      const CUIL = impartition.CUIL;
+      const preceptor = await this.getByCUIL({ CUIL });
+
+      return preceptor;
+    } catch(error) {
+      console.error('Error processing preceptor:', error);
+      throw new Error('Internal server error');
+    }
+  };
+
   static async fetchSingleRecord(table, CUIL) {
     const [result] = await db.promise().execute(`SELECT * FROM ${table} WHERE CUIL = ?`, [CUIL]);
     return result[0];

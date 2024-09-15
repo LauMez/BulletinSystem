@@ -8,6 +8,10 @@ export const createCourseRouter = ({ courseModel }) => {
 
   courseRouter.get('/', courseController.getAll);
   courseRouter.get('/:courseID', courseController.getByID);
+  courseRouter.get('/student/:CUIL', courseController.getByStudent);
+
+  courseRouter.get('/group/:courseGroupID/students', courseController.getStudents);
+
   courseRouter.post('/', courseController.create);
   courseRouter.patch('/:courseID', courseController.update);
   courseRouter.patch('/group/:courseGroupID', courseController.updateGroup);

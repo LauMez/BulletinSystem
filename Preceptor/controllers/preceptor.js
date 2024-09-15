@@ -43,6 +43,34 @@ export class PreceptorController {
     }
   }
 
+  getByDNI = async(req, res) => {
+    const { DNI } = req.params
+    try {
+      const preceptor = await this.preceptorModel.getByDNI({ DNI })
+
+      if (!preceptor || preceptor.length === 0) return res.status(404).json({ message: 'Preceptor not found' })
+
+      return res.json(preceptor)
+    } catch( error) {
+      console.log('Error ocurred while fetching preceptor: ', error)
+      return res.status(500).json({ message: 'Internal server error' })
+    }
+  };
+
+  getByCourse = async(req, res) => {
+    const { courseID } = req.params;
+
+    try {
+      const preceptor = await this.preceptorModel.getByCourse({ courseID })
+
+      if (!preceptor || preceptor.length === 0) return res.status(404).json({ message: 'Preceptor not found' })
+
+      return res.json(preceptor);
+    } catch( error) {
+      console.log('Error ocurred while fetching preceptor: ', error)
+      return res.status(500).json({ message: 'Internal server error' })
+    };
+  }
 
   getAccount = async (req, res) => {
     const { CUIL } =  req.params;

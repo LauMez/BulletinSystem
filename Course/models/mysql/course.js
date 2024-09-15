@@ -97,11 +97,8 @@ export class CourseModel {
       };
 
       return {
-        courseID: courseID,
-        year: course.year,
-        division: course.division,
-        entry_time: course.entry_time,
-        specialty: course.specialty
+        courseGroupID,
+        group: group.courseGroup
       }
 
     } catch(error) {
@@ -127,6 +124,48 @@ export class CourseModel {
       throw new Error('Internal server error');
     }
   }
+
+  static async getByStudent({ CUIL }) {
+    try {
+      const [[inscription]] = await db.promise().execute('SELECT * FROM Inscription WHERE CUIL = ?', [CUIL])
+
+      if(!inscription) return null
+
+      const courseID = inscription.courseID.toString('hex')
+      const courseGroupID = inscription.courseGroupID.toString('hex')
+
+      const course = await this.getByID({courseID});
+      const group = await this.getByCourseGroupID({courseGroupID})
+
+      return {
+        course,
+        group
+      };
+    } catch (error) {
+      console.error('Error processing course:', error);
+      throw new Error('Internal server error');
+    }
+  };
+
+  static async getStudents({ courseGroupID }) {
+    try {
+      const [inscriptions] = await db.promise().execute('SELECT * FROM Inscription WHERE courseGroupID = UUID_TO_BIN(?)', [courseGroupID]);
+
+      if(!inscriptions || inscriptions.length === 0) return null;
+
+      const students = await Promise.all(inscriptions.map(async (inscription) => {
+        const studentResponse = await fetch(`http://localhost:4567/student/${inscription.CUIL}`);
+        const student = await studentResponse.json();
+
+        return student;
+      }));
+
+      return students;
+    } catch (error) {
+      console.error('Error fetching students:', error);
+      throw new Error('Internal server error');
+    }
+  };
 
   static async create ({input}) {
     const { year, division, entry_time, specialty } = input;

@@ -43,6 +43,35 @@ export class ResponsibleController {
     }
   }
 
+  getByDNI = async(req, res) => {
+    const { DNI } = req.params
+    try {
+      const responsible = await this.responsibleModel.getByDNI({ DNI })
+
+      if (!responsible || responsible.length === 0) return res.status(404).json({ message: 'Responsible not found' })
+
+      return res.json(responsible)
+    } catch( error) {
+      console.log('Error ocurred while fetching responsible: ', error)
+      return res.status(500).json({ message: 'Internal server error' })
+    }
+  }
+
+  getByStudentCUIL = async(req, res) => {
+    const { CUIL } = req.params
+
+    try {
+      const responsibles = await this.responsibleModel.getByStudentCUIL({ studentCUIL: CUIL })
+
+      if(!responsibles || responsibles.length === 0) return res.status(404).json({ message: 'Responsibles not found' })
+
+        return res.json(responsibles)
+    } catch(error) {
+      console.error('Error occurred while fetching responsible:', error);
+      return res.status(500).json({ message: 'Internal server error' });
+    }
+  }
+
 
   getAccount = async (req, res) => {
     const { CUIL } =  req.params;

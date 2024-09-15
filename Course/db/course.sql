@@ -24,7 +24,8 @@ CREATE TABLE Course (
 CREATE TABLE Inscription (
     inscriptionID BINARY(16) PRIMARY KEY NOT NULL,
     CUIL VARCHAR(11) NOT NULL,
-    courseID BINARY(16) NOT NULL
+    courseID BINARY(16) NOT NULL,
+    courseGroupID BINARY(16) NOT NULL
 );
 
 CREATE TABLE Course_Group (

@@ -1,5 +1,4 @@
 import { validateStudent, validatePartialStudent } from "../schemas/student.js";
-import axios from 'axios';
 
 const convertEmptyStringsToNull = (obj) => {
   const result = {};
@@ -43,6 +42,20 @@ export class StudentController {
     }
   }
 
+  getByDNI = async(req, res) => {
+    const { DNI } = req.params
+    try {
+      const student = await this.studentModel.getByDNI({ DNI })
+
+      if (!student || student.length === 0) return res.status(404).json({ message: 'Student not found' })
+
+      return res.json(student)
+    } catch( error) {
+      console.log('Error ocurred while fetching student: ', error)
+      return res.status(500).json({ message: 'Internal server error' })
+    }
+  }
+
 
   getAccount = async (req, res) => {
     const { CUIL } =  req.params;
@@ -62,8 +75,9 @@ export class StudentController {
 
   getCreate = async(req, res, errorMessage = null) => {
     try {
-      const courses = await axios.get('http://localhost:1234/course');
-      return res.render('register', { courses: courses.data, errorMessage });
+      const response = await fetch('http://localhost:1234/course');
+      const courses = await response.json();
+      return res.render('register', { courses: courses, errorMessage });
     } catch (error) {
         return res.status(500).render('register', { courses: [], errorMessage: 'Error fetching courses' });
     }

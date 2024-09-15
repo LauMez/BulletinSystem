@@ -8,6 +8,8 @@ export const createStudentRouter = ({ studentModel }) => {
 
   studentRouter.get('/', studentController.getAll);
   studentRouter.get('/:CUIL', studentController.getByCUIL);
+  studentRouter.get('/dni/:DNI', studentController.getByDNI)
+
   studentRouter.get('/:CUIL/account', studentController.getAccount); 
   studentRouter.get('/register', studentController.getCreate);
   

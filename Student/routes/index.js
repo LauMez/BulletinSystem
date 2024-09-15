@@ -6,10 +6,15 @@ export const createIndexRouter = () => {
 
   const indexController = new IndexController();
 
-  indexRouter.get('/', indexController.index)
-  
-  indexRouter.get('/login', indexController.getLogin)
-  indexRouter.post('/login', indexController.login)
+  indexRouter.get('/:CUIL', indexController.index)
+
+  indexRouter.get('/:CUIL/profile', indexController.profile)
+
+  indexRouter.get('/:CUIL/schedules', indexController.schedules)
+
+  indexRouter.get('/:CUIL/bulletin', indexController.bulletin)
+
+  indexRouter.get('/:CUIL/subject/:subjectID', indexController.subject)
 
   indexRouter.get('/register', indexController.getRegister)
   indexRouter.post('/register', indexController.register)

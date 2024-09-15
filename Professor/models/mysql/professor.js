@@ -1,5 +1,5 @@
+import { application } from "express";
 import { db } from "../../config.js"
-import axios from "axios"
 
 db.connect(err => {
   if (err) {
@@ -124,16 +124,80 @@ export class ProfessorModel {
     return result[0];
   }
 
+  static async getByDNI({ DNI }) {
+    try {
+      const [[professor]] = await db.promise().execute('SELECT * FROM Personal_Information WHERE DNI = ?', [DNI])
+
+      if(!professor) return { errorMessage: 'This professor have not an account.' }
+
+      return {
+        CUIL: professor.CUIL,
+        DNI: professor.DNI
+      }
+    } catch(error) {
+      console.error('Error processing professor:', error);
+      throw new Error('Internal server error');
+    }
+  }
+
+  static async getSubjects({ CUIL }) {
+    try {
+      const [impartitions] = await db.promise().execute('SELECT * FROM Impartition WHERE CUIL = ?', [CUIL])
+
+      if(!impartitions) return { errorMessage: 'This professor have not an impartition.' }
+
+      const subjects = await Promise.all(impartitions.map(async (impartition) => {
+        const subjectID = Buffer.from(impartition.subjectID).toString('hex');
+
+        const subjectResponse = await fetch(`http://localhost:4321/subject/${subjectID}`);
+        const subject = await subjectResponse.json();
+
+        const courseResponse = await fetch(`http://localhost:1234/course/${subject.courseID}`);
+        const course = await courseResponse.json();
+
+        const preceptorResponse = await fetch(`http://localhost:6534/preceptor/course/${subject.courseID}`);
+        const preceptor = await preceptorResponse.json();
+
+        return {
+          subject: {
+            subjectID: subject.subjectID,
+            courseID: subject.courseID,
+            name: subject.name,
+            schedules: subject.schedules
+          },
+          course: {
+            courseID: course.courseID,
+            year: course.year,
+            division: course.division
+          },
+          preceptor: {
+            CUIL: preceptor.CUIL,
+            first_name: preceptor.personalInformation.first_name,
+            second_name: preceptor.personalInformation.second_name,
+            last_name1: preceptor.personalInformation.last_name1,
+            last_name2: preceptor.personalInformation.last_name2
+          }
+        };
+      }));
+
+      return subjects;
+    } catch(error) {
+      console.error('Error processing professor:', error);
+      throw new Error('Internal server error');
+    };
+  };
+
   static async getAccount({ CUIL }) {
     try {
-      const [[account]] = await db.promise().execute('SELECT * FROM Account WHERE CUIL = ?', [CUIL])
+      const [[account]] = await db.promise().execute('SELECT * FROM Account WHERE CUIL = ?', [CUIL]);
 
-      if(!account) return { errorMessage: 'This professor have not an account.' }
+      if(!account) return { errorMessage: 'This professor have not an account.' };
 
-      const accountID = account.accountID.toString('hex')
-      const { data: userAxios } = await axios.get(`http://localhost:7654/account/${accountID}`)
+      const accountID = account.accountID.toString('hex');
+      const response = await fetch(`http://localhost:7654/account/${accountID}`);
+      const user = await response.json();
 
-      const user = userAxios.account?.[0]?.[0];
+      // const user = userAxios.account?.[0]?.[0];
       if (!user) return { errorMessage: 'Account details not found.' };
 
       return {
@@ -156,9 +220,16 @@ export class ProfessorModel {
 
     let accountID;
     try {
-      const userResponse = await axios.post('http://localhost:7654/register/account', { DNI });
+      const response = await fetch('http://localhost:7654/register/account', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ DNI }),
+      });
+      const user = await response.json();
   
-      const userArray = userResponse.data.user;
+      // const userArray = userResponse.data.user;
       const firstObject = userArray[0][0];
       accountID = Buffer.from(firstObject.accountID).toString('hex');
     } catch {
@@ -202,7 +273,9 @@ export class ProfessorModel {
       const accountID = account.accountID.toString('hex');
   
       try {
-        await axios.delete(`http://localhost:7654/account/${accountID}`);
+        await fetch(`http://localhost:7654/account/${accountID}`, {
+          method: 'DELETE',
+        });
       } catch {
         throw new Error('Error during deletion');
       }
@@ -244,12 +317,18 @@ export class ProfessorModel {
       if (!account) return false
 
       const accountID = account.accountID.toString('hex')
-      console.log('numero: ', accountID)
 
-      const a = await axios.patch(`http://localhost:7654/account/${accountID}`, { password })
-      console.log(a.data)
+      const response = await fetch(`http://localhost:7654/account/${accountID}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ password }),
+      });
 
-      return a.data
+      const updatedAccount = await response.json();
+
+      return updatedAccount
     } catch {
       throw new Error('Error updating account')
     }

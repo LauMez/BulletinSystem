@@ -1,5 +1,4 @@
 import { db } from "../../config.js"
-import axios from "axios"
 
 db.connect(err => {
   if (err) {
@@ -54,6 +53,7 @@ export class StudentModel {
           card: card.cardID,
           personalInformation: {
             DNI: personalInformation.DNI,
+            birth_date: personalInformation.birth_date,
             first_name: personalInformation.first_name,
             second_name: personalInformation.second_name,
             last_name1: personalInformation.last_name1,
@@ -94,6 +94,7 @@ export class StudentModel {
         card: card.cardID,
         personalInformation: {
           DNI: personalInformation.DNI,
+          birth_date: personalInformation.birth_date,
           first_name: personalInformation.first_name,
           second_name: personalInformation.second_name,
           last_name1: personalInformation.last_name1,
@@ -166,6 +167,7 @@ export class StudentModel {
           card: card.cardID,
           personalInformation: {
             DNI: personalInformation.DNI,
+            birth_date: personalInformation.birth_date,
             first_name: personalInformation.first_name,
             second_name: personalInformation.second_name,
             last_name1: personalInformation.last_name1,
@@ -189,18 +191,33 @@ export class StudentModel {
     };
   };
 
-  
+  static async getByDNI({ DNI }) {
+    try {
+      const [[student]] = await db.promise().execute('SELECT * FROM Personal_Information WHERE DNI = ?', [DNI])
 
+      if(!student) return { errorMessage: 'This student have not an account.' }
+
+      return {
+        CUIL: student.CUIL,
+        DNI: student.DNI
+      }
+    } catch(error) {
+      console.error('Error processing student:', error);
+      throw new Error('Internal server error');
+    }
+  }
+  
   static async getAccount({ CUIL }) {
     try {
-      const [[account]] = await db.promise().execute('SELECT * FROM Account WHERE CUIL = ?', [CUIL])
+      const [[account]] = await db.promise().execute('SELECT * FROM Account WHERE CUIL = ?', [CUIL]);
 
-      if(!account) return { errorMessage: 'This student have not an account.' }
+      if(!account) return { errorMessage: 'This student have not an account.' };
 
-      const accountID = account.accountID.toString('hex')
-      const { data: userAxios } = await axios.get(`http://localhost:7654/account/${accountID}`)
+      const accountID = account.accountID.toString('hex');
+      const response = await fetch(`http://localhost:7654/account/${accountID}`);
+      const user = await response.json();
 
-      const user = userAxios.account?.[0]?.[0];
+      console.log(user);
       if (!user) return { errorMessage: 'Account details not found.' };
 
       return {
@@ -223,10 +240,17 @@ export class StudentModel {
 
     let accountID;
     try {
-      const userResponse = await axios.post('http://localhost:7654/register/account', { DNI });
+      const response = await fetch('http://localhost:7654/register/account', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ DNI }),
+      });
+      const user = await response.json();
   
-      const userArray = userResponse.data.user;
-      const firstObject = userArray[0][0];
+      // const userArray = userResponse.data.user;
+      const firstObject = user[0][0];
       accountID = Buffer.from(firstObject.accountID).toString('hex');
     } catch {
       throw new Error('Error creating user');
@@ -259,7 +283,13 @@ export class StudentModel {
       await executeQuery(`INSERT INTO Account (CUIL, accountID) VALUES (?, UUID_TO_BIN("${accountID}"));`, [CUIL]);
 
       try {
-        await axios.post(`http://localhost:1234/course/${course}/inscription`, { CUIL });
+        await fetch(`http://localhost:1234/course/${course}/inscription`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ CUIL }),
+        });
       } catch {
         throw new Error('Error creating inscription');
       }
@@ -277,7 +307,9 @@ export class StudentModel {
       const accountID = account.accountID.toString('hex');
   
       try {
-        await axios.delete(`http://localhost:7654/account/${accountID}`);
+        await fetch(`http://localhost:7654/account/${accountID}`, {
+          method: 'DELETE',
+        });
       } catch {
         throw new Error('Error during deletion');
       }
@@ -323,8 +355,16 @@ export class StudentModel {
 
       const accountID = account.accountID.toString('hex')
 
-      const updatedAccount = await axios.patch(`http://localhost:7654/account/${accountID}`, { password })
+      const response = await fetch(`http://localhost:7654/account/${accountID}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ password }),
+      });
 
+      const updatedAccount = await response.json();
+  
       return updatedAccount
     } catch {
       throw new Error('Error updating account')

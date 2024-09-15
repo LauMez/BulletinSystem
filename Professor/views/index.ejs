@@ -1,18 +1,84 @@
+
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bienvenido</title>
-    <link rel="stylesheet" href="../public/css/index.css">
+    <title>Profesor</title>
+    <link rel="stylesheet" href="/professor/css/index.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 </head>
 <body>
-    <div class="welcome-container">
-        <h2>Bienvenido, <%= user.username %></h2>
-        <p>Te has autenticado exitosamente.</p>
+    <div class="perfil">
+        <div class="log-out">
+            <button onclick="logout()" class="logout-button">
+                <i class="fa-solid fa-arrow-right-from-bracket"><p>Logout</p></i>
+            </button>
+        </div>
+        <a class="perfil_redireccion" href="<%= CUIL %>/profile">
+            <i class="fa-solid fa-user"></i>
+        </a>
+   </div>
+   <!-- <div id="animado" class="profesor__animacion">
+        <div class="bienvenido">
+            <h1>Bienvenido Tobias!</h1>
+        </div>
+
+        <div class="divisor_contenedor">
+            <hr class="divisor_animacion">
+        </div>
     </div>
-    <form action="/logout" method="POST">
-        <button type="submit">Salir</button>
-    </form>
+    -->
+    <div class="profesor__contenedor">
+        <div class="profesor__contenedor_cursos">
+            <% subjectsData.forEach(subjectData => { %>
+                <div class="tarjeta__curso" onclick="getSubjectURL('<%= CUIL %>', '<%= subjectData.subject.subjectID %>')">
+                    <div class="anio_curso"><h1><%= subjectData.course.year %>°<%= subjectData.course.division %></h1></div>
+                    <div class="imagen_curso">
+                        <i class="fa-solid fa-users"></i>
+                        <h1><%= subjectData.subject.name %></h1>
+                    </div>
+                    <% subjectData.subject.schedules.forEach(schedule => { %>
+                        <p><%= schedule.entry_schedule %>hs - <%= schedule.finish_schedule %>hs</p>
+                    <% }); %>
+                    <div class="preceptor_curso">
+                        <h1><%= subjectData.preceptor.first_name %> 
+                            <%= subjectData.preceptor.second_name || '' %> 
+                            <%= subjectData.preceptor.last_name1 %> 
+                            <%= subjectData.preceptor.last_name2 || '' %>
+                        </h1>
+                    </div>
+                </div>
+            <% }); %>
+        </div>
+
+    </div>
+
+    <script>
+        async function getSubjectURL(CUIL, subjectID) {
+            try {
+                window.location.href = `${CUIL}/subject/${subjectID}`;
+            } catch(error) {
+                console.error('Error in subject redirection:', error);
+            }
+        }
+
+        async function logout() {
+            try {
+                const response = await fetch('/logout', {
+                    method: 'POST',
+                    credentials: 'include'
+                });
+
+                if (response.ok) {
+                    window.location.href = '/login';
+                } else {
+                    console.error('Error during logout:', response.statusText);
+                }
+            } catch (error) {
+                console.error('Logout failed:', error);
+            }
+        }
+    </script>
 </body>
 </html>

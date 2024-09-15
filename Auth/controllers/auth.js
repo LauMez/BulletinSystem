@@ -7,62 +7,84 @@ export class AuthController {
   };
 
   index = async(req, res) => {
-      const { user } = req.session
+    const { user } = req.session;
 
-      console.log(user)
+    if (!user || !user.role) return res.redirect('/login');
 
-      if(user) return res.render('index', { user });
-      else return res.redirect('/login');
+    const roleRoutes = {
+      student: `/student/${user.cuil}`,
+      professor: `/professor/${user.cuil}`,
+    };
+
+    return res.redirect(roleRoutes[user.role] || '/login');
   };
 
-  getUser = async(req, res) => {
-    try {
-      const { user } = req.session
-      
-      if(!user) return { message: 'no anda' }
-
-      return user
-    } catch {
-      console.log('error capturing user')
-    }
-  }
-
   getLogin = async (req, res) => {
-    return res.render('login');
+    const { user } = req.session;
+
+    if (user) return res.redirect(user.role === 'student' ? `/student/${user.cuil}` : `/professor/${user.cuil}`);
+
+    return res.render('login', { message: req.query.message || '' });
   };
 
   login = async(req, res) => {
-    const { username, password } = req.body;
+    try {
+      const { dni, password } = req.body;
+  
+      const user = await this.authModel.login({ dni, password });
+  
+      if (!user || user.length === 0) return res.status(404).json({ error: 'Usuario no encontrado' });
+  
+      if (user.incorrectUser) return res.status(404).json({ error: user.incorrectUser });
+      
+      if (user.emptyPassword) return res.status(403).json({ error: user.emptyPassword, accountID: user.accountID });
+  
+      if (user.incorrectPassword) return res.status(404).json({ error: user.incorrectPassword });
+  
+      const { role, cuil } = user;
+      const token = jwt.sign({ dni, cuil, role }, SECRET_KEY, { expiresIn: '1h' });
 
-    console.log(username, password);
-
-    const login = await this.authModel.login({ username, password });
-    const token = jwt.sign({ username: username, password: password }, SECRET_KEY, { expiresIn: '1h' })
-    res
-      .cookie('access_token', token, {
+      res
+        .cookie('access_token', token, {
           httpOnly: true,
           sameSite: 'strict',
-          maxAge: 1000 * 60 * 60
-      })
-      .send({login, token})
+          maxAge: 1000 * 60 * 60 
+        })
+        .json({ user, token });
+    } catch (error) {
+      console.error('Error during login:', error);
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
   };
 
   logout = async(req, res) => {
+    try {
       res.clearCookie('access_token').redirect('/login')
+    } catch(error) {
+      console.error('Error during logout:', error);
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
   }
 
   account = async(req, res) => {
-    const { accountID } = req.params
+    try {
+      const { accountID } = req.params
 
-    const account = await this.authModel.account({ accountID })
-
-    return res.json(account)
+      const account = await this.authModel.account({ accountID })
+      
+      if(account.error) return res.status(404).json({ error: account.error })
+  
+      return res.render('updateAccount', {account})
+    } catch(error) {
+      console.error('Error during change of password:', error);
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
   }
 
   updateAccount = async(req, res) => {
     const { accountID } = req.params
     const { password } = req.body
-
+  
     try {
       const account = await this.authModel.updateAccount({ accountID, password })
 

@@ -1,15 +1,16 @@
 import express, { json } from 'express';
-import jwt from 'jsonwebtoken';
 import cookieParser from 'cookie-parser';
-
-import { createAuthRouter } from './routes/auth.js';
-
-import { corsMiddleware } from './middlewares/cors.js';
 import 'dotenv/config';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import bodyParser from 'body-parser';
-import { SECRET_KEY } from './config.js';
+
+import { createAuthRouter } from './routes/auth.js';
+
+import { createProxyMiddleware } from 'http-proxy-middleware';
+import { corsMiddleware } from './middlewares/cors.js';
+import { authMiddleware } from './middlewares/authMiddleware.js';
+import { authorize } from './middlewares/authorizeMiddleware.js';
 
 export const createApp = ({ authModel }) => {
   const app = express();
@@ -19,28 +20,18 @@ export const createApp = ({ authModel }) => {
   app.disable('x-powered-by');
   app.use(bodyParser.urlencoded({ extended: true }));
   app.use(bodyParser.json());
+  app.use(authMiddleware);
 
   const __filename = fileURLToPath(import.meta.url);
   const __dirname = path.dirname(__filename);
 
-  app.use((req, res, next) => {
-    const token = req.cookies.access_token
-    req.session = { user: null }
-
-    try {
-      const data = jwt.verify(token, SECRET_KEY)
-      req.session.user = data
-    } catch{}
-
-    next()
-  });
-
-  app.use('/public', express.static('public'));
-  app.use('/public', express.static(path.join(__dirname, 'public')));
+  app.use(express.static(path.join(__dirname, 'public')));
 
   app.set('views', path.join(__dirname, 'views'));
   app.set('view engine', 'ejs');
 
+  app.use('/student', authorize(['student']), createProxyMiddleware({ target: `http://localhost:4567` }));
+  app.use('/professor', authorize(['professor']), createProxyMiddleware({ target: `http://localhost:8734` }));
 
   app.use('/', createAuthRouter({ authModel }));
 

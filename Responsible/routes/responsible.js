@@ -8,6 +8,9 @@ export const createResponsibleRouter = ({ responsibleModel }) => {
 
   responsibleRouter.get('/', responsibleController.getAll);
   responsibleRouter.get('/:CUIL', responsibleController.getByCUIL);
+  responsibleRouter.get('/dni/:DNI', responsibleController.getByDNI);
+  responsibleRouter.get('/student/:CUIL', responsibleController.getByStudentCUIL)
+
   responsibleRouter.get('/:CUIL/account', responsibleController.getAccount); 
   responsibleRouter.get('/register', responsibleController.getCreate);
   

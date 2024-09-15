@@ -1,0 +1,96 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cronograma</title>
+
+    <link rel="stylesheet" href="/student/css/schedules.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+<body>
+    <div class="btn_back" id="btn_back">
+        <i class="fa-solid fa-arrow-left"></i>
+    </div>
+    <div class="curso__contenedor">
+        <div class="curso__horarios_contenedor">
+            <div class="curso__horarios curso__horarios_tarde_contenedor">
+                <table class="curso__tabla curso__horarios_manana">
+                    <tr class="curso__horarios_header">
+                        <td class="curso__header curso__header_horarios">Horarios</td>
+                        <td class="curso__header">Lunes</td>
+                        <td class="curso__header">Martes</td>
+                        <td class="curso__header">Miércoles</td>
+                        <td class="curso__header">Jueves</td>
+                        <td class="curso__header">Viernes</td>
+                    </tr>
+
+                    <% let scheduleRanges = ['7:10-9:20', '9:30-11:50', '13:10-15:20', '14:00-16:00', '15:30-17:30', '16:00-18:00', '18:00-20:00', '20:00-21:00', '20:00-22:00']; %>
+
+                    <% scheduleRanges.forEach(function(range) { %>
+
+                    <% 
+                    let hasSubjectsInRange = false;
+
+                    ['lunes', 'martes', 'miércoles', 'jueves', 'viernes'].forEach(function(day) {
+                        subjects.forEach(function(subject) {
+                            subject.schedules.forEach(function(schedule) {
+                                let subjectRange = `${schedule.entry_schedule}-${schedule.finish_schedule}`;
+                                if (schedule.day.toLowerCase() === day && subjectRange === range) {
+                                    hasSubjectsInRange = true; // Se encontró una materia en este rango
+                                }
+                            });
+                        });
+                    });
+
+                    if (hasSubjectsInRange) { %>
+                    <tr>
+                        <td class="horario"><%= range %></td>
+
+                        <% ['lunes', 'martes', 'miércoles', 'jueves', 'viernes'].forEach(function(day) { %>
+                        <td class="materia">
+                            <% 
+                            let foundSubject = false;
+
+                            subjects.forEach(function(subject) {
+                                subject.schedules.forEach(function(schedule) {
+                                    let subjectRange = `${schedule.entry_schedule}-${schedule.finish_schedule}`;
+
+                                    if (schedule.day.toLowerCase() === day && subjectRange === range) {
+                                        foundSubject = true;
+                            %>
+                                        <span><%= subject.name %></span>
+                            <% 
+                                    }
+                                });
+                            });
+
+                            if (!foundSubject) { %>
+                                <span>-</span>
+                            <% } %>
+                        </td>
+                        <% }); %>
+                    </tr>
+                    <% } %>
+
+                    <% }); %>
+
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var backButton = document.getElementById('btn_back')
+
+            backButton.addEventListener('click', function() {
+                if(window.history.length > 1) window.history.back()
+                else alert('No hay historial para volver')
+            })
+        })
+    </script>
+</body>
+</html>
