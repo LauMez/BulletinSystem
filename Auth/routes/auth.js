@@ -14,6 +14,9 @@ export const createAuthRouter = ({ authModel }) => {
   authRouter.patch('/account/:accountID', authController.updateAccount)
   authRouter.delete('/account/:accountID', authController.delete)
 
+  authRouter.get('/change-password', authController.getChangePassword);
+  authRouter.post('/change-password', authController.changePassword);
+
   authRouter.post('/register/account', authController.registerAccount);
 
   authRouter.post('/logout', authController.logout);

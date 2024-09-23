@@ -1,5 +1,7 @@
 import { SECRET_KEY } from '../config.js';
-import jwt from 'jsonwebtoken'
+import jwt from 'jsonwebtoken';
+import bcryptjs from 'bcryptjs';
+import { validatePassword } from '../schemas/auth.js';
 
 export class AuthController {
   constructor ({ authModel }) {
@@ -31,15 +33,17 @@ export class AuthController {
     try {
       const { dni, password } = req.body;
   
-      const user = await this.authModel.login({ dni, password });
+      const user = await this.authModel.login({ dni });
   
       if (!user || user.length === 0) return res.status(404).json({ error: 'Usuario no encontrado' });
+
+      if (user.emptyPassword) return res.status(403).json({ error: user.emptyPassword, accountID: user.accountID });
+
+      if(!(await bcryptjs.compare(password, user.password))) {
+        return res.status(404).json({ error: 'Contraseña incorrecta' });
+      }
   
       if (user.incorrectUser) return res.status(404).json({ error: user.incorrectUser });
-      
-      if (user.emptyPassword) return res.status(403).json({ error: user.emptyPassword, accountID: user.accountID });
-  
-      if (user.incorrectPassword) return res.status(404).json({ error: user.incorrectPassword });
   
       const { role, cuil } = user;
       const token = jwt.sign({ dni, cuil, role }, SECRET_KEY, { expiresIn: '1h' });
@@ -86,10 +90,17 @@ export class AuthController {
     const { password } = req.body
   
     try {
-      const account = await this.authModel.updateAccount({ accountID, password })
+      const validatedPassword = validatePassword(password);
+      if (!validatedPassword.success) {
+        const firstError = validatedPassword.error.errors[0].message;
+        return res.status(400).json({ message: firstError });
+      }
+      
+      const passwordHaash = await bcryptjs.hash(password, 10);
+      const account = await this.authModel.updateAccount({ accountID, passwordHaash });
 
       if (!account || account.length === 0) {
-        return res.status(404).json({ message: 'Account not updated' });
+        return res.status(404).json({ message: 'Error al actualizar la contraseña' });
     }
 
       return res.json({ message: "Account updated" })
@@ -98,6 +109,30 @@ export class AuthController {
         return res.status(500).json({ message: 'Internal Server Error' });
     }
   }
+
+  getChangePassword = async(req, res) => {
+    try {
+      return res.render('changePassword');
+    } catch(err) {
+      console.log(err);
+    }
+  };
+
+  changePassword = async(req, res) => {
+    try {
+      const { dni } = req.body;
+
+      console.log(dni);
+      const user = await this.authModel.login({ dni });
+
+      if(user.incorrectUser) return res.status(404).json({ error: user.incorrectUser }); 
+
+      return res.status(200).json(user);
+    } catch(error) {
+      console.error('Error changing password:', error);
+      return res.status(500).json({ message: 'Internal Server Error' });
+    };
+  };
 
   delete = async(req, res) => {
     const { accountID } = req.params;

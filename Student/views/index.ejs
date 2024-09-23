@@ -12,6 +12,12 @@
     <div class="menu__container">
         <div class="menu__content">
 
+            <div class="log-out">
+                <button onclick="logout()" class="logout-button">
+                    <i class="fa-solid fa-arrow-right-from-bracket"><p>Logout</p></i>
+                </button>
+            </div>
+
             <div class="menu__bienvenida">
                 <h1 class="nombre__animation">Bienvenido <%= student.personalInformation.first_name %>!<span>&#160;</span></h1>
             </div>
@@ -64,5 +70,24 @@
             </div>
         </div>
     </div>
+
+    <script>
+        async function logout() {
+            try {
+                const response = await fetch('/logout', {
+                    method: 'POST',
+                    credentials: 'include'
+                });
+
+                if (response.ok) {
+                    window.location.href = '/login';
+                } else {
+                    console.error('Error during logout:', response.statusText);
+                }
+            } catch (error) {
+                console.error('Logout failed:', error);
+            }
+        }
+    </script>
 </body>
 </html>

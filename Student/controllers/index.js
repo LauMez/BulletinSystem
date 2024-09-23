@@ -1,100 +1,100 @@
 export class IndexController {
     index = async (req, res) => {
-        const { CUIL } = req.params
+      const { CUIL } = req.params
 
-        try {
-            const [studentResponse, courseResponse] = await Promise.all([
-              fetch(`http://localhost:4567/student/${CUIL}`),
-              fetch(`http://localhost:1234/course/student/${CUIL}`)
-            ]);
-            
-            if (!studentResponse.ok || !courseResponse.ok) {
-              throw new Error('Error fetching student or course data');
-            }
-            
-            const student = await studentResponse.json();
-            const course = await courseResponse.json();
-            
-            const subjectsResponse = await fetch(`http://localhost:4321/subject/course/${course.course.courseID}`);
-            
-            if (!subjectsResponse.ok) throw new Error('Error fetching subjects data');
-            
-            const subjects = await subjectsResponse.json();
-            
-            return res.render('index', { student, subjects });
-          } catch (error) {
-            console.error('Error fetching data:', error.message);
-            return res.status(500).send('An error occurred while fetching data.');
-          }
+      try {
+        const [studentResponse, courseResponse] = await Promise.all([
+          fetch(`http://localhost:4567/student/${CUIL}`),
+          fetch(`http://localhost:1234/course/student/${CUIL}`)
+        ]);
+        
+        if (!studentResponse.ok || !courseResponse.ok) {
+          throw new Error('Error fetching student or course data');
+        }
+        
+        const student = await studentResponse.json();
+        const course = await courseResponse.json();
+        
+        const subjectsResponse = await fetch(`http://localhost:4321/subject/course/${course.course.courseID}`);
+        
+        if (!subjectsResponse.ok) throw new Error('Error fetching subjects data');
+        
+        const subjects = await subjectsResponse.json();
+        
+        return res.render('index', { student, subjects });
+      } catch (error) {
+        console.error('Error fetching data:', error.message);
+        return res.status(500).send('An error occurred while fetching data.');
+      }
     }
 
     profile = async(req, res) => {
-        const { CUIL } = req.params
+      const { CUIL } = req.params
 
-        try {
-            const [studentResponse, courseResponse, responsiblesResponse] = await Promise.all([
-              fetch(`http://localhost:4567/student/${CUIL}`),
-              fetch(`http://localhost:1234/course/student/${CUIL}`),
-              fetch(`http://localhost:6348/responsible/student/${CUIL}`)
-            ]);
-            
-            if (!studentResponse.ok || !courseResponse.ok || !responsiblesResponse.ok) {
-              throw new Error('Error fetching student, course, or responsible data');
-            }
-            
-            const student = await studentResponse.json();
-            const courseData = await courseResponse.json();
-            const responsibles = await responsiblesResponse.json();
-      
-            const course = courseData.course
-            const group = courseData.group
+      try {
+        const [studentResponse, courseResponse, responsiblesResponse] = await Promise.all([
+          fetch(`http://localhost:4567/student/${CUIL}`),
+          fetch(`http://localhost:1234/course/student/${CUIL}`),
+          fetch(`http://localhost:6348/responsible/student/${CUIL}`)
+        ]);
         
-            return res.render('profile', { student, course, group, responsibles });
-            
-          } catch (error) {
-            console.error('Error fetching data:', error.message);
-            return res.status(500).send('An error occurred while fetching data.');
-          }
+        if (!studentResponse.ok || !courseResponse.ok || !responsiblesResponse.ok) {
+          throw new Error('Error fetching student, course, or responsible data');
+        }
+        
+        const student = await studentResponse.json();
+        const courseData = await courseResponse.json();
+        const responsibles = await responsiblesResponse.json();
+  
+        const course = courseData.course
+        const group = courseData.group
+    
+        return res.render('profile', { student, course, group, responsibles });
+          
+      } catch (error) {
+        console.error('Error fetching data:', error.message);
+        return res.status(500).send('An error occurred while fetching data.');
+      }
     }
 
     schedules = async(req, res) => {
-        const { CUIL } = req.params
+      const { CUIL } = req.params
 
-        try {
-            const courseResponse = await fetch(`http://localhost:1234/course/student/${CUIL}`);
-            const course = await courseResponse.json();
-        
-            const subjectsResponse = await fetch(`http://localhost:4321/subject/course/${course.course.courseID}`);
-            const subjects = await subjectsResponse.json();
-        
-            return res.render('schedules', { subjects });
-        } catch (error) {
-            console.error('Error fetching schedules:', error);
-            return res.status(500).send('Error fetching schedules');
-        }
+      try {
+        const courseResponse = await fetch(`http://localhost:1234/course/student/${CUIL}`);
+        const course = await courseResponse.json();
+    
+        const subjectsResponse = await fetch(`http://localhost:4321/subject/course/${course.course.courseID}`);
+        const subjects = await subjectsResponse.json();
+    
+        return res.render('schedules', { subjects });
+      } catch (error) {
+        console.error('Error fetching schedules:', error);
+        return res.status(500).send('Error fetching schedules');
+      }
     }
 
     bulletin = async(req, res) => {
-        const { CUIL } = req.params
+      const { CUIL } = req.params
 
-        try {
-            const courseResponse = await fetch(`http://localhost:1234/course/student/${CUIL}`);
-            
-            if (!courseResponse.ok) throw new Error('Error fetching course data');
-            
-            const course = await courseResponse.json();
+      try {
+        const courseResponse = await fetch(`http://localhost:1234/course/student/${CUIL}`);
         
-            const subjectsResponse = await fetch(`http://localhost:4321/subject/course/${course.course.courseID}`);
+        if (!courseResponse.ok) throw new Error('Error fetching course data');
         
-            if (!subjectsResponse.ok) throw new Error('Error fetching subjects data');
-        
-            const subjects = await subjectsResponse.json();
-        
-            return res.render('bulletin', { subjects });
-          } catch (error) {
-            console.error('Error fetching data:', error.message);
-            return res.status(500).send('An error occurred while fetching data.');
-          }
+        const course = await courseResponse.json();
+    
+        const subjectsResponse = await fetch(`http://localhost:4321/subject/course/${course.course.courseID}`);
+    
+        if (!subjectsResponse.ok) throw new Error('Error fetching subjects data');
+    
+        const subjects = await subjectsResponse.json();
+    
+        return res.render('bulletin', { subjects });
+      } catch (error) {
+        console.error('Error fetching data:', error.message);
+        return res.status(500).send('An error occurred while fetching data.');
+      }
     }
 
     subject = async(req, res) => {

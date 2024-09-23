@@ -11,7 +11,8 @@ const DEFAULT_CONFIG = {
 const connectionString = process.env.DATABASE_URL ?? DEFAULT_CONFIG;
 
 export const {
-    SECRET_KEY = 'jhvghuiknbcusikhfbfijuhdfbdbvdcosjcidc-sknfjbcsudc$sk049883gvhrbnsm4'
+    SECRET_KEY = 'jhvghuiknbcusikhfbfijuhdfbdbvdcosjcidc-sknfjbcsudc$sk049883gvhrbnsm4',
+    thisPORT = 7654
 } = process.env;
 
-export const db = await mysql.createConnection(connectionString);
+export const db = mysql.createConnection(connectionString);

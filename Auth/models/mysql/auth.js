@@ -105,23 +105,20 @@ async function determineUser(dni) {
 }
 
 export class AuthModel {
-  static async login({ dni, password }) {
+  static async login({ dni }) {
     try {
-
       const [[user]] = await db.promise().execute('SELECT * FROM User WHERE DNI = ?', [dni])
 
       if(!user) return { incorrectUser: 'El DNI no existe o no esta registrado' }
 
-      if(user.password === '' || !user.password) return { emptyPassword: 'Usuario requiere contraseña', accountID: user.accountID.toString('hex') }
-
-      const passwordCorrect = user.password === password ? true : false
-
-      if(!passwordCorrect) return { incorrectPassword: 'Contraseña incorrecta' }
+      if(user.password === '' || !user.password) return { emptyPassword: 'Usuario requiere contraseña', accountID: user.accountID.toString('hex') };
 
       const determinedUser = await determineUser(dni);
 
       return {
+        accountID: user.accountID.toString('hex'),
         dni,
+        password: user.password,
         cuil: determinedUser.CUIL,
         role: determinedUser.role
       }
@@ -145,12 +142,12 @@ export class AuthModel {
     }
   }
 
-  static async updateAccount({ accountID, password }) {
+  static async updateAccount({ accountID, passwordHaash }) {
     const [account] = await db.promise().execute(`SELECT * FROM User WHERE accountID = UUID_TO_BIN("${accountID}")`)
 
     if(account.length === 0) return []
 
-    return await db.promise().execute(`UPDATE User SET password = ? WHERE accountID = UUID_TO_BIN("${accountID}")`, [password])
+    return await db.promise().execute(`UPDATE User SET password = ? WHERE accountID = UUID_TO_BIN("${accountID}")`, [passwordHaash])
   }
 
   static async delete({ accountID }) {
