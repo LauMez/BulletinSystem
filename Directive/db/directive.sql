@@ -20,6 +20,7 @@ CREATE TABLE Directive (
 CREATE TABLE Personal_Information (
     DNI VARCHAR(8) PRIMARY KEY,
     CUIL VARCHAR(11) NOT NULL,
+    birth_date DATE NOT NULL,
     first_name VARCHAR(255) NOT NULL,
     second_name VARCHAR(255),
     last_name1 VARCHAR(255) NOT NULL,

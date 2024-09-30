@@ -54,7 +54,6 @@
                         
                     </form>
                     <div class="login__crear_cuenta">
-                        <h1>¿No tienes cuenta?<a href="/register"> Resgistrarse</a></h1>
                         <a href="/change-password">Olvide mi contraseña</a>
                     </div>
                 </div>
@@ -82,8 +81,6 @@
                     body: JSON.stringify({ dni, password })
                 })
 
-                console.log(response)
-
                 if(response.ok) {
                     Swal.fire({
                         icon: 'success',
@@ -96,7 +93,6 @@
                     })
                 } else if (response.status === 403) {
                     const data = await response.json();
-                    console.log(data)
                     Swal.fire({
                         icon: 'info',
                         title: 'Error',

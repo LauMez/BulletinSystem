@@ -27,15 +27,24 @@
                         <i class="fa-solid fa-user"></i>
                     </div>
                     <div class="alumno__nombre">
-                        <h1><%= student.personalInformation.first_name %> <%= student.personalInformation.last_name1 %> <%= course.year %>°<%= course.division %></h1>
+                        <% if(course || group) { %>
+                            <h1><%= student.personalInformation.first_name %> <%= student.personalInformation.last_name1 %> <%= course.year %>°<%= course.division %></h1>
+                        <% } else { %>
+                            <h1><%= student.personalInformation.first_name %> <%= student.personalInformation.last_name1 %> (sin curso)</h1>
+                        <% } %>
                     </div>  
                 </div>
                 <div class="alumno__info_relevante">
                     <ul class="alumno__datos_container">
                         <li class="alumno__dato relevante"><span>Documento: </span><p><%= student.personalInformation.DNI %></p></li>
                         <li class="alumno__dato relevante"><span>Direccion: </span><p><%= student.personalInformation.direction %></p></li>
-                        <li class="alumno__dato relevante"><span>Turno: </span><p><%= course.entry_time %></p></li>
-                        <li class="alumno__dato relevante"><span>Grupo: </span><p><%= group.group %></p></li>
+                        <% if(course && group) { %>
+                            <li class="alumno__dato relevante"><span>Turno: </span><p><%= course.entry_time %></p></li>
+                            <li class="alumno__dato relevante"><span>Grupo: </span><p><%= group.group %></p></li>
+                        <% } else { %>
+                            <li class="alumno__dato relevante"><span>Turno: </span><p>-</p></li>
+                            <li class="alumno__dato relevante"><span>Grupo: </span><p>-</p></li>
+                        <% } %>
                     </ul>
                 </div>
             </div>
@@ -64,32 +73,64 @@
             }
 
             const age = calculateAge(student.personalInformation.birth_date)
-            let repsonsibles = responsibles
-            if(age >= 18) {
-                repsonsibles.unshift({
-                    responsible: student,
-                    responsability: 'Estudiante'
-                });
+            let repsonsibles = responsibles;
+            console.log('responsibles', repsonsibles)
+            if(responsibles) {
+                console.log('hay')
+                if(age >= 18) {
+                    repsonsibles.unshift({
+                        responsible: student,
+                        responsability: 'Estudiante'
+                    });
+                }
+            } else {
+                if(age >= 18) {
+                    responsibles = [{
+                        responsible: student,
+                        responsability: 'Estudiante'
+                    }];
+                }
             }
         %>
-        <section class="alumno__info_responsables_container">
-            <div class="alumno__info_responsables">
-              <div class="alumno__header_responsables">
-                <h1>Información Responsables <span id="responsable_page">1</span>/<%= responsibles.length %></h1>
-              </div>
-              <ul class="alumno__datos_container" id="responsables_list">
-                <li class="alumno__dato"><span>Nombre: </span><p id="nombre_responsable"><%= responsibles[0].responsible.personalInformation.first_name %> <%= responsibles[0].responsible.personalInformation.last_name1 %></p></li>
-                <li class="alumno__dato"><span>Teléfono fijo: </span><p id="telefono_fijo_responsable"><%= responsibles[0].responsible.personalInformation.landline_phone_number || '-'%></p></li>
-                <li class="alumno__dato"><span>Celular: </span><p id="celular_responsable"><%= responsibles[0].responsible.personalInformation.phone_number %></p></li>
-                <li class="alumno__dato"><span>Dirección: </span><p id="direccion_responsable"><%= responsibles[0].responsible.personalInformation.direction %></p></li>
-                <li class="alumno__dato"><span>Responsable: </span><p id="relacion_responsable"><%= responsibles[0].responsability %></p></li>
-              </ul>
-              <div class="alumno__info_responsables_arrow">
-                <i id="alumno__arrow_back" class="fa-solid fa-arrow-left"></i>
-                <i id="alumno__arrow_next" class="fa-solid fa-arrow-right"></i>
-              </div>
-            </div>
-          </section>
+        <% if(responsibles) { %>
+            <section class="alumno__info_responsables_container">
+                <div class="alumno__info_responsables">
+                    <div class="alumno__header_responsables">
+                    <h1>Información Responsables <span id="responsable_page">1</span>/<%= responsibles.length%></h1>
+                    </div>
+                    <ul class="alumno__datos_container" id="responsables_list">
+                    <li class="alumno__dato"><span>Nombre: </span><p id="nombre_responsable"><%= responsibles[0].responsible.personalInformation.first_name %> <%= responsibles[0].responsible.personalInformation.last_name1 %></p></li>
+                    <li class="alumno__dato"><span>Teléfono fijo: </span><p id="telefono_fijo_responsable"><%= responsibles[0].responsible.personalInformation.landline_phone_number %></p></li>
+                    <li class="alumno__dato"><span>Celular: </span><p id="celular_responsable"><%= responsibles[0].responsible.personalInformation.phone_number %></p></li>
+                    <li class="alumno__dato"><span>Dirección: </span><p id="direccion_responsable"><%= responsibles[0].responsible.personalInformation.direction %></p></li>
+                    <li class="alumno__dato"><span>Responsable: </span><p id="relacion_responsable"><%= responsibles[0].responsability %></p></li>
+                    </ul>
+                    <div class="alumno__info_responsables_arrow">
+                    <i id="alumno__arrow_back" class="fa-solid fa-arrow-left"></i>
+                    <i id="alumno__arrow_next" class="fa-solid fa-arrow-right"></i>
+                    </div>
+                </div>
+            </section>
+        <% } else { %>
+            <section class="alumno__info_responsables_container">
+                <div class="alumno__info_responsables">
+                    <div class="alumno__header_responsables">
+                    <h1>Información Responsables <span id="responsable_page">0</span>/0</h1>
+                    </div>
+                    <ul class="alumno__datos_container" id="responsables_list">
+                    <li class="alumno__dato"><span>Nombre: </span><p id="nombre_responsable">-</p></li>
+                    <li class="alumno__dato"><span>Teléfono fijo: </span><p id="telefono_fijo_responsable">-</p></li>
+                    <li class="alumno__dato"><span>Celular: </span><p id="celular_responsable">-</p></li>
+                    <li class="alumno__dato"><span>Dirección: </span><p id="direccion_responsable">-</p></li>
+                    <li class="alumno__dato"><span>Responsable: </span><p id="relacion_responsable">-</p></li>
+                    </ul>
+                    <div class="alumno__info_responsables_arrow">
+                    <i id="alumno__arrow_back" class="fa-solid fa-arrow-left"></i>
+                    <i id="alumno__arrow_next" class="fa-solid fa-arrow-right"></i>
+                    </div>
+                </div>
+            </section>
+        <% } %>
     </div>
 
     <script>
@@ -102,36 +143,38 @@
             })
         })
 
-        document.addEventListener('DOMContentLoaded', function () {
-            let currentPage = 0;
-            const totalPages = <%= responsibles.length %>;
-            const responsiblesResponse = <%- JSON.stringify(responsibles) %>;
+        <% if(responsibles) { %>
+            document.addEventListener('DOMContentLoaded', function () {
+                let currentPage = 0;
+                const totalPages = <%= responsibles.length %>;
+                const responsiblesResponse = <%- JSON.stringify(responsibles) %>;
 
-            function updateResponsableInfo() {
-                document.getElementById('responsable_page').textContent = currentPage + 1;
-                document.getElementById('nombre_responsable').textContent = `${responsiblesResponse[currentPage].responsible.personalInformation.first_name} ${responsiblesResponse[currentPage].responsible.personalInformation.last_name1}`;
-                document.getElementById('telefono_fijo_responsable').textContent = responsiblesResponse[currentPage].responsible.personalInformation.landline_phone_number || '-';
-                document.getElementById('celular_responsable').textContent = responsiblesResponse[currentPage].responsible.personalInformation.phone_number;
-                document.getElementById('direccion_responsable').textContent = responsiblesResponse[currentPage].responsible.personalInformation.direction;
-                document.getElementById('relacion_responsable').textContent = responsiblesResponse[currentPage].responsability;
-            }
-
-            document.getElementById('alumno__arrow_next').addEventListener('click', function () {
-                if (currentPage < totalPages - 1) {
-                currentPage++;
-                updateResponsableInfo();
+                function updateResponsableInfo() {
+                    document.getElementById('responsable_page').textContent = currentPage + 1;
+                    document.getElementById('nombre_responsable').textContent = `${responsiblesResponse[currentPage].responsible.personalInformation.first_name} ${responsiblesResponse[currentPage].responsible.personalInformation.last_name1}`;
+                    document.getElementById('telefono_fijo_responsable').textContent = responsiblesResponse[currentPage].responsible.personalInformation.landline_phone_number || '-';
+                    document.getElementById('celular_responsable').textContent = responsiblesResponse[currentPage].responsible.personalInformation.phone_number;
+                    document.getElementById('direccion_responsable').textContent = responsiblesResponse[currentPage].responsible.personalInformation.direction;
+                    document.getElementById('relacion_responsable').textContent = responsiblesResponse[currentPage].responsability;
                 }
-            });
 
-            document.getElementById('alumno__arrow_back').addEventListener('click', function () {
-                if (currentPage > 0) {
-                currentPage--;
+                document.getElementById('alumno__arrow_next').addEventListener('click', function () {
+                    if (currentPage < totalPages - 1) {
+                    currentPage++;
+                    updateResponsableInfo();
+                    }
+                });
+
+                document.getElementById('alumno__arrow_back').addEventListener('click', function () {
+                    if (currentPage > 0) {
+                    currentPage--;
+                    updateResponsableInfo();
+                    }
+                });
+
                 updateResponsableInfo();
-                }
             });
-
-            updateResponsableInfo();
-        });
+        <% } %>
     </script>
 
 </body>

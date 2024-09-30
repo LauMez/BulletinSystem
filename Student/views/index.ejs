@@ -32,41 +32,44 @@
                     </a>
                 </div>
 
-                <div class="opciones">
-                    <a href="<%= student.CUIL %>/schedules">
-                        <div class="opcion__item" style="background-color: rgb(71, 80, 182);"><i class="fas fa-users"></i></div>
-                        <div class="opcion__name">Cronograma</div>
-                    </a>
-                </div>
+                <% if(subjects) { %>
 
-                <div class="opciones">
-                    <a href="<%= student.CUIL %>/bulletin">    
-                        <div class="opcion__item" style="background-color: rgb(71, 80, 182);"><i class="fas fa-school"></i></div>
-                        <div class="opcion__name">Boletin</div>
-                    </a>
-                </div>
-
-                <div class="opciones materias__container">
-                    
-                    <label for="view__subject">
-                        <div class="opcion__item item__change" style="background-color: rgb(71, 80, 182);"><i id="open__subject" class="fa-solid fa-address-book"></i></div>
-                        <div class="opcion__name">Materia</div>
-                    </label>
-
-                    <input type="checkbox" name="" id="view__subject">
-                   
-                    <div class="subject__container">
-                        <% subjects.forEach(function(subject) { %>
-                            <div class="subject">
-                                <a href="<%= student.CUIL %>/subject/<%= subject.subjectID %>">
-                                    <div class="opcion__item" style="background-color: rgb(71, 80, 182);"><i class="fa-solid fa-address-book"></i></div>
-                                    <div class="opcion__name"><%= subject.name %></div>
-                                </a>
-                            </div>
-                        <% }) %>
+                    <div class="opciones">
+                        <a href="<%= student.CUIL %>/schedules">
+                            <div class="opcion__item" style="background-color: rgb(71, 80, 182);"><i class="fas fa-users"></i></div>
+                            <div class="opcion__name">Cronograma</div>
+                        </a>
                     </div>
-                    <label for="view__subject" class="exit__subject"></label>
-                </div>
+
+                    <div class="opciones">
+                        <a href="<%= student.CUIL %>/bulletin">    
+                            <div class="opcion__item" style="background-color: rgb(71, 80, 182);"><i class="fas fa-school"></i></div>
+                            <div class="opcion__name">Boletin</div>
+                        </a>
+                    </div>
+
+                    <div class="opciones materias__container">
+                    
+                        <label for="view__subject">
+                            <div class="opcion__item item__change" style="background-color: rgb(71, 80, 182);"><i id="open__subject" class="fa-solid fa-address-book"></i></div>
+                            <div class="opcion__name">Materia</div>
+                        </label>
+    
+                        <input type="checkbox" name="" id="view__subject">
+    
+                        <div class="subject__container">
+                            <% subjects.forEach(function(subject) { %>
+                                <div class="subject">
+                                    <a href="<%= student.CUIL %>/subject/<%= subject.subjectID %>">
+                                        <div class="opcion__item" style="background-color: rgb(71, 80, 182);"><i class="fa-solid fa-address-book"></i></div>
+                                        <div class="opcion__name"><%= subject.name %></div>
+                                    </a>
+                                </div>
+                            <% }) %>
+                        </div>
+                        <label for="view__subject" class="exit__subject"></label>
+                    </div>
+                <% } %>
             </div>
         </div>
     </div>

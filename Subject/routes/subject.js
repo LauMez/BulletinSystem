@@ -10,7 +10,7 @@ export const createSubjectRouter = ({ subjectModel }) => {
   subjectRouter.get('/schedules', subjectController.getAllSchedules);
 
   subjectRouter.get('/:subjectID', subjectController.getByID);
-  subjectRouter.get('/course/:courseID', subjectController.getByCourseID);
+  subjectRouter.get('/course/:courseID/group/:courseGroupID', subjectController.getByCourseGroupID);
   subjectRouter.get('/:subjectID/schedules', subjectController.getSchedulesByID);
 
   subjectRouter.post('/', subjectController.create);

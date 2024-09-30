@@ -32,7 +32,7 @@ export const createApp = ({ authModel }) => {
   app.set('view engine', 'ejs');
 
   app.use('/student', authorize(['student']), createProxyMiddleware({ target: `http://localhost:4567` }));
-  app.use('/professor/:CUIL', authorize(['professor']), createProxyMiddleware({ target: `http://localhost:8734` }));
+  app.use('/professor', authorize(['professor']), createProxyMiddleware({ target: `http://localhost:8734` }));
 
   app.use('/', createAuthRouter({ authModel }));
 

@@ -37,13 +37,13 @@ export class AuthController {
   
       if (!user || user.length === 0) return res.status(404).json({ error: 'Usuario no encontrado' });
 
+      if (user.incorrectUser) return res.status(404).json({ error: user.incorrectUser });
+
       if (user.emptyPassword) return res.status(403).json({ error: user.emptyPassword, accountID: user.accountID });
 
       if(!(await bcryptjs.compare(password, user.password))) {
         return res.status(404).json({ error: 'Contraseña incorrecta' });
       }
-  
-      if (user.incorrectUser) return res.status(404).json({ error: user.incorrectUser });
   
       const { role, cuil } = user;
       const token = jwt.sign({ dni, cuil, role }, SECRET_KEY, { expiresIn: '1h' });
@@ -122,7 +122,6 @@ export class AuthController {
     try {
       const { dni } = req.body;
 
-      console.log(dni);
       const user = await this.authModel.login({ dni });
 
       if(user.incorrectUser) return res.status(404).json({ error: user.incorrectUser }); 

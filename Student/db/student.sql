@@ -50,56 +50,36 @@ CREATE TABLE Student_Card (
 
 INSERT INTO Student (CUIL)
 VALUES ('20472561562');
-INSERT INTO Account (CUIL, DNI, password)
-VALUES ('20472561562', '47256156', 'juan.carlos123');
-INSERT INTO Personal_Information (CUIL, DNI, first_name, second_name, last_name1, phone_number, direction)
-VALUES ('20472561562', '47256156', 'juan', 'carlos', 'roldon', '223-345-3014', 'las manos');
-INSERT INTO Student_Information (CUIL, blood_type, social_work)
-VALUES ('20472561562', 'B', 'Galeno');
-INSERT INTO Student_Card (studentCardID, CUIL, cardID)
-VALUES (UUID_TO_BIN('d0ff036c-1497-4bc1-995f-bfd848086fcf'), '20472561562', 'SUBE1');
-
+INSERT INTO Account (accountID, CUIL)
+VALUES (UUID_TO_BIN('bcfd01fb-f1cd-4c48-abed-654acf1accc9'), '20472561562');
+INSERT INTO Personal_Information (DNI, CUIL, birth_date, first_name, second_name, last_name1, phone_number, direction)
+VALUES ('47256156', '20472561562', '2006-03-13', 'juan', 'carlos', 'roldon', '2233453014', 'las manos');
+INSERT INTO Student_Information (studentID, CUIL, blood_type, social_work)
+VALUES (UUID_TO_BIN('8ade05f0-4f52-4abd-9bf6-bf736e7218fa'), '20472561562', 'B', 'Galeno');
 
 INSERT INTO Student (CUIL)
 VALUES ('20482561562');
-INSERT INTO Account (CUIL, DNI, password)
-VALUES ('20482561562', '48256156', 'ian.avellaneda123');
-INSERT INTO Personal_Information (CUIL, DNI, first_name, last_name1, phone_number, direction)
-VALUES ('20482561562', '48256156', 'ian', 'avellaneda', '223-345-3015', 'las orejas');
-INSERT INTO Student_Information (CUIL, blood_type, social_work)
-VALUES ('20482561562', 'A', 'SAMI');
-INSERT INTO Student_Card (studentCardID, CUIL, cardID)
-VALUES (UUID_TO_BIN('e131a19f-9274-425e-9302-10d6c911994e'), '20482561562', 'SUBE2');
+INSERT INTO Account (accountID, CUIL)
+VALUES (UUID_TO_BIN('e2052014-00d2-46b8-859d-7321e2fa08fb'), '20482561562');
+INSERT INTO Personal_Information (DNI, CUIL, birth_date, first_name, last_name1, phone_number, direction)
+VALUES ('48256156', '20482561562', '2005-04-01', 'dario', 'benedetto', '2233448014', 'los pies');
+INSERT INTO Student_Information (studentID, CUIL, blood_type, social_work)
+VALUES (UUID_TO_BIN('ca392e77-c0cb-4ba6-a22a-a68aeb8e8297'), '20482561562', 'A+', 'Galeno');
 
 INSERT INTO Student (CUIL)
 VALUES ('20492561562');
-INSERT INTO Account (CUIL, DNI, password)
-VALUES ('20492561562', '49256156', 'maria.jose123');
-INSERT INTO Personal_Information (CUIL, DNI, first_name, second_name, last_name1, last_name2, phone_number, direction)
-VALUES ('20492561562', '49256156', 'maria', 'jose', 'acevedo', 'gonzales', '223-345-3016', 'las palmas');
-INSERT INTO Student_Information (CUIL, blood_type, social_work)
-VALUES ('20492561562', 'B', 'Osde');
-INSERT INTO Student_Card (studentCardID, CUIL, cardID)
-VALUES (UUID_TO_BIN('00fa28fe-13db-448d-9cd2-9013ef024dd7'), '20492561562', 'SUBE3');
+INSERT INTO Account (accountID, CUIL)
+VALUES (UUID_TO_BIN('0b47ce87-d43b-4a53-a149-42b207e7ca86'), '20492561562');
+INSERT INTO Personal_Information (DNI, CUIL, birth_date, first_name, last_name1, phone_number, direction)
+VALUES ('49256156', '20492561562', '2006-12-30', 'lionel', 'scaloni', '2233454294', 'las orejas');
+INSERT INTO Student_Information (studentID, CUIL, blood_type, social_work)
+VALUES (UUID_TO_BIN('3886d5e1-41ac-4b05-a4d3-e35c738fb416'), '20492561562', 'B+', 'Galeno');
 
 INSERT INTO Student (CUIL)
 VALUES ('20502561562');
-INSERT INTO Account (CUIL, DNI, password)
-VALUES ('20502561562', '50256156', 'branco.samien123');
-INSERT INTO Personal_Information (CUIL, DNI, first_name, second_name, last_name1, phone_number, direction)
-VALUES ('20502561562', '50256156', 'branco', 'samien', 'aguirre', '223-345-3017', 'los dedos');
-INSERT INTO Student_Information (CUIL, blood_type, social_work)
-VALUES ('20502561562', 'AB', 'Osde');
-INSERT INTO Student_Card (studentCardID, CUIL, cardID)
-VALUES (UUID_TO_BIN('1305ab3b-497e-4344-9e5f-96482995296c'), '20502561562', 'SUBE4');
-
-INSERT INTO Student (CUIL)
-VALUES ('20512561562');
-INSERT INTO Account (CUIL, DNI, password)
-VALUES ('20512561562', '50256156', 'nahuel.cludio123');
-INSERT INTO Personal_Information (CUIL, DNI, first_name, second_name, last_name1, last_name2, phone_number, direction)
-VALUES ('20512561562', '50256156', 'nahuel', 'cludio', 'palacios', 'navarro', '223-345-3018', 'las piernas');
-INSERT INTO Student_Information (CUIL, blood_type, social_work)
-VALUES ('20512561562', 'O', 'Medicum');
-INSERT INTO Student_Card (studentCardID, CUIL, cardID)
-VALUES (UUID_TO_BIN('5c181d34-a74d-42ac-b78e-2d19d2779de2'), '20512561562', 'SUBE5');
+INSERT INTO Account (accountID, CUIL)
+VALUES (UUID_TO_BIN('c31f00cb-0ef6-4bd3-99c5-c417405d7142'), '20502561562');
+INSERT INTO Personal_Information (DNI, CUIL, birth_date, first_name, last_name1, phone_number, direction)
+VALUES ('50256156', '20502561562', '2005-08-09', 'paulo', 'dybala', '2233406714', 'las uñas');
+INSERT INTO Student_Information (studentID, CUIL, blood_type, social_work)
+VALUES (UUID_TO_BIN('8a33d15c-164e-4f9c-90c6-2516f8fd6feb'), '20502561562', 'AB+', 'Galeno');

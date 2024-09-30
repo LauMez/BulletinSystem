@@ -272,20 +272,21 @@ export class CourseModel {
 
   static async getInscriptions({ courseID }) {
     try {
-      const [inscriptions] = await db.promise().execute('SELECT * FROM Inscription WHERE courseID = UUID_TO_BIN(?)', 
-        [courseID]
-      )
+      const [inscriptions] = await db.promise().execute('SELECT * FROM Inscription WHERE courseID = UUID_TO_BIN(?)', [courseID]);
 
-      if(!inscriptions || inscriptions.length === 0) return { message: "Inscriptions not found" }
+      if(!inscriptions || inscriptions.length === 0) return null;
 
-      return inscriptions.map(inscription => ({
-        inscriptionID: inscription.inscriptionID.toString('hex'),
-        courseID: inscription.courseID.toString('hex'),
-        CUIL: inscription.CUIL
+      const students = await Promise.all(inscriptions.map(async (inscription) => {
+        const studentResponse = await fetch(`http://localhost:4567/student/${inscription.CUIL}`);
+        const student = await studentResponse.json();
+
+        return student;
       }));
-    } catch(e) {
-      console.log('Error fetching course inscriptions', e)
-      throw new Error('Error geting course inscriptions')
+
+      return students;
+    } catch (error) {
+      console.error('Error fetching students:', error);
+      throw new Error('Internal server error');
     }
   }
 

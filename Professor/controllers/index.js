@@ -28,8 +28,14 @@ export class IndexController {
             const courseResponse = await fetch(`http://localhost:1234/course/${subject.courseID}`);
             const course = await courseResponse.json();
 
-            const studentsResponse = await fetch(`http://localhost:1234/course/group/${subject.courseGroupID}/students`);
-            const students = await studentsResponse.json();
+            let students;
+            if(!subject.courseGroupID || subject.courseGroupID == '') {
+                const studentsResponse = await fetch(`http://localhost:1234/course/${subject.courseID}/inscription`);
+                students = await studentsResponse.json();
+            } else {
+                const studentsResponse = await fetch(`http://localhost:1234/course/group/${subject.courseGroupID}/students`);
+                students = await studentsResponse.json();
+            }
 
             return res.render('subject', { subject, students, course });
         } catch(error) {

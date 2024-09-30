@@ -8,11 +8,9 @@ export const authorize = (allowedRoles) => {
 
       const url = req.originalUrl;
       let cuil;
-      console.log('Original URL:', url); // Loggea la URL completa
-      const match = url.match(/\/student\/(\d+)/); // Busca el CUIL en la URL
+      const match = url.match(/\/student\/(\d+)/);
       if (match && match[1]) {
         cuil = match[1];
-        console.log('CUIL encontrado:', cuil); // Aquí tienes el CUIL
 
         if(user.cuil !== cuil) { return res.redirect('/login'); }
       }

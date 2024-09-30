@@ -7,24 +7,27 @@ export class IndexController {
           fetch(`http://localhost:4567/student/${CUIL}`),
           fetch(`http://localhost:1234/course/student/${CUIL}`)
         ]);
-        
-        if (!studentResponse.ok || !courseResponse.ok) {
+
+        if(!studentResponse.ok) {
           throw new Error('Error fetching student or course data');
         }
-        
+
         const student = await studentResponse.json();
+        
+        if (!courseResponse.ok) return res.render('index', { student, subjects: null });
+        
         const course = await courseResponse.json();
         
-        const subjectsResponse = await fetch(`http://localhost:4321/subject/course/${course.course.courseID}`);
+        const subjectsResponse = await fetch(`http://localhost:4321/subject/course/${course.course.courseID}/group/${course.group.courseGroupID}`);
         
-        if (!subjectsResponse.ok) throw new Error('Error fetching subjects data');
+        if (!subjectsResponse.ok) return res.render('index', { student, subjects: null });
         
         const subjects = await subjectsResponse.json();
         
         return res.render('index', { student, subjects });
       } catch (error) {
         console.error('Error fetching data:', error.message);
-        return res.status(500).send('An error occurred while fetching data.');
+        return res.status(500).send(error.message);
       }
     }
 
@@ -38,22 +41,34 @@ export class IndexController {
           fetch(`http://localhost:6348/responsible/student/${CUIL}`)
         ]);
         
-        if (!studentResponse.ok || !courseResponse.ok || !responsiblesResponse.ok) {
-          throw new Error('Error fetching student, course, or responsible data');
+        if (!studentResponse.ok) {
+          throw new Error('Error fetching student');
         }
-        
         const student = await studentResponse.json();
-        const courseData = await courseResponse.json();
-        const responsibles = await responsiblesResponse.json();
+
+        let course, group, responsibles;
+
+        if(!courseResponse.ok) {
+          course = null;
+          group = null;
+        }
+
+        const courseData = await courseResponse.json() || null;
+        responsibles = await responsiblesResponse.json() || null;
+
+        console.log(responsibles)
+
+
+        if(responsibles.errorMessage) responsibles = null;
   
-        const course = courseData.course
-        const group = courseData.group
+        course = courseData.course || null;
+        group = courseData.group || null;
     
         return res.render('profile', { student, course, group, responsibles });
           
       } catch (error) {
         console.error('Error fetching data:', error.message);
-        return res.status(500).send('An error occurred while fetching data.');
+        return res.status(500).send(error.message);
       }
     }
 

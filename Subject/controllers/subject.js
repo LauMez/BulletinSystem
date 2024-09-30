@@ -52,14 +52,14 @@ export class SubjectController {
     }
   };
 
-  getByCourseID = async(req, res) => {
-    const { courseID } = req.params;
+  getByCourseGroupID = async(req, res) => {
+    const { courseID, courseGroupID } = req.params;
 
     try {
-      const subjects = await this.subjectModel.getByCourseID({ courseID });
+      const subjects = await this.subjectModel.getByCourseGroupID({ courseID, courseGroupID });
 
       if (subjects.length === 0) {
-        return res.status(404).json({ message: 'No subjects found for the given course ID' });
+        return res.status(404).json({ message: 'No subjects found for the given course group ID or course ID' });
       }
 
       return res.json(subjects);
