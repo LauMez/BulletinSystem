@@ -56,8 +56,6 @@ export class IndexController {
         const courseData = await courseResponse.json() || null;
         responsibles = await responsiblesResponse.json() || null;
 
-        console.log(responsibles)
-
 
         if(responsibles.errorMessage) responsibles = null;
   
