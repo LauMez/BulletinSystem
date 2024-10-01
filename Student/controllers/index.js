@@ -78,9 +78,11 @@ export class IndexController {
       try {
         const courseResponse = await fetch(`http://localhost:1234/course/student/${CUIL}`);
         const course = await courseResponse.json();
-    
-        const subjectsResponse = await fetch(`http://localhost:4321/subject/course/${course.course.courseID}`);
+
+        const subjectsResponse = await fetch(`http://localhost:4321/subject/course/${course.course.courseID}/group/${course.group.courseGroupID}`);
         const subjects = await subjectsResponse.json();
+
+        if (!subjectsResponse.ok) return res.status(500).sned('Error fetching subjects');
     
         return res.render('schedules', { subjects });
       } catch (error) {

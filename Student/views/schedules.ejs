@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -27,54 +26,38 @@
                         <td class="curso__header">Viernes</td>
                     </tr>
 
-                    <% let scheduleRanges = ['7:10-9:20', '9:30-11:50', '13:10-15:30', '14:00-16:00', '15:40-17:30', '16:00-18:00', '18:00-20:00', '20:00-21:00', '20:00-22:00']; %>
-
-                    <% scheduleRanges.forEach(function(range) { %>
-
                     <% 
-                    let hasSubjectsInRange = false;
+                    let scheduleMap = {};
 
-                    ['lunes', 'martes', 'miércoles', 'jueves', 'viernes'].forEach(function(day) {
-                        subjects.forEach(function(subject) {
-                            subject.schedules.forEach(function(schedule) {
-                                let subjectRange = `${schedule.entry_schedule}-${schedule.finish_schedule}`;
-                                if (schedule.day.toLowerCase() === day && subjectRange === range) {
-                                    hasSubjectsInRange = true; // Se encontró una materia en este rango
-                                }
-                            });
+                    subjects.forEach(function(subject) {
+                        subject.schedules.forEach(function(schedule) {
+                            let day = schedule.day.toLowerCase();
+                            let hours = `${schedule.entry_schedule}-${schedule.finish_schedule}`;
+
+                            if (!scheduleMap[hours]) scheduleMap[hours] = {};
+
+                            if (!scheduleMap[hours][day]) scheduleMap[hours][day] = subject.name;
                         });
                     });
 
-                    if (hasSubjectsInRange) { %>
-                    <tr>
-                        <td class="horario"><%= range %></td>
+                    let schedules = Object.keys(scheduleMap);
+                    let days = ['lunes', 'martes', 'miercoles', 'jueves', 'viernes'];
+                    %>
 
-                        <% ['lunes', 'martes', 'miércoles', 'jueves', 'viernes'].forEach(function(day) { %>
-                        <td class="materia">
-                            <% 
-                            let foundSubject = false;
+                    <% schedules.forEach(function(schedule) { %>
+                        <tr>
+                            <td class="horario"><%= schedule %></td>
 
-                            subjects.forEach(function(subject) {
-                                subject.schedules.forEach(function(schedule) {
-                                    let subjectRange = `${schedule.entry_schedule}-${schedule.finish_schedule}`;
-
-                                    if (schedule.day.toLowerCase() === day && subjectRange === range) {
-                                        foundSubject = true;
-                            %>
-                                        <span><%= subject.name %></span>
-                            <% 
-                                    }
-                                });
-                            });
-
-                            if (!foundSubject) { %>
-                                <span>-</span>
-                            <% } %>
-                        </td>
-                        <% }); %>
-                    </tr>
-                    <% } %>
-
+                            <% days.forEach(function(day) { %>
+                                <td class="materia">
+                                    <% if (scheduleMap[schedule][day]) { %>
+                                        <span><%= scheduleMap[schedule][day] %></span>
+                                    <% } else { %>
+                                        <span>-</span>
+                                    <% } %>
+                                </td>
+                            <% }); %>
+                        </tr>
                     <% }); %>
 
                 </table>
