@@ -52,6 +52,23 @@ export class SubjectController {
     }
   };
 
+  getByCourseID = async(req, res) => {
+    const { courseID } = req.params;
+
+    try {
+      const subjects = await this.subjectModel.getByCourseID({ courseID });
+
+      if (subjects.length === 0) {
+        return res.status(404).json({ message: 'No subjects found for the given course group ID or course ID' });
+      }
+
+      return res.json(subjects);
+    } catch (error) {
+      console.error('Error occurred while fetching subjects:', error);
+      return res.status(500).json({ message: 'Internal server error' });
+    }
+  };
+
   getByCourseGroupID = async(req, res) => {
     const { courseID, courseGroupID } = req.params;
 

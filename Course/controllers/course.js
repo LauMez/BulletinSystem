@@ -46,6 +46,21 @@ export class CourseController {
     }
   };
 
+  getByCourseGroupID = async(req, res) => {
+    const { courseGroupID } = req.params;
+
+    try {
+      const group = await this.courseModel.getByCourseGroupID({ courseGroupID });
+
+      if (group.length === 0) return res.status(404).json({ message: 'No group found for the given course group ID' });
+
+      return res.json(group);
+    } catch (error) {
+      console.error('Error occurred while fetching groups:', error);
+      return res.status(500).json({ message: 'Internal server error' });
+    }
+  };
+
   getGroupsByID = async (req, res) => {
     const { courseID } = req.params;
 

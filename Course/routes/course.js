@@ -18,6 +18,7 @@ export const createCourseRouter = ({ courseModel }) => {
 
   courseRouter.get('/groups', courseController.getAllGroups);
   courseRouter.get('/:courseID/groups', courseController.getGroupsByID);
+  courseRouter.get('/group/:courseGroupID', courseController.getByCourseGroupID);
   courseRouter.post('/:courseID/group', courseController.createGroup);
   courseRouter.delete('/:courseID', courseController.delete);
   courseRouter.delete('/group/:courseGroupID', courseController.deleteGroup);

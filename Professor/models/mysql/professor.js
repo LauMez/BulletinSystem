@@ -140,6 +140,33 @@ export class ProfessorModel {
     }
   }
 
+  static async getBySubject({ subjectID }) {
+    try {
+      const [[impartition]] = await db.promise().execute('SELECT * FROM Impartition WHERE subjectID = UUID_TO_BIN(?)', [subjectID]);
+      if (!impartition) return { 
+        errorMessage: `The professor with subject ID ${subjectID} does not have impartitions.` 
+      };
+
+      const CUIL = impartition.CUIL;
+
+      const personalInformation = await this.fetchSingleRecord('Personal_Information', CUIL);
+      if (!personalInformation) return { errorMessage: 'This professor does not have personal information.' };
+  
+      return {
+        CUIL,
+        personalInformation: {
+          first_name: personalInformation.first_name,
+          second_name: personalInformation.second_name,
+          last_name1: personalInformation.last_name1,
+          last_name2: personalInformation.last_name2,
+        }
+      };
+    } catch (error) {
+      console.error('Error processing professor:', error);
+      throw new Error('Internal server error');
+    }
+  };
+
   static async getSubjects({ CUIL }) {
     try {
       const [impartitions] = await db.promise().execute('SELECT * FROM Impartition WHERE CUIL = ?', [CUIL])

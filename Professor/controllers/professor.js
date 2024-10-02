@@ -56,6 +56,20 @@ export class ProfessorController {
     }
   }
 
+  getBySubject = async(req, res) => {
+    const { subjectID } = req.params
+    try {
+      const professor = await this.professorModel.getBySubject({ subjectID })
+
+      if (!professor || professor.length === 0) return res.status(404).json({ message: 'Professor not found' })
+
+      return res.json(professor)
+    } catch( error) {
+      console.log('Error ocurred while fetching professor: ', error)
+      return res.status(500).json({ message: 'Internal server error' })
+    }
+  };
+
   getSubjects = async(req, res) => {
     const { CUIL } = req.params;
 

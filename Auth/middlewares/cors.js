@@ -4,7 +4,9 @@ const ACCEPTED_ORIGINS = [
   'http://localhost:7654',
   'http://localhost:4567',
   'http://localhost:8734',
-  'http://localhost:6348'
+  'http://localhost:6348',
+  'http://localhost:9457',
+  'http://localhost:6534'
 ];
 
 export const corsMiddleware = ({ acceptedOrigins = ACCEPTED_ORIGINS } = {}) => cors({

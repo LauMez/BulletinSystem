@@ -23,10 +23,14 @@ export class AuthController {
 
   getLogin = async (req, res) => {
     const { user } = req.session;
-
-    if (user) return res.redirect(user.role === 'student' ? `/student/${user.cuil}` : `/professor/${user.cuil}`);
-
-    return res.render('login', { message: req.query.message || '' });
+    if(user) {
+      if(user.role === 'student') return res.redirect(`/student/${user.cuil}`);
+      else if(user.role === 'professor') return res.redirect(`/professor/${user.cuil}`)
+      else if(user.role === 'directive') return res.redirect(`/directive/${user.cuil}`)
+      else if(user.role === 'preceptor') return res.redirect(`/preceptor/${user.cuil}`)
+      else if(user.role === 'responsible') return res.redirect(`/responsible/${user.cuil}`)
+      else return res.render('login', { message: req.query.message || '' });    
+    } else return res.render('login', { message: req.query.message || '' });
   };
 
   login = async(req, res) => {

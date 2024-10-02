@@ -88,15 +88,19 @@ async function isPreceptor(dni) {
 async function determineUser(dni) {
   const student = await isStudent(dni);
   if (student) return student;
+  console.log('student')
 
   const professor = await isProfessor(dni);
   if (professor) return professor;
+  console.log('professor')
 
   const responsible = await isResponsible(dni);
   if (responsible) return responsible;
+  console.log('responsible')
 
   const directive = await isDirective(dni);
   if (directive) return directive;
+  console.log('directive')
 
   const preceptor = await isPreceptor(dni);
   if (preceptor) return preceptor;

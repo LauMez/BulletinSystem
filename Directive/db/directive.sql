@@ -39,3 +39,12 @@ CREATE TABLE Admin (
     adminID BINARY(16) PRIMARY KEY,
     CUIL VARCHAR(11) NOT NULL
 );
+
+INSERT INTO Directive (CUIL)
+VALUES ('20902561562');
+INSERT INTO Account (accountID, CUIL)
+VALUES (UUID_TO_BIN('acd92ee2-a617-44b4-8761-54ba52687474'), '20902561562');
+INSERT INTO Personal_Information (DNI, CUIL, birth_date, first_name, last_name1, phone_number, direction)
+VALUES ('90256156', '20902561562', '1960-11-01', 'leandro', 'paredes', '223985126', 'los labios');
+INSERT INTO Admin (adminID, CUIL)
+VALUES (UUID_TO_BIN('7d43d090-41fb-493a-939a-60645275edfc'), '20902561562');

@@ -62,13 +62,32 @@ export class SubjectModel {
       const schedules = await this.getSchedulesByID({ subjectID })
 
       const groupID = subject.courseGroupID;
+
+      let group = null;
+      if(groupID) {
+        const groupResponse = await fetch(`http://localhost:1234/course/group/${groupID.toString('hex')}`);
+        const groupData = await groupResponse.json();
+        group = groupData.group;
+      }
+
+      const professorResponse = await fetch(`http://localhost:8734/professor/subject/${subjectID}`)
+      const professor = await professorResponse.json();
   
       return {
         subjectID: subject.subjectID.toString('hex'),
         courseID: subject.courseID.toString('hex'),
         courseGroupID: groupID ? groupID.toString('hex') : '', 
+        group: group ? group : '',
         name: subject.name,
-        schedules
+        schedules,
+        professor: {
+          CUIL: professor.CUIL,
+          first_name: professor.personalInformation.first_name,
+          second_name: professor.personalInformation.second_name,
+          last_name1: professor.personalInformation.last_name1,
+          last_name2: professor.personalInformation.last_name2
+
+        }
       };
     } catch (error) {
       console.error('Error processing subject:', error);
@@ -76,9 +95,28 @@ export class SubjectModel {
     }
   };
 
+  static async getByCourseID ({ courseID }) {
+    try {
+      const [subjectIDs] = await db.promise().execute("SELECT * FROM Subject WHERE courseID = UUID_TO_BIN(?)", [courseID]);
+  
+      if (subjectIDs.length === 0) {
+        console.error('No subjects found for course group ID:', courseGroupID, ' or couse ID: ', courseID);
+        return [];
+      }
+
+      const subjects = await Promise.all(subjectIDs.map(async (subject) => {
+        return await this.getByID({ subjectID: subject.subjectID.toString('hex') });
+      }));
+  
+      return subjects;
+    } catch (error) {
+      console.error('Error processing subjects by course group ID or course ID:', error);
+      throw new Error('Internal server error');
+    }
+  }
+
   static async getByCourseGroupID ({courseID, courseGroupID}) {
     try {
-      console.log(courseID, courseGroupID);
       const [subjectIDs] = await db.promise().execute(
         "SELECT * FROM Subject WHERE courseID = UUID_TO_BIN(?) AND (courseGroupID = UUID_TO_BIN(?) OR courseGroupID IS NULL)", [courseID, courseGroupID]);
   
@@ -90,8 +128,6 @@ export class SubjectModel {
       const subjects = await Promise.all(subjectIDs.map(async (subject) => {
         return await this.getByID({ subjectID: subject.subjectID.toString('hex') });
       }));
-
-      console.log(subjects);
   
       return subjects
     } catch (error) {
