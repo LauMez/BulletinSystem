@@ -57,6 +57,36 @@ export class PreceptorController {
     }
   };
 
+  getCourses = async(req, res) => {
+    const { CUIL } = req.params;
+
+    try {
+      const courses = await this.preceptorModel.getCourses({ CUIL });
+
+      if(courses.length === 0 || !courses) return res.status(404).json({message: 'preceptor courses not found'});
+
+      return res.json(courses);
+    } catch(error) {
+      console.error('Error occurred while fetching preceptor courses:', error);
+      return res.status(500).json({ nessage: 'Internal server error' });
+    };
+  };
+
+  getCourse = async(req, res) => {
+    const { CUIL, courseID } = req.params;
+
+    try {
+      const course = await this.preceptorModel.getCourse({ CUIL, courseID });
+
+      if(course.length === 0 || !course) return res.status(404).json({message: 'Preceptor course not found'});
+
+      return res.json(course);
+    } catch(error) {
+      console.error('Error occurred while fetching preceptor course:', error);
+      return res.status(500).json({ nessage: 'Internal server error' });
+    };
+  }
+
   getByCourse = async(req, res) => {
     const { courseID } = req.params;
 

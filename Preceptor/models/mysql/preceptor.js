@@ -135,6 +135,56 @@ export class PreceptorModel {
     }
   };
 
+  static async getCourses({ CUIL }) {
+    try {
+      const [impartitions] = await db.promise().execute('SELECT * FROM Impartition WHERE CUIL = ?', [CUIL])
+
+      if(!impartitions) return { errorMessage: 'This preceptor have not an impartition.' }
+
+      const courses = await Promise.all(impartitions.map(async (impartition) => {
+        const courseID = Buffer.from(impartition.courseID).toString('hex');
+
+        const courseResponse = await fetch(`http://localhost:1234/course/${courseID}`);
+        const course = await courseResponse.json();
+        
+        return {
+          course: {
+            courseID: course.courseID,
+            year: course.year,
+            division: course.division
+          }
+        };
+      }));
+
+      return courses;
+    } catch(error) {
+      console.error('Error processing professor:', error);
+      throw new Error('Internal server error');
+    };
+  };
+
+  static async getCourse({ CUIL, courseID }) {
+    try {
+      const courseResponse = await fetch(`http://localhost:1234/course/${courseID}`);
+      const course = await courseResponse.json();
+
+      const studentsResponse = await fetch(`http://localhost:1234/course/${courseID}/students`);
+      const students = await studentsResponse.json();
+      
+      return {
+        course: {
+          courseID: course.courseID,
+          year: course.year,
+          division: course.division
+        },
+        students
+      }
+    } catch(error) {
+      console.error('Error processing professor:', error);
+      throw new Error('Internal server error');
+    };
+  };
+
   static async getByCourse({ courseID }) {
     try {
       const [[impartition]] = await db.promise().execute(`SELECT * FROM Impartition WHERE courseID = UUID_TO_BIN("${courseID}")`);

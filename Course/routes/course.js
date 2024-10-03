@@ -10,7 +10,8 @@ export const createCourseRouter = ({ courseModel }) => {
   courseRouter.get('/:courseID', courseController.getByID);
   courseRouter.get('/student/:CUIL', courseController.getByStudent);
 
-  courseRouter.get('/group/:courseGroupID/students', courseController.getStudents);
+  courseRouter.get('/:courseID/students', courseController.getStudents);
+  courseRouter.get('/group/:courseGroupID/students', courseController.getStudentsByGroup);
 
   courseRouter.post('/', courseController.create);
   courseRouter.patch('/:courseID', courseController.update);

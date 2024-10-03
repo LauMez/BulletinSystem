@@ -147,7 +147,27 @@ export class CourseModel {
     }
   };
 
-  static async getStudents({ courseGroupID }) {
+  static async getStudents({ courseID }) {
+    try {
+      const [inscriptions] = await db.promise().execute('SELECT * FROM Inscription WHERE courseID = UUID_TO_BIN(?)', [courseID]);
+
+      if(!inscriptions || inscriptions.length === 0) return null;
+
+      const students = await Promise.all(inscriptions.map(async (inscription) => {
+        const studentResponse = await fetch(`http://localhost:4567/student/${inscription.CUIL}`);
+        const student = await studentResponse.json();
+
+        return student;
+      }));
+
+      return students;
+    } catch (error) {
+      console.error('Error fetching students:', error);
+      throw new Error('Internal server error');
+    }
+  };
+
+  static async getStudentsByGroup({ courseGroupID }) {
     try {
       const [inscriptions] = await db.promise().execute('SELECT * FROM Inscription WHERE courseGroupID = UUID_TO_BIN(?)', [courseGroupID]);
 

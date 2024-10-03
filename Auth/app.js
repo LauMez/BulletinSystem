@@ -34,7 +34,7 @@ export const createApp = ({ authModel }) => {
   app.use('/student', authorize(['student']), createProxyMiddleware({ target: `http://localhost:4567` }));
   app.use('/professor', authorize(['professor']), createProxyMiddleware({ target: `http://localhost:8734` }));
   app.use('/directive', authorize(['directive']), createProxyMiddleware({ target: `http://localhost:9457` }));
-  app.use('/preceptor', authorize(['preceptor']), createProxyMiddleware({ target: `http://localhost:8734` }));
+  app.use('/preceptor', authorize(['preceptor']), createProxyMiddleware({ target: `http://localhost:6534` }));
   app.use('/responsible', authorize(['responsible']), createProxyMiddleware({ target: `http://localhost:6534` }));
 
   app.use('/', createAuthRouter({ authModel }));

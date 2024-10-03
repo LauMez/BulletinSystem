@@ -70,7 +70,7 @@ async function isDirective(dni) {
 
 async function isPreceptor(dni) {
   try {
-    const response = await fetch(`http://localhost:9457/preceptor/dni/${dni}`);
+    const response = await fetch(`http://localhost:6534/preceptor/dni/${dni}`);
     const preceptor = await response.json();
 
     if (preceptor.errorMessage) return false;

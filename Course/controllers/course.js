@@ -91,9 +91,23 @@ export class CourseController {
   };
 
   getStudents = async(req, res) => {
+    const { courseID } = req.params
+    try {
+      const students = await this.courseModel.getStudents({ courseID });
+
+      if (!students || students.length === 0) return res.status(404).json({ message: 'No students found for the given course ID' });
+
+      return res.json(students)
+    } catch (error) {
+      console.error('Error occurred while fetching students:', error);
+      return res.status(500).json({ message: 'Internal server error' });
+    }
+  };
+
+  getStudentsByGroup = async(req, res) => {
     const { courseGroupID } = req.params
     try {
-      const students = await this.courseModel.getStudents({ courseGroupID });
+      const students = await this.courseModel.getStudentsByGroup({ courseGroupID });
 
       if (!students || students.length === 0) return res.status(404).json({ message: 'No students found for the given courseGroupID' });
 
