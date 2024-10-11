@@ -20,7 +20,7 @@
                     <i class="fa-solid fa-arrow-right-from-bracket"><p>Logout</p></i>
                 </button>
             </div>
-            <h1><a href="<%= CUIL %>/profile">Perfil</a></h1>
+            <h1><a href="<%= data.CUIL %>/profile">Perfil</a></h1>
         </div>
     </header>
     <div class="container-principal">
@@ -43,19 +43,19 @@
                         </tr>
                     </thead>
                     <tbody id="tabla-usuarios-1">
-                        <% data.forEach(d => { %>
+                        <% data.students.forEach(studentData => { %>
                             <tr>
-                                <td><%= d.course.year %>°<%= d.course.division %></td>
-                                <td><%= d.course.group %></td>
-                                <td><%= d.student.personalInformation.DNI %></td>
+                                <td><%= studentData.course.year %>°<%= studentData.course.division %></td>
+                                <td><%= studentData.course.group %></td>
+                                <td><%= studentData.student.personalInformation.DNI %></td>
                                 <td>
-                                    <%= d.student.personalInformation.first_name %>
-                                    <%= d.student.personalInformation.second_name || '' %>
-                                    <%= d.student.personalInformation.last_name1 %>
-                                    <%= d.student.personalInformation.last_name2 || '' %>
+                                    <%= studentData.student.personalInformation.first_name %>
+                                    <%= studentData.student.personalInformation.second_name || '' %>
+                                    <%= studentData.student.personalInformation.last_name1 %>
+                                    <%= studentData.student.personalInformation.last_name2 || '' %>
                                 </td>
                                 <td>
-                                    <i class="fas fa-pen"></i>
+                                    <div onclick="editStudent('<%= data.CUIL %>', '<%= studentData.student.CUIL %>')"><i class="fas fa-pen"></i></div>
                                     <i class="fas fa-trash-alt"></i>
                                 </td>
                             </tr>
@@ -82,7 +82,7 @@
                         </tr>
                     </thead>
                     <tbody id="tabla-usuarios-2">
-                        <% professors.forEach(professor => { %>
+                        <% data.professors.forEach(professor => { %>
                             <tr>
                                 <td><%= professor.personalInformation.DNI %></td>
                                 <td>
@@ -92,7 +92,7 @@
                                     <%= professor.personalInformation.last_name2 || '' %>
                                 </td>
                                 <td>
-                                    <i class="fas fa-pen"></i>
+                                    <div onclick="editProfessor('<%= data.CUIL %>', '<%= professor.CUIL %>')"><i class="fas fa-pen"></i></div>
                                     <i class="fas fa-trash-alt"></i>
                                 </td>
                             </tr>
@@ -119,7 +119,7 @@
                         </tr>
                     </thead>
                     <tbody id="tabla-usuarios-3">
-                        <% preceptors.forEach(preceptor => { %>
+                        <% data.preceptors.forEach(preceptor => { %>
                             <tr>
                                 <td><%= preceptor.personalInformation.DNI %></td>
                                 <td>
@@ -129,7 +129,7 @@
                                     <%= preceptor.personalInformation.last_name2 || '' %>
                                 </td>
                                 <td>
-                                    <i class="fas fa-pen"></i>
+                                    <div onclick="editPreceptor('<%= data.CUIL %>', '<%= preceptor.CUIL %>')"><i class="fas fa-pen"></i></div>
                                     <i class="fas fa-trash-alt"></i>
                                 </td>
                             </tr>
@@ -149,7 +149,7 @@
             <div class="content-year" id="content-year-1" style="display: none;">
                 <button class="back-button"><i class="fas fa-times"></i></button>
                 <div class="course" id="course_1">
-                    <% coursesData.forEach(courseData => { %>
+                    <% data.courses.forEach(courseData => { %>
                         <% if(courseData.course.year == 1) { %>
                             <table class="table-curso">
                                 <thead>
@@ -195,7 +195,7 @@
             <div class="content-year" id="content-year-2" style="display: none;">
                 <button class="back-button"><i class="fas fa-times"></i></button>
                 <div class="course" id="course_2">
-                    <% coursesData.forEach(courseData => { %>
+                    <% data.courses.forEach(courseData => { %>
                         <% if(courseData.course.year == 2) { %>
                             <table class="table-curso">
                                 <thead>
@@ -241,7 +241,7 @@
             <div class="content-year" id="content-year-3" style="display: none;">
                 <button class="back-button"><i class="fas fa-times"></i></button>
                 <div class="course" id="course_3">
-                    <% coursesData.forEach(courseData => { %>
+                    <% data.courses.forEach(courseData => { %>
                         <% if(courseData.course.year == 3) { %>
                             <table class="table-curso">
                                 <thead>
@@ -287,7 +287,7 @@
             <div class="content-year" id="content-year-4" style="display: none;">
                 <button class="back-button"><i class="fas fa-times"></i></button>
                 <div class="course course_" id="course_4">
-                    <% coursesData.forEach(courseData => { %>
+                    <% data.courses.forEach(courseData => { %>
                         <% if(courseData.course.year == 4) { %>
                             <table class="table-curso">
                                 <thead>
@@ -334,7 +334,7 @@
             <div class="content-year" id="content-year-5" style="display: none;">
                 <button class="back-button"><i class="fas fa-times"></i></button>
                 <div class="course course_" id="course_5">
-                    <% coursesData.forEach(courseData => { %>
+                    <% data.courses.forEach(courseData => { %>
                         <% if(courseData.course.year == 5) { %>
                             <table class="table-curso">
                                 <thead>
@@ -380,7 +380,7 @@
             <div class="content-year" id="content-year-6" style="display: none;">
                 <button class="back-button"><i class="fas fa-times"></i></button>
                 <div class="course course_" id="course_6">
-                    <% coursesData.forEach(courseData => { %>
+                    <% data.courses.forEach(courseData => { %>
                         <% if(courseData.course.year == 6) { %>
                             <table class="table-curso">
                                 <thead>
@@ -426,7 +426,7 @@
             <div class="content-year" id="content-year-7" style="display: none;">
                 <button class="back-button"><i class="fas fa-times"></i></button>
                 <div class="course course_" id="course_7">
-                    <% coursesData.forEach(courseData => { %>
+                    <% data.courses.forEach(courseData => { %>
                         <% if(courseData.course.year == 7) { %>
                             <table class="table-curso">
                                 <thead>
@@ -468,6 +468,27 @@
     </div>
     
     <script>
+        async function editStudent(CUIL, studentCUIL) {
+            try {
+                window.location.href = `${CUIL}/editStudent/${studentCUIL}`;
+            } catch(error) {
+                console.error('Error in course redirection:', error);
+            }
+        }
+        async function editProfessor(CUIL, professorCUIL) {
+            try {
+                window.location.href = `${CUIL}/editProfessor/${professorCUIL}`;
+            } catch(error) {
+                console.error('Error in course redirection:', error);
+            }
+        }
+        async function editPreceptor(CUIL, preceptorCUIL) {
+            try {
+                window.location.href = `${CUIL}/editPreceptor/${preceptorCUIL}`;
+            } catch(error) {
+                console.error('Error in course redirection:', error);
+            }
+        }
         // Función de filtrado
         function filterTable(inputId, tableId) {
             const input = document.getElementById(inputId);
@@ -619,7 +640,6 @@
                 }
             });
         });
-
     </script>
 </body>
 </html>

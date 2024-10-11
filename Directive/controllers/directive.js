@@ -1,5 +1,4 @@
 import { validateDirective, validatePartialDirective } from "../schemas/directive.js";
-import axios from 'axios';
 
 const convertEmptyStringsToNull = (obj) => {
   const result = {};
@@ -75,7 +74,8 @@ export class DirectiveController {
 
   getCreate = async(req, res, errorMessage = null) => {
     try {
-      const courses = await axios.get('http://localhost:1234/course');
+      const coursesResponse = await fetch('http://localhost:1234/course');
+      const courses = await coursesResponse.json();
       return res.render('register', { courses: courses.data, errorMessage });
     } catch (error) {
         return res.status(500).render('register', { courses: [], errorMessage: 'Error fetching courses' });

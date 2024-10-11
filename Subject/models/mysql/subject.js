@@ -16,12 +16,27 @@ export class SubjectModel {
         console.error('No subjects found');
         return [];
       }
+
+      const subjectsResponse = await Promise.all(subjects.map(async (subject) => {
+        const courseID = subject.courseID.toString('hex');
+        const courseResponse = await fetch(`http://localhost:1234/course/${courseID}`);
+        const course = await courseResponse.json();
   
-      return subjects.map(subject => ({
-        subjectID: subject.subjectID.toString('hex'),
-        courseID: subject.courseID.toString('hex'),
-        name: subject.name
+        return {
+          subjectID: subject.subjectID.toString('hex'),
+          name: subject.name,
+          courseID,
+          year: course.year,
+          division: course.division
+        };
       }));
+  
+      // return subjects.map(subject => ({
+      //   subjectID: subject.subjectID.toString('hex'),
+      //   courseID: subject.courseID.toString('hex'),
+      //   name: subject.name
+      // }));
+      return subjectsResponse;
     } catch (error) {
       console.error('Error processing subjects:', error);
       throw new Error('Internal server error');

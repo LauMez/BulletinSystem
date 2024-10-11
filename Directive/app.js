@@ -9,7 +9,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import bodyParser from 'body-parser';
 
-export const createApp = ({ directiveModel }) => {
+export const createApp = ({ directiveModel, indexModel }) => {
   const app = express();
   app.use(json());
   app.use(corsMiddleware());
@@ -26,7 +26,7 @@ export const createApp = ({ directiveModel }) => {
   app.set('view engine', 'ejs');
 
   app.use('/directive', createDirectiveRouter({ directiveModel }));
-  app.use('/', createIndexRouter())
+  app.use('/', createIndexRouter({ indexModel }))
 
   const PORT = process.env.PORT ?? 9457;
 
