@@ -3,6 +3,8 @@ export class IndexModel {
         const subjectsResponse = await fetch(`http://localhost:8734/professor/${CUIL}/subjects`);
         const subjects = await subjectsResponse.json();
 
+        console.log(subjects);
+
         return { subjects, CUIL };
     };
 

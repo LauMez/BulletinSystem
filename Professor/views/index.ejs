@@ -33,11 +33,15 @@
                         <p><%= schedule.entry_schedule %>hs - <%= schedule.finish_schedule %>hs</p>
                     <% }); %>
                     <div class="preceptor_curso">
-                        <h1><%= subjectData.preceptor.first_name %> 
-                            <%= subjectData.preceptor.second_name || '' %> 
-                            <%= subjectData.preceptor.last_name1 %> 
-                            <%= subjectData.preceptor.last_name2 || '' %>
-                        </h1>
+                        <% if(subjectData.preceptor) { %>
+                            <h1><%= subjectData.preceptor.first_name %> 
+                                <%= subjectData.preceptor.second_name || '' %> 
+                                <%= subjectData.preceptor.last_name1 %> 
+                                <%= subjectData.preceptor.last_name2 || '' %>
+                            </h1>
+                        <% } else { %>
+                            <h1>Sin preceptor</h1>
+                        <% } %>
                     </div>
                 </div>
             <% }); %>

@@ -22,6 +22,8 @@ export class IndexController {
 
       const preceptor = await this.indexModel.profile({ CUIL });
 
+      console.log(preceptor);
+
       return res.render('profile', { preceptor });        
     } catch (error) {
       console.error('Error fetching data:', error.message);

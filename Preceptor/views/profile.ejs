@@ -38,23 +38,13 @@
                 </div>
                 <div class="alumno__info_relevante">
                     <ul class="alumno__datos_container">
-                        <li class="alumno__dato relevante">?</li>
-                        <li class="alumno__dato relevante">?</li>
-                        <li class="alumno__dato relevante">?</li>
-                        <li class="alumno__dato relevante">?</li>
+                        <li class="alumno__dato relevante"><span>Documento: </span><p><%= preceptor.personalInformation.DNI %></p></li>
+                        <li class="alumno__dato relevante"><span>Direccion: </span><p><%= preceptor.personalInformation.direction %></p></li>
+                        <li class="alumno__dato relevante"><span>Telefono fijo: </span><p><%= preceptor.personalInformation.landline_phone_number || '-' %></p></li>
+                        <li class="alumno__dato relevante"><span>Celular: </span><p><%= preceptor.personalInformation.phone_number %></p></li>
                     </ul>
                 </div>
             </div>
-
-            <div class="alumno__info_personal">
-                <ul class="alumno__datos_container">
-                    <li class="alumno__dato">?</li>
-                    <li class="alumno__dato">?</li>
-                    <li class="alumno__dato">?</li>
-                    <li class="alumno__dato">?</li>
-                </ul>
-            </div>
-        
         </section>
         <!-- fin section informacion personal -->
         

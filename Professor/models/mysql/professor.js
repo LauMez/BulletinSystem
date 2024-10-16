@@ -183,28 +183,47 @@ export class ProfessorModel {
         const course = await courseResponse.json();
 
         const preceptorResponse = await fetch(`http://localhost:6534/preceptor/course/${subject.courseID}`);
-        const preceptor = await preceptorResponse.json();
 
-        return {
-          subject: {
-            subjectID: subject.subjectID,
-            courseID: subject.courseID,
-            name: subject.name,
-            schedules: subject.schedules
-          },
-          course: {
-            courseID: course.courseID,
-            year: course.year,
-            division: course.division
-          },
-          preceptor: {
-            CUIL: preceptor.CUIL,
-            first_name: preceptor.personalInformation.first_name,
-            second_name: preceptor.personalInformation.second_name,
-            last_name1: preceptor.personalInformation.last_name1,
-            last_name2: preceptor.personalInformation.last_name2
-          }
-        };
+        let preceptor = null;
+        if(preceptorResponse.ok) preceptor = await preceptorResponse.json();
+
+        if(preceptorResponse.ok) {
+          return {
+            subject: {
+              subjectID: subject.subjectID,
+              courseID: subject.courseID,
+              name: subject.name,
+              schedules: subject.schedules
+            },
+            course: {
+              courseID: course.courseID,
+              year: course.year,
+              division: course.division
+            },
+            preceptor: {
+              CUIL: preceptor.CUIL,
+              first_name: preceptor.personalInformation.first_name,
+              second_name: preceptor.personalInformation.second_name,
+              last_name1: preceptor.personalInformation.last_name1,
+              last_name2: preceptor.personalInformation.last_name2
+            }
+          };
+        } else {
+          return {
+            subject: {
+              subjectID: subject.subjectID,
+              courseID: subject.courseID,
+              name: subject.name,
+              schedules: subject.schedules
+            },
+            course: {
+              courseID: course.courseID,
+              year: course.year,
+              division: course.division
+            },
+            preceptor
+          };
+        }
       }));
 
       return subjects;

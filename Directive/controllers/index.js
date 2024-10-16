@@ -21,7 +21,7 @@ export class IndexController {
       const { CUIL } = req.params;
 
       const directive = await this.indexModel.profile({ CUIL });
-
+      
       return res.render('profile', { directive });
     } catch (error) {
       console.error('Error fetching data:', error.message);
