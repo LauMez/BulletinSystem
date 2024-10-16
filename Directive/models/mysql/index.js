@@ -73,7 +73,7 @@ export class IndexModel {
         return directive;
     };
 
-    static async editStudent({ CUIL, studentCUIL }) {
+    static async getEditStudent({ studentCUIL }) {
         const studentResponse = await fetch(`http://localhost:4567/student/${studentCUIL}`, { method: 'GET' });
 
         if (!studentResponse.ok) {
@@ -92,7 +92,24 @@ export class IndexModel {
         return { student, courses };
     };
 
-    static async editProfessor({ CUIL, professorCUIL }) {
+    static async editStudent({ studentCUIL, courseID, courseGroupID }) {
+        const response = await fetch(`http://localhost:1234/course/inscription/${studentCUIL}`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                courseID,
+                courseGroupID
+            })
+        });
+
+        if (!response.ok) return null;
+
+        return true;
+    }
+
+    static async getEditProfessor({ CUIL, professorCUIL }) {
         const professorResponse = await fetch(`http://localhost:8734/professor/${professorCUIL}`, { method: 'GET' });
 
         if (!professorResponse.ok) {
@@ -108,10 +125,25 @@ export class IndexModel {
         const professor = await professorResponse.json();
         const subjects = await subjectsResponse.json();
 
-        return { professor, subjects };
+        const availableSubjects = subjects.filter(subject => subject.impartition === null);
+
+        return { professor, subjects: availableSubjects };
     };
 
-    static async editPreceptor({ CUIL, preceptorCUIL }) {
+    static async editProfessor({ professorCUIL, subjectID }) {
+        const response = await fetch(`http://localhost:8734/professor/${professorCUIL}/impartition/${subjectID}`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (!response.ok) return null;
+
+        return true;
+    }
+
+    static async getEditPreceptor({ CUIL, preceptorCUIL }) {
         const preceptorResponse = await fetch(`http://localhost:6534/preceptor/${preceptorCUIL}`, { method: 'GET' });
 
         if (!preceptorResponse.ok) {
@@ -127,6 +159,21 @@ export class IndexModel {
         const preceptor = await preceptorResponse.json();
         const courses = await coursesResponse.json();
 
-        return { preceptor, courses };
+        const availableCourses = courses.filter(course => course.impartition === null);
+
+        return { preceptor, courses: availableCourses };
     };
+
+    static async editPreceptor({ preceptorCUIL, courseID }) {
+        const response = await fetch(`http://localhost:6534/preceptor/${preceptorCUIL}/impartition/${courseID}`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (!response.ok) return null;
+
+        return true;
+    }
 }

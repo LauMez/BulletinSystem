@@ -20,6 +20,9 @@ export const createProfessorRouter = ({ professorModel }) => {
 
   professorRouter.delete('/:CUIL', professorController.delete); 
 
+  professorRouter.get('/impartition/:subjectID', professorController.getImpartitionBySubject);
+  professorRouter.patch('/:CUIL/impartition/:subjectID', professorController.editImpartition);
+
   professorRouter.patch('/:CUIL', professorController.update); 
   professorRouter.patch('/:CUIL/account', professorController.updateAccount); 
   return professorRouter;

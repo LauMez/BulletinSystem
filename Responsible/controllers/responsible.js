@@ -128,6 +128,19 @@ export class ResponsibleController {
     }
   };
 
+  deleteStudent = async(req,res) => {
+    try {
+      const { CUIL } = req.params;
+      
+      const student = await this.responsibleModel.deleteStudent({ CUIL });
+
+      return res.status(200).json({ message: 'Student deleted from responsibles' });
+    } catch (error) {
+      console.error('Error occurred while deleting student from responsibles:', error);
+      return res.status(500).json({ message: 'Internal server error' });
+    }
+  };
+
   update = async (req, res) => {
     const { CUIL } = req.params
     try {

@@ -55,8 +55,12 @@
                                     <%= studentData.student.personalInformation.last_name2 || '' %>
                                 </td>
                                 <td>
-                                    <div onclick="editStudent('<%= data.CUIL %>', '<%= studentData.student.CUIL %>')"><i class="fas fa-pen"></i></div>
-                                    <i class="fas fa-trash-alt"></i>
+                                    <div onclick="editStudent('<%= data.CUIL %>', '<%= studentData.student.CUIL %>')">
+                                        <i class="fas fa-pen"></i>
+                                    </div>
+                                    <div onclick="deleteStudent('<%= data.CUIL %>', '<%= studentData.student.CUIL %>')">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </div>
                                 </td>
                             </tr>
                         <% }); %>
@@ -92,8 +96,12 @@
                                     <%= professor.personalInformation.last_name2 || '' %>
                                 </td>
                                 <td>
-                                    <div onclick="editProfessor('<%= data.CUIL %>', '<%= professor.CUIL %>')"><i class="fas fa-pen"></i></div>
-                                    <i class="fas fa-trash-alt"></i>
+                                    <div onclick="editProfessor('<%= data.CUIL %>', '<%= professor.CUIL %>')">
+                                        <i class="fas fa-pen"></i>
+                                    </div>
+                                    <div onclick="deleteProfessor('<%= data.CUIL %>', '<%= professor.CUIL %>')">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </div>
                                 </td>
                             </tr>
                         <% }); %>
@@ -129,8 +137,12 @@
                                     <%= preceptor.personalInformation.last_name2 || '' %>
                                 </td>
                                 <td>
-                                    <div onclick="editPreceptor('<%= data.CUIL %>', '<%= preceptor.CUIL %>')"><i class="fas fa-pen"></i></div>
-                                    <i class="fas fa-trash-alt"></i>
+                                    <div onclick="editPreceptor('<%= data.CUIL %>', '<%= preceptor.CUIL %>')">
+                                        <i class="fas fa-pen"></i>
+                                    </div>
+                                    <div onclick="deletePreceptor('<%= data.CUIL %>', '<%= preceptor.CUIL %>')">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </div>
                                 </td>
                             </tr>
                         <% }); %>
@@ -165,6 +177,7 @@
                                 </thead>
                                 <tbody>
                                 <% courseData.subjects.forEach(subject => { %>
+                                    <%= console.log(subject)  %>
                                     <tr>
                                         <% if(subject.group === '') { %>
                                             <td>Curricular</td>
@@ -173,12 +186,18 @@
                                         <% } %>
                                         <td><%= subject.group %></td>
                                         <td><%= subject.name %></td>
-                                        <td>
-                                            <% subject.professor.personalInformation.first_name %>
-                                            <% subject.professor.personalInformation.second_name || '' %>
-                                            <% subject.professor.personalInformation.last_name1 %>
-                                            <% subject.professor.personalInformation.last_name2 || '' %>
-                                        </td>
+                                        <% if(subject.professor) { %>
+                                            <td>
+                                                <% subject.professor.first_name %>
+                                                <% subject.professor.second_name || '' %>
+                                                <% subject.professor.last_name1 %>
+                                                <% subject.professor.last_name2 || '' %>
+                                            </td>
+                                        <% } else { %>
+                                            <td>
+                                                Sin profesor
+                                            </td>
+                                        <% } %>
                                     </tr>
                                 <% }); %>
                                 </tbody>
@@ -219,12 +238,18 @@
                                         <% } %>
                                         <td><%= subject.group %></td>
                                         <td><%= subject.name %></td>
-                                        <td>
-                                            <% subject.professor.personalInformation.first_name %>
-                                            <% subject.professor.personalInformation.second_name || '' %>
-                                            <% subject.professor.personalInformation.last_name1 %>
-                                            <% subject.professor.personalInformation.last_name2 || '' %>
-                                        </td>
+                                        <% if(subject.professor) { %>
+                                            <td>
+                                                <% subject.professor.first_name %>
+                                                <% subject.professor.second_name || '' %>
+                                                <% subject.professor.last_name1 %>
+                                                <% subject.professor.last_name2 || '' %>
+                                            </td>
+                                        <% } else { %>
+                                            <td>
+                                                Sin profesor
+                                            </td>
+                                        <% } %>
                                     </tr>
                                 <% }); %>
                                 </tbody>
@@ -265,12 +290,18 @@
                                         <% } %>
                                         <td><%= subject.group %></td>
                                         <td><%= subject.name %></td>
-                                        <td>
-                                            <% subject.professor.personalInformation.first_name %>
-                                            <% subject.professor.personalInformation.second_name || '' %>
-                                            <% subject.professor.personalInformation.last_name1 %>
-                                            <% subject.professor.personalInformation.last_name2 || '' %>
-                                        </td>
+                                        <% if(subject.professor) { %>
+                                            <td>
+                                                <% subject.professor.first_name %>
+                                                <% subject.professor.second_name || '' %>
+                                                <% subject.professor.last_name1 %>
+                                                <% subject.professor.last_name2 || '' %>
+                                            </td>
+                                        <% } else { %>
+                                            <td>
+                                                Sin profesor
+                                            </td>
+                                        <% } %>
                                     </tr>
                                 <% }); %>
                                 </tbody>
@@ -311,12 +342,18 @@
                                         <% } %>
                                         <td><%= subject.group %></td>
                                         <td><%= subject.name %></td>
-                                        <td>
-                                            <% subject.professor.personalInformation.first_name %>
-                                            <% subject.professor.personalInformation.second_name || '' %>
-                                            <% subject.professor.personalInformation.last_name1 %>
-                                            <% subject.professor.personalInformation.last_name2 || '' %>
-                                        </td>
+                                        <% if(subject.professor) { %>
+                                            <td>
+                                                <% subject.professor.first_name %>
+                                                <% subject.professor.second_name || '' %>
+                                                <% subject.professor.last_name1 %>
+                                                <% subject.professor.last_name2 || '' %>
+                                            </td>
+                                        <% } else { %>
+                                            <td>
+                                                Sin profesor
+                                            </td>
+                                        <% } %>
                                     </tr>
                                 <% }); %>
                                 </tbody>
@@ -358,12 +395,18 @@
                                         <% } %>
                                         <td><%= subject.group %></td>
                                         <td><%= subject.name %></td>
-                                        <td>
-                                            <% subject.professor.personalInformation.first_name %>
-                                            <% subject.professor.personalInformation.second_name || '' %>
-                                            <% subject.professor.personalInformation.last_name1 %>
-                                            <% subject.professor.personalInformation.last_name2 || '' %>
-                                        </td>
+                                        <% if(subject.professor) { %>
+                                            <td>
+                                                <% subject.professor.first_name %>
+                                                <% subject.professor.second_name || '' %>
+                                                <% subject.professor.last_name1 %>
+                                                <% subject.professor.last_name2 || '' %>
+                                            </td>
+                                        <% } else { %>
+                                            <td>
+                                                Sin profesor
+                                            </td>
+                                        <% } %>
                                     </tr>
                                 <% }); %>
                                 </tbody>
@@ -404,12 +447,18 @@
                                         <% } %>
                                         <td><%= subject.group %></td>
                                         <td><%= subject.name %></td>
-                                        <td>
-                                            <% subject.professor.personalInformation.first_name %>
-                                            <% subject.professor.personalInformation.second_name || '' %>
-                                            <% subject.professor.personalInformation.last_name1 %>
-                                            <% subject.professor.personalInformation.last_name2 || '' %>
-                                        </td>
+                                        <% if(subject.professor) { %>
+                                            <td>
+                                                <% subject.professor.first_name %>
+                                                <% subject.professor.second_name || '' %>
+                                                <% subject.professor.last_name1 %>
+                                                <% subject.professor.last_name2 || '' %>
+                                            </td>
+                                        <% } else { %>
+                                            <td>
+                                                Sin profesor
+                                            </td>
+                                        <% } %>
                                     </tr>
                                 <% }); %>
                                 </tbody>
@@ -450,12 +499,18 @@
                                         <% } %>
                                         <td><%= subject.group %></td>
                                         <td><%= subject.name %></td>
-                                        <td>
-                                            <%= subject.professor.first_name %>
-                                            <%= subject.professor.second_name || '' %>
-                                            <%= subject.professor.last_name1 %>
-                                            <%= subject.professor.last_name2 || '' %>
-                                        </td>
+                                        <% if(subject.professor) { %>
+                                            <td>
+                                                <%= subject.professor.first_name %>
+                                                <%= subject.professor.second_name || '' %>
+                                                <%= subject.professor.last_name1 %>
+                                                <%= subject.professor.last_name2 || '' %>
+                                            </td>
+                                        <% } else { %>
+                                            <td>
+                                                Sin profesor
+                                            </td>
+                                        <% } %>
                                     </tr>
                                 <% }); %>
                                 </tbody>
@@ -487,6 +542,63 @@
                 window.location.href = `${CUIL}/editPreceptor/${preceptorCUIL}`;
             } catch(error) {
                 console.error('Error in course redirection:', error);
+            }
+        }
+
+        async function deleteStudent(CUIL, studentCUIL) {
+            try {
+                const response = await fetch(`http://localhost:9457/${CUIL}/deleteStudent/${studentCUIL}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+                });
+
+                if (response.ok) {
+                window.location.href = '/';
+                } else {
+                console.error('Failed to delete student:', response.statusText);
+                }
+            } catch (error) {
+                console.error('Error in delete student request:', error);
+            }
+        }
+
+        async function deleteProfessor(CUIL, professorCUIL) {
+            try {
+                const response = await fetch(`http://localhost:9457/${CUIL}/deleteProfessor/${professorCUIL}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+                });
+
+                if (response.ok) {
+                window.location.href = '/';
+                } else {
+                console.error('Failed to delete professor:', response.statusText);
+                }
+            } catch (error) {
+                console.error('Error in delete professor request:', error);
+            }
+        }
+
+        async function deletePreceptor(CUIL, preceptorCUIL) {
+            try {
+                const response = await fetch(`http://localhost:9457/${CUIL}/deletePreceptor/${preceptorCUIL}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+                });
+
+                if (response.ok) {
+                window.location.href = '/';
+                } else {
+                console.error('Failed to delete professor:', response.statusText);
+                }
+            } catch (error) {
+                console.error('Error in delete professor request:', error);
             }
         }
         // Función de filtrado

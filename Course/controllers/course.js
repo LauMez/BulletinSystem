@@ -9,7 +9,7 @@ export class CourseController {
     try {
       const courses = await this.courseModel.getAll();
 
-      if (courses.length === 0) return res.status(404).json({ message: 'No courses found' });
+      if (!courses) return res.status(404).json({ message: 'No courses found' });
 
       return res.json(courses);
     } catch (error) {
@@ -230,6 +230,17 @@ export class CourseController {
       console.log('Error occurred while fetching inscriptions: ', error)
       return res.status(500).json({ message: 'Internal server errror' })
     }
+  }
+
+  editInscription = async(req, res) => {
+    const { CUIL } = req.params;
+    const { courseID, courseGroupID } = req.body;
+
+    const editedInscription = await this.courseModel.editInscription({ CUIL, courseID, courseGroupID });
+
+    if(!editedInscription) return res.status(500).json({ message: 'Error editing the inscription' });
+
+    return res.status(200).json({ message: 'Inscription edited correctly.' });
   }
 
   deleteInscription = async (req, res) => {

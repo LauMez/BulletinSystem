@@ -19,23 +19,23 @@ export class SubjectModel {
 
       const subjectsResponse = await Promise.all(subjects.map(async (subject) => {
         const courseID = subject.courseID.toString('hex');
+        const subjectID = subject.subjectID.toString('hex');
         const courseResponse = await fetch(`http://localhost:1234/course/${courseID}`);
         const course = await courseResponse.json();
+        const impartitionResponse = await fetch(`http://localhost:8734/professor/impartition/${subjectID}`);
+        
+        let impartition = null;
+        if(impartitionResponse.ok) impartition = await impartitionResponse.json();
   
         return {
           subjectID: subject.subjectID.toString('hex'),
           name: subject.name,
           courseID,
           year: course.year,
-          division: course.division
+          division: course.division,
+          impartition
         };
       }));
-  
-      // return subjects.map(subject => ({
-      //   subjectID: subject.subjectID.toString('hex'),
-      //   courseID: subject.courseID.toString('hex'),
-      //   name: subject.name
-      // }));
       return subjectsResponse;
     } catch (error) {
       console.error('Error processing subjects:', error);
@@ -87,23 +87,34 @@ export class SubjectModel {
 
       const professorResponse = await fetch(`http://localhost:8734/professor/subject/${subjectID}`)
       const professor = await professorResponse.json();
-  
-      return {
-        subjectID: subject.subjectID.toString('hex'),
-        courseID: subject.courseID.toString('hex'),
-        courseGroupID: groupID ? groupID.toString('hex') : '', 
-        group: group ? group : '',
-        name: subject.name,
-        schedules,
-        professor: {
-          CUIL: professor.CUIL,
-          first_name: professor.personalInformation.first_name,
-          second_name: professor.personalInformation.second_name,
-          last_name1: professor.personalInformation.last_name1,
-          last_name2: professor.personalInformation.last_name2
-
+        
+      if(professor.errorMessage) {
+        return {
+          subjectID: subject.subjectID.toString('hex'),
+          courseID: subject.courseID.toString('hex'),
+          courseGroupID: groupID ? groupID.toString('hex') : '', 
+          group: group ? group : '',
+          name: subject.name,
+          schedules,
+          professor: null
+        };
+      } else {
+        return {
+          subjectID: subject.subjectID.toString('hex'),
+          courseID: subject.courseID.toString('hex'),
+          courseGroupID: groupID ? groupID.toString('hex') : '', 
+          group: group ? group : '',
+          name: subject.name,
+          schedules,
+          professor: {
+            CUIL: professor.CUIL,
+            first_name: professor.personalInformation.first_name,
+            second_name: professor.personalInformation.second_name,
+            last_name1: professor.personalInformation.last_name1,
+            last_name2: professor.personalInformation.last_name2
+          }
         }
-      };
+      }
     } catch (error) {
       console.error('Error processing subject:', error);
       throw new Error('Internal server error');

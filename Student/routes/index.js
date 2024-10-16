@@ -1,10 +1,10 @@
 import { Router } from 'express';
 import { IndexController } from '../controllers/index.js';
 
-export const createIndexRouter = () => {
+export const createIndexRouter = ({ indexModel }) => {
   const indexRouter = Router();
 
-  const indexController = new IndexController();
+  const indexController = new IndexController({ indexModel });
 
   indexRouter.get('/:CUIL', indexController.index)
 

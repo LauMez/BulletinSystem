@@ -305,17 +305,18 @@ export class StudentModel {
       const [[account]] = await db.promise().execute(`SELECT accountID FROM Account WHERE CUIL = ?`, [CUIL]);
 
       const accountID = account.accountID.toString('hex');
-  
-      try {
-        await fetch(`http://localhost:7654/account/${accountID}`, {
-          method: 'DELETE',
-        });
-      } catch {
-        throw new Error('Error during deletion');
-      }
-  
+
+      const courseResponse = await fetch(`http://localhost:1234/course/student/${CUIL}`);
+      const course = await courseResponse.json();
+
+      await fetch(`http://localhost:7654/account/${accountID}`, { method: 'DELETE' });
+
+      await fetch(`http://localhost:6348/responsible/student/${CUIL}`, { method: 'DELETE' });
+
+      await fetch(`http://localhost:1234/course/inscription/${course.inscriptionID}`, { method: 'DELETE' });  
+
       await db.promise().execute(`DELETE FROM Account WHERE CUIL = ?`, [CUIL]);
-  
+      
       const tables = [
         'Student_Card',
         'Student_Information',
@@ -326,7 +327,9 @@ export class StudentModel {
       for (const table of tables) {
         await deleteFromTable(table, CUIL);
       }
-  
+
+      const message = 'ok';
+      return message;
     } catch (e) {
       console.log(e);
       throw new Error('Error deleting account');

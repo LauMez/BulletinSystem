@@ -16,7 +16,8 @@ export const createResponsibleRouter = ({ responsibleModel }) => {
   
   responsibleRouter.post('/', responsibleController.create); 
 
-  responsibleRouter.delete('/:CUIL', responsibleController.delete); 
+  responsibleRouter.delete('/:CUIL', responsibleController.delete);
+  responsibleRouter.delete('/student/:CUIL', responsibleController.deleteStudent);
 
   responsibleRouter.patch('/:CUIL', responsibleController.update); 
   responsibleRouter.patch('/:CUIL/account', responsibleController.updateAccount); 

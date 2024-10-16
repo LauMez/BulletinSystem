@@ -12,24 +12,35 @@
 <body>
     <div class="exit btn_back" id="btn_back">
         <i class="fas fa-caret-square-left"></i>
-    </div>
+    </div>  
     <div class="container">
         <h1>Modificar</h1>
-        <div class="formulario">
-            <label for="">Nombre:</label>
-            <input type="text" placeholder="<%= data.preceptor.personalInformation.first_name %> <%= data.preceptor.personalInformation.second_name || '' %> <%= data.preceptor.personalInformation.last_name1 %> <%= data.preceptor.personalInformation.last_name2 || '' %>" readonly>
-            <label for="">Documento:</label>
-            <input type="text" placeholder="<%= data.preceptor.personalInformation.DNI %>" readonly>
-            <label for="">Curso:</label>
+        <form id="modifyForm">
+            <div class="formulario">
+            <label>Nombre:</label>
+            <input type="text" 
+                    placeholder="<%= data.preceptor.personalInformation.first_name %> 
+                    <%= data.preceptor.personalInformation.second_name || '' %> 
+                    <%= data.preceptor.personalInformation.last_name1 %> 
+                    <%= data.preceptor.personalInformation.last_name2 || '' %>" readonly>
+        
+            <label>Documento:</label>
+            <input type="text" 
+                    placeholder="<%= data.preceptor.personalInformation.DNI %>" readonly>
+        
+            <label for="course">Curso:</label>
             <select id="course" name="course">
+                <option selected>Seleccione una materia</option>
                 <% data.courses.forEach(course => { %>
-                    <option><%= course.year %>°<%= course.division %></option>
+                    <option value="<%= course.courseID %>">
+                        <%= course.year %>°<%= course.division %>
+                    </option>
                 <% }) %>
-            </select>
-        </div>
-        <input type="submit">
-
-    </div>  
+                </select>
+            </div>
+            <button type="submit">Guardar Cambios</button>
+        </form>
+    </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
@@ -40,6 +51,37 @@
                 else alert('No hay historial para volver')
             })
         })
+
+        const form = document.getElementById('modifyForm');
+        const preceptorCUIL = '<%= data.preceptor.CUIL %>';
+        const CUIL = '<%= CUIL %>';
+
+        form.addEventListener('submit', async (event) => {
+            event.preventDefault(); // Evita el envío tradicional del formulario.
+
+            const courseID = document.getElementById('course').value;
+
+            try {
+                const response = await fetch(`http://localhost:9457/${CUIL}/editPreceptor/${preceptorCUIL}`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ courseID })
+                });
+
+                console.log('front ', response);
+
+                if (!response.ok) {
+                const errorData = await response.json();
+                console.error('Error en la inscripción:', errorData);
+                } else {
+                window.location.href = '/';
+                }
+            } catch (error) {
+                console.error('Error en la solicitud:', error);
+            }
+        });
     </script>
 </body>
 </html>

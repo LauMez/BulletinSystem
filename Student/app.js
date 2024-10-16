@@ -9,13 +9,15 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import bodyParser from 'body-parser';
 
-export const createApp = ({ studentModel }) => {
+export const createApp = ({ studentModel, indexModel }) => {
   const app = express();
   app.use(json());
   app.use(corsMiddleware());
   app.disable('x-powered-by');
   app.use(bodyParser.urlencoded({ extended: true }));
   app.use(bodyParser.json());
+
+  app.options('*', corsMiddleware());
 
   const __filename = fileURLToPath(import.meta.url);
   const __dirname = path.dirname(__filename);
@@ -27,7 +29,7 @@ export const createApp = ({ studentModel }) => {
 
 
   app.use('/student', createStudentRouter({ studentModel }));
-  app.use('/', createIndexRouter())
+  app.use('/', createIndexRouter({ indexModel }))
 
   const PORT = process.env.PORT ?? 4567;
 

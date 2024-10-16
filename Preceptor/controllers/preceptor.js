@@ -145,14 +145,46 @@ export class PreceptorController {
 
 
   delete = async (req, res) => {
-    const { CUIL } = req.params;
-
     try {
+      const { CUIL } = req.params;
+      
       const preceptor = await this.preceptorModel.delete({ CUIL });
 
-      return res.json({ message: 'preceptor deleted' });
+      if (preceptor !== 'ok') return res.status(404).json({ message: 'Preceptor not found' });
+
+      return res.status(200).json({ message: 'preceptor deleted' });
     } catch (error) {
       console.error('Error occurred while deleting preceptor:', error);
+      return res.status(500).json({ message: 'Internal server error' });
+    }
+  };
+
+  getImpartitionByCourse = async(req, res) => {
+    try {
+      const { courseID } = req.params;
+
+      const impartition = await this.preceptorModel.getImpartitionByCourse({ courseID });
+
+      if(!impartition) return res.status(404).json(impartition);
+
+      return res.status(200).json(impartition);
+    } catch (error) {
+      console.error('Error occurred while getting preceptor impartition:', error);
+      return res.status(500).json({ message: 'Internal server error' });
+    }
+  };
+
+  editImpartition = async(req, res) => {
+    try {
+      const { CUIL, courseID } = req.params;
+
+      const editedImpartition = await this.preceptorModel.editImpartition({ CUIL, courseID });
+
+      if (!editedImpartition) return res.status(404).json({ message: 'Preceptor no existe o fallo la edición.' });
+
+      return res.status(200).json({ message: 'Impartition edited correctly.' });
+    } catch (error) {
+      console.error('Error occurred while deleting preceptor impartition:', error);
       return res.status(500).json({ message: 'Internal server error' });
     }
   };

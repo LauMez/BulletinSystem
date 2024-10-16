@@ -19,30 +19,30 @@
             </div>
 
             <div class="menu__bienvenida">
-                <h1 class="nombre__animation">Bienvenido <%= student.personalInformation.first_name %>!<span>&#160;</span></h1>
+                <h1 class="nombre__animation">Bienvenido <%= data.student.personalInformation.first_name %>!<span>&#160;</span></h1>
             </div>
 
 
             <div class="menu__opciones_container">
 
                 <div class="opciones">
-                    <a href="<%= student.CUIL %>/profile">
+                    <a href="<%= data.student.CUIL %>/profile">
                         <div class="opcion__item" style="background-color: rgb(71, 80, 182);"><i class="fas fa-user"></i></div>
                         <div class="opcion__name">Informacion</div>
                     </a>
                 </div>
 
-                <% if(subjects) { %>
+                <% if(data.subjects) { %>
 
                     <div class="opciones">
-                        <a href="<%= student.CUIL %>/schedules">
+                        <a href="<%= data.student.CUIL %>/schedules">
                             <div class="opcion__item" style="background-color: rgb(71, 80, 182);"><i class="fas fa-users"></i></div>
                             <div class="opcion__name">Cronograma</div>
                         </a>
                     </div>
 
                     <div class="opciones">
-                        <a href="<%= student.CUIL %>/bulletin">    
+                        <a href="<%= data.student.CUIL %>/bulletin">    
                             <div class="opcion__item" style="background-color: rgb(71, 80, 182);"><i class="fas fa-school"></i></div>
                             <div class="opcion__name">Boletin</div>
                         </a>
@@ -58,9 +58,9 @@
                         <input type="checkbox" name="" id="view__subject">
     
                         <div class="subject__container">
-                            <% subjects.forEach(function(subject) { %>
+                            <% data.subjects.forEach(function(subject) { %>
                                 <div class="subject">
-                                    <a href="<%= student.CUIL %>/subject/<%= subject.subjectID %>">
+                                    <a href="<%= data.student.CUIL %>/subject/<%= subject.subjectID %>">
                                         <div class="opcion__item" style="background-color: rgb(71, 80, 182);"><i class="fa-solid fa-address-book"></i></div>
                                         <div class="opcion__name"><%= subject.name %></div>
                                     </a>

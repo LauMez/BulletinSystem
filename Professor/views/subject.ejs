@@ -15,10 +15,9 @@
         <i class="fa-solid fa-arrow-left"></i>
     </div>
 
-    <!-- boletin -->
     <div class="contenedor-boletin">
-        <h1><%= course.year %>°<%= course.division %>  <%= subject.name %></h1>
-            <% subject.schedules.forEach(schedule => { %>
+        <h1><%= data.course.year %>°<%= data.course.division %>  <%= data.subject.name %></h1>
+            <% data.subject.schedules.forEach(schedule => { %>
             <p><%= schedule.entry_schedule %>hs - <%= schedule.finish_schedule %>hs</p>
         <% }); %> 
         <table>
@@ -47,7 +46,7 @@
             <tr> 
             </tr> 
 
-            <% students.forEach(student => { %>
+            <% data.students.forEach(student => { %>
                 <tr>
                     <td class="dato-boletin">
                         <%= student.personalInformation.first_name %>

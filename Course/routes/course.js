@@ -26,6 +26,7 @@ export const createCourseRouter = ({ courseModel }) => {
 
   courseRouter.get('/:courseID/inscription', courseController.getInscriptions);
   courseRouter.post('/:courseID/inscription', courseController.createInscription);
+  courseRouter.patch('/inscription/:CUIL', courseController.editInscription);
   courseRouter.delete('/inscription/:inscriptionID', courseController.deleteInscription);
 
   return courseRouter;

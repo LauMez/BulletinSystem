@@ -134,9 +134,41 @@ export class ProfessorController {
     try {
       const professor = await this.professorModel.delete({ CUIL });
 
-      return res.json({ message: 'professor deleted' });
+      if (professor !== 'ok') return res.status(404).json({ message: 'Professor not found' });
+
+      return res.status(200).json({ message: 'Professor deleted' });
     } catch (error) {
       console.error('Error occurred while deleting professor:', error);
+      return res.status(500).json({ message: 'Internal server error' });
+    }
+  };
+
+  getImpartitionBySubject = async(req, res) => {
+    try {
+      const { subjectID } = req.params;
+
+      const impartition = await this.professorModel.getImpartitionBySubject({ subjectID });
+
+      if(!impartition) return res.status(404).json(impartition);
+
+      return res.status(200).json(impartition);
+    } catch (error) {
+      console.error('Error occurred while deleting professor:', error);
+      return res.status(500).json({ message: 'Internal server error' });
+    }
+  }
+
+  editImpartition = async(req, res) => {
+    try {
+      const { CUIL, subjectID } = req.params;
+
+      const editedImpartition = await this.professorModel.editImpartition({ CUIL, subjectID });
+
+      if (!editedImpartition) return res.status(404).json({ message: 'Profesor no existe o fallo la edición.' });
+
+      return res.status(200).json({ message: 'Impartition edited correctly.' });
+    } catch (error) {
+      console.error('Error occurred while updating professor impartition:', error);
       return res.status(500).json({ message: 'Internal server error' });
     }
   };

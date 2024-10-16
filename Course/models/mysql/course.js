@@ -17,14 +17,31 @@ export class CourseModel {
         console.error('Courses not found');
         return [];
       }
+
+
+      const courseResponse = await Promise.all(
+        courses.map(async (course) => {
+          const courseID = course.courseID.toString('hex');
+          const groups = await this.getGroupsByID({ courseID }); 
+
+          const impartitionResponse = await fetch(`http://localhost:6534/preceptor/impartition/${courseID}`);
+        
+          let impartition = null;
+          if(impartitionResponse.ok) impartition = await impartitionResponse.json();
     
-      return courses.map(course => ({
-        courseID: course.courseID.toString('hex'),
-        year: course.year,
-        division: course.division,
-        entry_time: course.entry_time,
-        specialty: course.specialty
-      }));
+          return {
+            courseID,
+            year: course.year,
+            division: course.division,
+            entry_time: course.entry_time,
+            specialty: course.specialty,
+            groups,
+            impartition
+          };
+        })
+      );
+    
+      return courseResponse
     } catch (error) {
       console.error('Error processing courses:', error);
       throw new Error('Internal server error');
@@ -139,7 +156,8 @@ export class CourseModel {
 
       return {
         course,
-        group
+        group,
+        inscriptionID: inscription.inscriptionID.toString('hex')
       };
     } catch (error) {
       console.error('Error processing course:', error);
@@ -323,6 +341,20 @@ export class CourseModel {
       throw new Error('Error geting course inscriptions')
     }
   }
+
+  static async editInscription({ CUIL, courseID, courseGroupID }) {
+    try {
+      console.log('model data: ', CUIL, courseID, courseGroupID);
+      const request = await db.promise().execute('UPDATE Inscription SET courseID = UUID_TO_BIN(?), courseGroupID = UUID_TO_BIN(?) WHERE CUIL = ?', [courseID, courseGroupID, CUIL]);
+      
+      if(!request) return null;
+
+      return true;
+    } catch(error) {
+      console.log('Error editing course inscription', error)
+      throw new Error('Error editing course inscriptions')
+    };
+  };
 
   static async deleteInscription({ inscriptionID }) {
     try {

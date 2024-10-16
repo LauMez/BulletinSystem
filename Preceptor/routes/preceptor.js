@@ -22,6 +22,9 @@ export const createPreceptorRouter = ({ preceptorModel }) => {
 
   preceptorRouter.delete('/:CUIL', preceptorController.delete); 
 
+  preceptorRouter.get('/impartition/:courseID', preceptorController.getImpartitionByCourse);
+  preceptorRouter.patch('/:CUIL/impartition/:courseID', preceptorController.editImpartition);
+
   preceptorRouter.patch('/:CUIL', preceptorController.update); 
   preceptorRouter.patch('/:CUIL/account', preceptorController.updateAccount); 
   return preceptorRouter;

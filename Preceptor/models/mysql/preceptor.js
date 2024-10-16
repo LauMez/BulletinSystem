@@ -1,5 +1,4 @@
 import { db } from "../../config.js"
-import axios from "axios"
 
 db.connect(err => {
   if (err) {
@@ -212,10 +211,10 @@ export class PreceptorModel {
 
       if(!account) return { errorMessage: 'This preceptor have not an account.' }
 
-      const accountID = account.accountID.toString('hex')
-      const { data: userAxios } = await axios.get(`http://localhost:7654/account/${accountID}`)
+      const accountID = account.accountID.toString('hex');
+      const response = await fetch(`http://localhost:7654/account/${accountID}`);
+      const user = await response.json();
 
-      const user = userAxios.account?.[0]?.[0];
       if (!user) return { errorMessage: 'Account details not found.' };
 
       return {
@@ -238,10 +237,16 @@ export class PreceptorModel {
 
     let accountID;
     try {
-      const userResponse = await axios.post('http://localhost:7654/register/account', { DNI });
+      const response = await fetch('http://localhost:7654/register/account', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ DNI }),
+      });
+      const user = await response.json();
   
-      const userArray = userResponse.data.user;
-      const firstObject = userArray[0][0];
+      const firstObject = user[0][0];
       accountID = Buffer.from(firstObject.accountID).toString('hex');
     } catch {
       throw new Error('Error creating user');
@@ -283,12 +288,8 @@ export class PreceptorModel {
 
       const accountID = account.accountID.toString('hex');
   
-      try {
-        await axios.delete(`http://localhost:7654/account/${accountID}`);
-      } catch {
-        throw new Error('Error during deletion');
-      }
-  
+      await fetch(`http://localhost:7654/account/${accountID}`, { method: 'DELETE' });
+
       await db.promise().execute(`DELETE FROM Account WHERE CUIL = ?`, [CUIL]);
   
       const tables = [
@@ -301,11 +302,49 @@ export class PreceptorModel {
         await deleteFromTable(table, CUIL);
       }
   
+      const message = 'ok';
+      return message;
     } catch (e) {
       console.log(e);
       throw new Error('Error deleting preceptor');
     }
   }
+
+  static async getImpartitionByCourse({ courseID }) {
+    try {
+      const [[impartition]] = await db.promise().execute('SELECT * FROM Impartition WHERE courseID = UUID_TO_BIN(?)', [courseID]);
+
+      if(!impartition) return null;
+      
+      return {
+        CUIL: impartition.CUIL
+      }
+    } catch(e) {
+      console.log(e);
+      throw new Error('Error getting preceptor impartition');
+    }
+  };
+
+  static async editImpartition({ CUIL, courseID }) {
+    try {
+      const [impartition] = await db.promise().execute('SELECT * FROM Impartition WHERE courseID = UUID_TO_BIN(?)', [courseID]);
+
+      await db.promise().execute(`DELETE FROM Impartition WHERE CUIL = ?`, [CUIL]);
+
+      if(impartition.length > 0) {
+        await db.promise().execute(`UPDATE Impartition SET CUIL = ? WHERE courseID = UUID_TO_BIN(?)`, [CUIL, courseID]);
+      } else {
+        const [[{impartitionID}]] = await db.promise().execute('SELECT UUID() AS impartitionID');
+        await db.promise().execute(`INSERT INTO Impartition (impartitionID, CUIL, courseID) VALUES (UUID_TO_BIN(?), ?, UUID_TO_BIN(?));`, 
+        [impartitionID, CUIL, courseID]);
+      }
+
+      return true;
+    } catch(e) {
+      console.log(e);
+      throw new Error('Error updating preceptor impartition');
+    }
+  };
 
   static async update({ CUIL, input }) {
     const { phone_number, landline_phone_number, direction } = input;
@@ -326,12 +365,18 @@ export class PreceptorModel {
       if (!account) return false
 
       const accountID = account.accountID.toString('hex')
-      console.log('numero: ', accountID)
+      
+      const response = await fetch(`http://localhost:7654/account/${accountID}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ password }),
+      });
 
-      const a = await axios.patch(`http://localhost:7654/account/${accountID}`, { password })
-      console.log(a.data)
-
-      return a.data
+      const updatedAccount = await response.json();
+  
+      return updatedAccount
     } catch {
       throw new Error('Error updating account')
     }

@@ -27,20 +27,20 @@
                         <i class="fa-solid fa-user"></i>
                     </div>
                     <div class="alumno__nombre">
-                        <% if(course || group) { %>
-                            <h1><%= student.personalInformation.first_name %> <%= student.personalInformation.last_name1 %> <%= course.year %>°<%= course.division %></h1>
+                        <% if(data.course || data.group) { %>
+                            <h1><%= data.student.personalInformation.first_name %> <%= data.student.personalInformation.last_name1 %> <%= data.course.year %>°<%= data.course.division %></h1>
                         <% } else { %>
-                            <h1><%= student.personalInformation.first_name %> <%= student.personalInformation.last_name1 %> (sin curso)</h1>
+                            <h1><%= data.student.personalInformation.first_name %> <%= data.student.personalInformation.last_name1 %> (sin curso)</h1>
                         <% } %>
                     </div>  
                 </div>
                 <div class="alumno__info_relevante">
                     <ul class="alumno__datos_container">
-                        <li class="alumno__dato relevante"><span>Documento: </span><p><%= student.personalInformation.DNI %></p></li>
-                        <li class="alumno__dato relevante"><span>Direccion: </span><p><%= student.personalInformation.direction %></p></li>
-                        <% if(course && group) { %>
-                            <li class="alumno__dato relevante"><span>Turno: </span><p><%= course.entry_time %></p></li>
-                            <li class="alumno__dato relevante"><span>Grupo: </span><p><%= group.group %></p></li>
+                        <li class="alumno__dato relevante"><span>Documento: </span><p><%= data.student.personalInformation.DNI %></p></li>
+                        <li class="alumno__dato relevante"><span>Direccion: </span><p><%= data.student.personalInformation.direction %></p></li>
+                        <% if(data.course && data.group) { %>
+                            <li class="alumno__dato relevante"><span>Turno: </span><p><%= data.course.entry_time %></p></li>
+                            <li class="alumno__dato relevante"><span>Grupo: </span><p><%= data.group.group %></p></li>
                         <% } else { %>
                             <li class="alumno__dato relevante"><span>Turno: </span><p>-</p></li>
                             <li class="alumno__dato relevante"><span>Grupo: </span><p>-</p></li>
@@ -51,9 +51,9 @@
 
             <div class="alumno__info_personal">
                 <ul class="alumno__datos_container">
-                    <li class="alumno__dato"><span>Obra social: </span><p><%= student.studentInformation.social_work %></p></li>
-                    <li class="alumno__dato"><span>Telefono fijo: </span><p><%= student.personalInformation.landline_phone_number || '-' %></p></li>
-                    <li class="alumno__dato"><span>Celular: </span><p><%= student.personalInformation.phone_number %></p></li>
+                    <li class="alumno__dato"><span>Obra social: </span><p><%= data.student.studentInformation.social_work %></p></li>
+                    <li class="alumno__dato"><span>Telefono fijo: </span><p><%= data.student.personalInformation.landline_phone_number || '-' %></p></li>
+                    <li class="alumno__dato"><span>Celular: </span><p><%= data.student.personalInformation.phone_number %></p></li>
                 </ul>
             </div>
         
@@ -72,11 +72,11 @@
                 return age;
             }
 
-            const age = calculateAge(student.personalInformation.birth_date)
-            let repsonsibles = responsibles || [];
+            const age = calculateAge(data.student.personalInformation.birth_date)
+            let responsibles = data.responsibles || [];
             if (age >= 18) {
                 responsibles.unshift({
-                    responsible: student,
+                    responsible: data.student,
                     responsability: 'Estudiante'
                 });
             }
@@ -158,7 +158,7 @@
             })
         })
 
-        let responsibles = <%- JSON.stringify(responsibles) %>;
+        let responsibles = <%- JSON.stringify(data.responsibles) %>;
 
         if(responsibles) {
             document.addEventListener('DOMContentLoaded', function () {

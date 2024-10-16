@@ -15,20 +15,31 @@
     </div>
     <div class="container">
         <h1>Modificar</h1>
-        <div class="formulario">
-            <label for="">Nombre:</label>
-            <input type="text" placeholder="<%= data.professor.personalInformation.first_name %> <%= data.professor.personalInformation.second_name || '' %> <%= data.professor.personalInformation.last_name1 %> <%= data.professor.personalInformation.last_name2 || '' %>" readonly>
-            <label for="">Documento:</label>
-            <input type="text" placeholder="<%= data.professor.personalInformation.DNI %>" readonly>
-        </div>
-        <select id="subject" name="subject">
-            <option selected>Seleccione una materia</option>
-            <% data.subjects.forEach(subject => { %>
-                <option><%= subject.name %> <%= subject.year %>°<%= subject.division %></option>
-            <% }) %>
-        </select>
-        <input type="submit">
-
+        <form id="modifyForm">
+            <div class="formulario">
+              <label>Nombre:</label>
+              <input type="text" 
+                     placeholder="<%= data.professor.personalInformation.first_name %> 
+                     <%= data.professor.personalInformation.second_name || '' %> 
+                     <%= data.professor.personalInformation.last_name1 %> 
+                     <%= data.professor.personalInformation.last_name2 || '' %>" readonly>
+        
+              <label>Documento:</label>
+              <input type="text" 
+                     placeholder="<%= data.professor.personalInformation.DNI %>" readonly>
+        
+              <label for="subject">Materia:</label>
+              <select id="subject" name="subject">
+                <option selected>Seleccione una materia</option>
+                <% data.subjects.forEach(subject => { %>
+                    <option value="<%= subject.subjectID %>">
+                        <%= subject.name %> <%= subject.year %>°<%= subject.division %>
+                    </option>
+                <% }) %>
+                </select>
+            </div>
+            <button type="submit">Guardar Cambios</button>
+        </form>
     </div>  
 
     <script>
@@ -40,6 +51,37 @@
                 else alert('No hay historial para volver')
             })
         })
+
+        const form = document.getElementById('modifyForm');
+        const professorCUIL = '<%= data.professor.CUIL %>';
+        const CUIL = '<%= CUIL %>';
+
+        form.addEventListener('submit', async (event) => {
+            event.preventDefault(); // Evita el envío tradicional del formulario.
+
+            const subjectID = document.getElementById('subject').value;
+
+            try {
+                const response = await fetch(`http://localhost:9457/${CUIL}/editProfessor/${professorCUIL}`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ subjectID })
+                });
+
+                console.log('front ', response);
+
+                if (!response.ok) {
+                const errorData = await response.json();
+                console.error('Error en la inscripción:', errorData);
+                } else {
+                window.location.href = '/';
+                }
+            } catch (error) {
+                console.error('Error en la solicitud:', error);
+            }
+        });
     </script>
 </body>
 </html>

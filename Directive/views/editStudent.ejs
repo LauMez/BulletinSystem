@@ -15,25 +15,36 @@
     </div>
     <div class="container">
         <h1>Modificar</h1>
-        <div class="formulario">
-            <label for="">Nombre:</label>
-            <input type="text" placeholder="<%= data.student.personalInformation.first_name %> <%= data.student.personalInformation.second_name || '' %> <%= data.student.personalInformation.last_name1 %> <%= data.student.personalInformation.last_name2 || '' %>" readonly>
-            <label for="">Documento:</label>
-            <input type="text" placeholder="<%= data.student.personalInformation.DNI %>" readonly>
-            <label for="">Curso:</label>
-            <select id="course" name="course">
+        <form id="modifyForm">
+            <div class="formulario">
+              <label>Nombre:</label>
+              <input type="text" 
+                     placeholder="<%= data.student.personalInformation.first_name %> 
+                     <%= data.student.personalInformation.second_name || '' %> 
+                     <%= data.student.personalInformation.last_name1 %> 
+                     <%= data.student.personalInformation.last_name2 || '' %>" readonly>
+        
+              <label>Documento:</label>
+              <input type="text" 
+                     placeholder="<%= data.student.personalInformation.DNI %>" readonly>
+        
+              <label for="course">Curso:</label>
+              <select id="course" name="course" required>
+                <option value="" selected>Seleccione un curso</option>
                 <% data.courses.forEach(course => { %>
-                    <option><%= course.year %>°<%= course.division %></option>
+                <option value="<%= course.courseID %>">
+                  <%= course.year %>°<%= course.division %>
+                </option>
                 <% }) %>
-            </select>
-            <label for="">Grupo:</label>
-            <select id="group" name="group">
-                <option>A</option>
-                <option>B</option>
-            </select>
-        </div>
-        <input type="submit">
-
+              </select>
+        
+              <label for="group">Grupo:</label>
+              <select id="group" name="group" required>
+                <option value="">Seleccione un grupo</option>
+              </select>
+            </div>
+            <button type="submit">Guardar Cambios</button>
+          </form>
     </div>  
 
     <script>
@@ -45,6 +56,66 @@
                 else alert('No hay historial para volver')
             })
         })
+
+        // Obtener los elementos select
+        const courseSelect = document.getElementById('course');
+        const groupSelect = document.getElementById('group');
+
+        // Data de cursos y grupos
+        const coursesData = <%- JSON.stringify(data.courses) %>;
+
+        // Escuchar el evento 'change' del select de curso
+        courseSelect.addEventListener('change', (event) => {
+        const selectedCourseID = event.target.value;
+
+        // Buscar el curso seleccionado en los datos
+        const selectedCourse = coursesData.find(course => course.courseID === selectedCourseID);
+
+        // Limpiar el select de grupos
+        groupSelect.innerHTML = '<option value="">Seleccione un grupo</option>';
+
+        // Agregar los grupos del curso seleccionado
+        if (selectedCourse && selectedCourse.groups) {
+            selectedCourse.groups.forEach(group => {
+            const option = document.createElement('option');
+            option.value = group.courseGroupID; // Asegúrate que group tenga un ID único
+            option.textContent = group.group;
+            groupSelect.appendChild(option);
+            });
+        }
+        });
+
+        const form = document.getElementById('modifyForm');
+        const studentCUIL = '<%= data.student.CUIL %>';
+        const CUIL = '<%= CUIL %>';
+
+        form.addEventListener('submit', async (event) => {
+            event.preventDefault(); // Evita el envío tradicional del formulario.
+
+            const courseID = document.getElementById('course').value;
+            const courseGroupID = document.getElementById('group').value;
+
+            try {
+                const response = await fetch(`http://localhost:9457/${CUIL}/editStudent/${studentCUIL}`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ courseID, courseGroupID })
+                });
+
+                console.log('front ', response);
+
+                if (!response.ok) {
+                const errorData = await response.json();
+                console.error('Error en la inscripción:', errorData);
+                } else {
+                window.location.href = '/';
+                }
+            } catch (error) {
+                console.error('Error en la solicitud:', error);
+            }
+        });
     </script>
 </body>
 </html>

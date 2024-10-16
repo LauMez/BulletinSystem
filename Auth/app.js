@@ -23,6 +23,8 @@ export const createApp = ({ authModel }) => {
   app.use(bodyParser.json());
   app.use(authMiddleware);
 
+  app.options('*', corsMiddleware());
+
   const __filename = fileURLToPath(import.meta.url);
   const __dirname = path.dirname(__filename);
 

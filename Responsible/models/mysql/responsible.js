@@ -263,6 +263,15 @@ export class ResponsibleModel {
     }
   }
 
+  static async deleteStudent({ CUIL }) {
+    try {
+      await db.promise().execute(`DELETE FROM ResponsibleOf WHERE studentCUIL = ?`, [CUIL]);
+    } catch (e) {
+      console.log(e);
+      throw new Error('Error deleting student from responsible');
+    }
+  };
+
   static async update({ CUIL, input }) {
     const { phone_number, landline_phone_number, direction } = input;
     try {

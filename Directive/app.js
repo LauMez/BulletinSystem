@@ -17,6 +17,8 @@ export const createApp = ({ directiveModel, indexModel }) => {
   app.use(bodyParser.urlencoded({ extended: true }));
   app.use(bodyParser.json());
 
+  app.options('*', corsMiddleware());
+
   const __filename = fileURLToPath(import.meta.url);
   const __dirname = path.dirname(__filename);
 

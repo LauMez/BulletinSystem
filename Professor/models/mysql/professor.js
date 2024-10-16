@@ -299,13 +299,7 @@ export class ProfessorModel {
 
       const accountID = account.accountID.toString('hex');
   
-      try {
-        await fetch(`http://localhost:7654/account/${accountID}`, {
-          method: 'DELETE',
-        });
-      } catch {
-        throw new Error('Error during deletion');
-      }
+      await fetch(`http://localhost:7654/account/${accountID}`, { method: 'DELETE' });
   
       await db.promise().execute(`DELETE FROM Account WHERE CUIL = ?`, [CUIL]);
   
@@ -319,11 +313,49 @@ export class ProfessorModel {
         await deleteFromTable(table, CUIL);
       }
   
+      const message = 'ok';
+      return message;
     } catch (e) {
       console.log(e);
       throw new Error('Error deleting professor');
     }
   }
+
+  static async getImpartitionBySubject({ subjectID }) {
+    try {
+      const [[impartition]] = await db.promise().execute('SELECT * FROM Impartition WHERE subjectID = UUID_TO_BIN(?)', [subjectID]);
+
+      if(!impartition) return null;
+
+      return {
+        CUIL: impartition.CUIL
+      }
+    } catch(e) {
+      console.log(e);
+      throw new Error('Error updating professor impartition');
+    }
+  };
+
+  static async editImpartition({ CUIL, subjectID }) {
+    try {
+      const [impartition] = await db.promise().execute('SELECT * FROM Impartition WHERE subjectID = UUID_TO_BIN(?)', [subjectID]);
+
+      await db.promise().execute(`DELETE FROM Impartition WHERE CUIL = ?`, [CUIL]);
+
+      if(impartition.length > 0) {
+        await db.promise().execute(`UPDATE Impartition SET CUIL = ? WHERE subjectID = UUID_TO_BIN(?)`, [CUIL, subjectID]);
+      } else {
+        const [[{impartitionID}]] = await db.promise().execute('SELECT UUID() AS impartitionID');
+        await db.promise().execute(`INSERT INTO Impartition (impartitionID, CUIL, subjectID) VALUES (UUID_TO_BIN(?), ?, UUID_TO_BIN(?));`, 
+        [impartitionID, CUIL, subjectID]);
+      }
+
+      return true;
+    } catch(e) {
+      console.log(e);
+      throw new Error('Error updating professor impartition');
+    }
+  };
 
   static async update({ CUIL, input }) {
     const { phone_number, landline_phone_number, direction } = input;

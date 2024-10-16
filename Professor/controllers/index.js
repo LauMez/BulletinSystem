@@ -1,14 +1,15 @@
 export class IndexController {
+    constructor ({ indexModel }) {
+        this.indexModel = indexModel;
+    };
+
     index = async (req, res) => {
-        const { CUIL } = req.params;
-
         try {
-            const subjectsResponse = await fetch(`http://localhost:8734/professor/${CUIL}/subjects`);
-            const subjectsData = await subjectsResponse.json();
+            const { CUIL } = req.params;
 
-            console.log(subjectsData)
-    
-            return res.render('index', {subjectsData, CUIL});
+            const data = await this.indexModel.index({ CUIL });
+
+            return res.render('index', { data });
         } catch(error) {
             console.error('Error fetching data:', error);
             return res.status(500).send('Error fetching data');
@@ -19,62 +20,22 @@ export class IndexController {
         try {
             const { CUIL, subjectID } = req.params;
 
-            // const professorResponse = await fetch(`http://localhost:8734/professor/${CUIL}`);
-            // const professor = await professorResponse.json();
+            const data = await this.indexModel.subject({ subjectID });
 
-            const subjectResponse = await fetch(`http://localhost:4321/subject/${subjectID}`);
-            const subject = await subjectResponse.json();
-
-            const courseResponse = await fetch(`http://localhost:1234/course/${subject.courseID}`);
-            const course = await courseResponse.json();
-
-            let students;
-            if(!subject.courseGroupID || subject.courseGroupID == '') {
-                const studentsResponse = await fetch(`http://localhost:1234/course/${subject.courseID}/inscription`);
-                students = await studentsResponse.json();
-            } else {
-                const studentsResponse = await fetch(`http://localhost:1234/course/group/${subject.courseGroupID}/students`);
-                students = await studentsResponse.json();
-            }
-
-            return res.render('subject', { subject, students, course });
+            return res.render('subject', { data });
         } catch(error) {
             console.error('Error fetching data:', error.message);
             return res.status(500).send('An error occurred while fetching data.');
         }
     };
 
-    profile = async(req, res) => {
-        const { CUIL } = req.params
-  
+    profile = async(req, res) => {  
         try {
-            // const [professorResponse, courseResponse, responsiblesResponse] = await Promise.all([
-            // fetch(`http://localhost:4567/student/${CUIL}`),
-            // fetch(`http://localhost:1234/course/student/${CUIL}`),
-            // fetch(`http://localhost:6348/responsible/student/${CUIL}`)
-            // ]);
+            const { CUIL } = req.params;
 
-            const professorResponse = await fetch(`http://localhost:8734/professor/${CUIL}`);
+            const professor = await this.indexModel.profile({ CUIL });
 
-            if (!professorResponse.ok) {
-                throw new Error('Error fetching professor data');
-            };
-
-            const professor = await professorResponse.json();
-            
-            // if (!studentResponse.ok || !courseResponse.ok || !responsiblesResponse.ok) {
-            // throw new Error('Error fetching student, course, or responsible data');
-            // }
-            
-            // const student = await studentResponse.json();
-            // const courseData = await courseResponse.json();
-            // const responsibles = await responsiblesResponse.json();
-
-            // const course = courseData.course
-            // const group = courseData.group
-        
             return res.render('profile', { professor });
-            
         } catch (error) {
             console.error('Error fetching data:', error.message);
             return res.status(500).send('An error occurred while fetching data.');

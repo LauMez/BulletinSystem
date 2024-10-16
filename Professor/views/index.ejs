@@ -15,24 +15,15 @@
                 <i class="fa-solid fa-arrow-right-from-bracket"><p>Logout</p></i>
             </button>
         </div>
-        <a class="perfil_redireccion" href="<%= CUIL %>/profile">
+        <a class="perfil_redireccion" href="<%= data.CUIL %>/profile">
             <i class="fa-solid fa-user"></i>
         </a>
    </div>
-   <!-- <div id="animado" class="profesor__animacion">
-        <div class="bienvenido">
-            <h1>Bienvenido Tobias!</h1>
-        </div>
 
-        <div class="divisor_contenedor">
-            <hr class="divisor_animacion">
-        </div>
-    </div>
-    -->
     <div class="profesor__contenedor">
         <div class="profesor__contenedor_cursos">
-            <% subjectsData.forEach(subjectData => { %>
-                <div class="tarjeta__curso" onclick="getSubjectURL('<%= CUIL %>', '<%= subjectData.subject.subjectID %>')">
+            <% data.subjects.forEach(subjectData => { %>
+                <div class="tarjeta__curso" onclick="getSubjectURL('<%= data.CUIL %>', '<%= subjectData.subject.subjectID %>')">
                     <div class="anio_curso"><h1><%= subjectData.course.year %>°<%= subjectData.course.division %></h1></div>
                     <div class="imagen_curso">
                         <i class="fa-solid fa-users"></i>
