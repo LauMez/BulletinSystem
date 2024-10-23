@@ -97,6 +97,7 @@
                             <tr>
                                 <td><%= professor.personalInformation.DNI %></td>
                                 <td></td>
+
                                 <td>
                                     <%= professor.personalInformation.first_name %>
                                     <%= professor.personalInformation.second_name || '' %>
@@ -104,6 +105,7 @@
                                     <%= professor.personalInformation.last_name2 || '' %>
                                 </td>
                                 <td></td>
+
                                 <td class="opciones-user">
                                     <div onclick="editProfessor('<%= data.CUIL %>', '<%= professor.CUIL %>')">
                                         <i class="fas fa-pen"></i>
@@ -142,13 +144,16 @@
                     <tbody id="tabla-usuarios-3">
                         <% data.preceptors.forEach(preceptor => { %>
                             <tr>
+                                
                                 <td><%= preceptor.personalInformation.DNI %></td>
+                                <td></td>
                                 <td>
                                     <%= preceptor.personalInformation.first_name %>
                                     <%= preceptor.personalInformation.second_name || '' %>
                                     <%= preceptor.personalInformation.last_name1 %>
                                     <%= preceptor.personalInformation.last_name2 || '' %>
                                 </td>
+                                <td></td>
                                 <td class="opciones-user">
                                     <div onclick="editPreceptor('<%= data.CUIL %>', '<%= preceptor.CUIL %>')">
                                         <i class="fas fa-pen"></i>
@@ -157,6 +162,7 @@
                                         <i class="fas fa-trash-alt"></i>
                                     </div>
                                 </td>
+
                             </tr>
                         <% }); %>
                     </tbody>
