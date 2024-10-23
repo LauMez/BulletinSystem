@@ -15,29 +15,71 @@ header {
     padding: 5px;
     width: 100%;
     display: flex;
-    height: 5vh;
+    height: 5.5vh;
     color: white;
     justify-content: space-around;
     align-items: end;
-    border-bottom: 3px solid var(--color-light);
-    color:var(--color-dark);
+    color:white;
+    background-color: var(--color-dark);
 }
 header h1{
     font-size: 15px;
     padding: 5px;
     font-weight: 600;
 }
+
+
+
 .secciones{
     display:flex;
 }
 .seccion-user{
     display: flex;
+    width: 10%;
+    justify-content: space-around;
+    align-items: center;
 }
 .seccion-user h1{
-    font-weight: 700;
-    color: var(--color-light);
-}
+    transition: all 0.4s ease;
 
+}
+.seccion-user h1 a{
+    font-weight: 700;
+    color: white;
+    text-decoration: none;
+    padding: 3px;
+}
+.seccion-user h1:hover{
+    transform: scale(1.1);
+}
+/*
+log out
+*/
+
+.log-out{
+    display: flex;
+    justify-content: center;
+}
+.logout-button{
+    display: flex;
+    align-items: center;
+    background-color: var(--color-dark);
+    border: none;
+    cursor: pointer;
+    color: white;
+    border-radius: 3px;
+    transition: all 0.4s ease;
+}
+.logout-button i{
+    padding: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.logout-button:hover{
+    transform:scale(1.1);
+}
+/**/
 .container-principal {
     display: flex;
     width: 100%;
@@ -80,19 +122,25 @@ header h1{
     font-weight: bold;
 }
 
-.tb_header{
-    border-radius: 10px 0px 0px 0px;
+thead{
+    border-radius: 10px 10px 0px 0px;
 }
 .th_buscador{
-    border-radius: 0px 10px 0px 0px;
-
 }
 .buscador{
     border: 1px solid gray;
     width: 100%;
     height: 3vh;
-    padding: 5px;
+    padding: 2px;
     border-radius: 10px;
+}
+.agregar{
+    display: flex;
+    justify-content: center;
+    border-radius: 0px 10px 10px 0px;
+}
+.agregar  i{
+    font-size: 25px;
 }
 .content-table th,
 .content-table td {
@@ -123,8 +171,16 @@ header h1{
 .content-table tbody tr:last-of-type {
     border-bottom: 2px solid var(--color-light);
 }
+.opciones-user{
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+}
 
-
+.opciones{
+    padding: 0px;
+    margin: 0px;
+}
 /*
 
 curso/materia 
