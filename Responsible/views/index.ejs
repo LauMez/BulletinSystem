@@ -1,18 +1,154 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bienvenido</title>
-    <link rel="stylesheet" href="../public/css/index.css">
+    <title>Responsable</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="/responsible/css/index.css">
 </head>
 <body>
-    <div class="welcome-container">
-        <h2>Bienvenido, <%= user.username %></h2>
-        <p>Te has autenticado exitosamente.</p>
+    <div class="exit">
+        <div class="log-out">
+            <i class="fa-solid fa-right-from-bracket" onclick="logout()"></i>
+        </div>
+        
+        <a href="<%= data.responsible.CUIL %>/profile">
+            <i class="fas fa-user-circle"></i>
+        </a>
     </div>
-    <form action="/logout" method="POST">
-        <button type="submit">Salir</button>
-    </form>
+
+    <div class="menu__container">
+
+        <div class="menu-users">
+            <div class="menu__bienvenida">
+                <h1 class="nombre__animation">Bienvenido <%= data.responsible.personalInformation.first_name %> <%= data.responsible.personalInformation.second_name || '' %> <%= data.responsible.personalInformation.last_name1 || '' %> <%= data.responsible.personalInformation.last_name2 || '' %> !<span>&#160;</span></h1>
+            </div>
+            <div class="menu-users">
+                <% data.responsible.responsibleOf.forEach(student => { %>
+                    <div class="opciones user">
+                        <a href="#" class="student-link" 
+                           data-cuil="<%= student.CUIL %>" 
+                           data-name="<%= student.first_name %> <%= student.second_name || '' %> <%= student.last_name1 %> <%= student.last_name2 || '' %>"
+                           data-responsability="<%= student.responsability %>">
+                            <div class="opcion__item"><i class="fas fa-user"></i></div>
+                            <div class="opcion__name">
+                                <%= student.first_name %>
+                                <%= student.second_name || '' %>
+                                <%= student.last_name1 %>
+                                <%= student.last_name2 || '' %>
+                            </div>
+                        </a>
+                    </div>
+                <% }); %>
+            </div>
+        </div>
+
+        <div class="menu__content" style="display: none;">
+            <div class="menu__bienvenida">
+                <h1 class="nombre__animation">Bienvenido, <span id="student-name"></span>!<span>&#160;</span></h1> <!-- Añadí el id student-name -->
+            </div>
+
+            <div class="menu__opciones_container">
+                <i class="fas fa-times-circle" id="back-user"></i>  
+
+                <div class="opciones opcion_informacion">
+                    <a id="student-info-link">
+                        <div class="opcion__item"><i class="fas fa-user"></i></div>
+                        <div class="opcion__name">Informacion</div>
+                    </a>
+                </div>
+
+                <div class="opciones opcion_cronograma" style="display: none;">
+                    <a id="student-schedule-link">
+                        <div class="opcion__item"><i class="fas fa-users"></i></div>
+                        <div class="opcion__name">Cronograma</div>
+                    </a>
+                </div>
+
+                <div class="opciones opcion_boletin" style="display: none;">
+                    <a id="student-bulletin-link">
+                        <div class="opcion__item"><i class="fas fa-school"></i></div>
+                        <div class="opcion__name">Boletin</div>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        async function logout() {
+            try {
+                const response = await fetch('/logout', {
+                    method: 'POST',
+                    credentials: 'include'
+                });
+
+                if (response.ok) {
+                    window.location.href = '/login';
+                } else {
+                    console.error('Error during logout:', response.statusText);
+                }
+            } catch (error) {
+                console.error('Logout failed:', error);
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
+            const studentLinks = document.querySelectorAll(".student-link");
+            const menuContent = document.querySelector(".menu__content");
+            const menuUsers = document.querySelector(".menu-users");
+            const backButton = document.getElementById("back-user");
+
+            const studentNameSpan = document.getElementById("student-name");
+            const infoLink = document.getElementById("student-info-link");
+            const scheduleOption = document.querySelector(".opcion_cronograma");
+            const bulletinOption = document.querySelector(".opcion_boletin");
+
+            studentLinks.forEach(link => {
+                link.addEventListener("click", function (e) {
+                    e.preventDefault();
+
+                    const CUIL = <%= data.responsible.CUIL %>;
+                    const studentCUIL = link.getAttribute("data-cuil");
+                    const name = link.getAttribute("data-name");
+                    const responsability = link.getAttribute("data-responsability");
+
+                    // Comprobar los datos capturados
+                    console.log('CUIL:', studentCUIL);
+                    console.log('Nombre:', name);
+                    console.log('Responsabilidad:', responsability);
+
+                    // Actualizar enlaces dinámicamente
+                    
+                    document.getElementById("student-schedule-link").href = `/responsible/${CUIL}/studentSchedules/${studentCUIL}`;
+                    document.getElementById("student-bulletin-link").href = `/responsible/${CUIL}/studentBulletin/${studentCUIL}`;
+
+                    // Mostrar/ocultar opciones según la responsabilidad
+                    if (responsability === "Padre" || responsability === "Madre") {
+                        infoLink.href = `/responsible/${CUIL}/studentProfile/${studentCUIL}`;
+                        scheduleOption.style.display = "flex";
+                        bulletinOption.style.display = "flex";
+                    } else {
+                        infoLink.href = `/responsible/${CUIL}/profile/${studentCUIL}`;
+                        scheduleOption.style.display = "none";
+                        bulletinOption.style.display = "none";
+                    }
+
+                    // Mostrar el nombre del estudiante seleccionado
+                    studentNameSpan.textContent = name;
+
+                    // Mostrar el menú y ocultar la lista de usuarios
+                    menuContent.style.display = "flex";
+                    menuUsers.style.display = "none";
+                });
+            });
+
+            backButton.addEventListener("click", function () {
+                menuContent.style.display = "none";
+                menuUsers.style.display = "flex";
+            });
+        });
+    </script>
 </body>
 </html>

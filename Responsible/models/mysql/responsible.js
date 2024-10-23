@@ -92,8 +92,21 @@ export class ResponsibleModel {
       if(responsiblesOf.length === 0) return { errorMessage: `The responsible with CUIL ${CUIL} is not responsable of anyone.` };
 
       const responsibleOfGroup = await Promise.all(responsiblesOf.map(async (responsibleOf) => {
+        const [studentResponse] = await Promise.all([
+          fetch(`http://localhost:4567/student/${responsibleOf.studentCUIL}`)
+        ]);
+        
+        if (!studentResponse.ok) {
+            throw new Error('Error fetching student');
+        }
+        const student = await studentResponse.json();
+
         return {
           CUIL: responsibleOf.studentCUIL,
+          first_name: student.personalInformation.first_name,
+          second_name: student.personalInformation.second_name,
+          last_name1: student.personalInformation.last_name1,
+          last_name2: student.personalInformation.last_name2,
           responsability: responsibleOf.responsability
         }
       }))
