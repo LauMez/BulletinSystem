@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Materia</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="/professor/css/subject.css">
+</head>
+<body>
+
+    <div class="btn_back" id="btn_back">
+        <i class="fa-solid fa-arrow-left"></i>
+    </div>
+
+    <div class="contenedor-boletin">
+        
+         
+        <table>
+            <input type="checkbox" name="" id="button__abrir_materias">
+
+            <tr class="info-materia">
+                <td colspan="10" class="header">
+                    <h1><%= data.course.year %>°<%= data.course.division %>  <%= data.subject.name %></h1>
+                    <% data.subject.schedules.forEach(schedule => { %>
+                    <p><%= schedule.entry_schedule %>hs - <%= schedule.finish_schedule %>hs</p>
+                <% }); %>
+                </td>
+            </tr>
+            <tr> 
+                <td class="header" rowspan="3">Alumnos</td> 
+                <td class="header">1ºcuatrimestre</td> 
+                <td class="header" colspan="2">2º cuatrimestre</td> 
+                <td class="header" rowspan="3">cierre anual</td>
+                <td class="header" rowspan="3">intensificacion diciembre</td>
+                <td class="header" rowspan="3">intencificacion febrero</td>
+                <td class="header" rowspan="3">intensificacion ampliatoria marzo </td>
+                <td class="header" rowspan="3">nota final</td> 
+            </tr> 
+            
+            <tr> 
+                
+                <td class="header second_line" rowspan="2">Valoracion pedagogica</td> 
+                <td class="header second_line" rowspan="2">intensificacion cuatrimestre1 </td> 
+                <td class="header second_line" rowspan="2">valoracion pedagogica</td> 
+                
+            </tr>
+
+            <tr> 
+            </tr> 
+
+            <% data.students.forEach(student => { %>
+                <tr>
+                    <td class="dato-boletin">
+                        <%= student.personalInformation.first_name %>
+                        <%= student.personalInformation.second_name || '' %>
+                        <%= student.personalInformation.last_name1 %>
+                        <%= student.personalInformation.last_name2 || '' %>
+                    </td>
+                    <td class="dato-boletin">
+                        <select name="" id="">
+                            <option value="">TEA</option>
+                            <option value="">TEP</option>
+                            <option value="">TED</option>
+                        </select>
+                    </td>
+                    <td class="dato-boletin">
+                        <select name="" id="">
+                            <option value="">TEA</option>
+                            <option value="">TEP</option>
+                            <option value="">TED</option>
+                        </select>
+                    </td>
+                    <td class="dato-boletin">
+                        <select name="" id="">
+                            <option value="">TEA</option>
+                            <option value="">TEP</option>
+                            <option value="">TED</option>
+                        </select>
+                    </td>
+                    <td class="dato-boletin">
+                        <select name="" id="">
+                            <option value="">TEA</option>
+                            <option value="">TEP</option>
+                            <option value="">TED</option>
+                        </select>
+                    </td>
+                    <td class="dato-boletin">
+                        <select name="" id="">
+                            <option value="">TEA</option>
+                            <option value="">TEP</option>
+                            <option value="">TED</option>
+                        </select>
+                    </td>
+                    <td class="dato-boletin">
+                        <select name="" id="">
+                            <option value="">TEA</option>
+                            <option value="">TEP</option>
+                            <option value="">TED</option>
+                        </select>
+                    </td>
+                    <td class="dato-boletin">
+                        <select name="" id="">
+                            <option value="">TEA</option>
+                            <option value="">TEP</option>
+                            <option value="">TED</option>
+                        </select>
+                    </td>
+                    <td class="dato-boletin">
+                        <select name="" id="">
+                            <option value="">TEA</option>
+                            <option value="">TEP</option>
+                            <option value="">TED</option>
+                        </select>
+                    </td>
+                </tr>
+            <% }); %>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var backButton = document.getElementById('btn_back')
+
+            backButton.addEventListener('click', function() {
+                if(window.history.length > 1) window.history.back()
+                else alert('No hay historial para volver')
+            })
+        })
+    </script>
+</body>
+</html>

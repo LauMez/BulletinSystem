@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cambio de Contraseña</title>
+    <link rel="stylesheet" href="/css/updateAccount.css">
+    
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Cambio de Contraseña</h1>
+        <form id="updatePasswordForm">
+            <div class="form-group">
+                <label for="dni">DNI de la cuenta:</label>
+                <input type="text" id="dni" name="dni" value="<%= account.DNI %>" readonly>
+            </div>
+
+            <div class="form-group">
+                <label for="newPassword">Nueva Contraseña:</label>
+                <input type="password" id="newPassword" name="newPassword" required>
+            </div>
+
+            <div class="form-group">
+                <label for="confirmPassword">Confirmar Contraseña:</label>
+                <input type="password" id="confirmPassword" name="confirmPassword" required>
+            </div>
+
+            <button type="submit" class="btn">Actualizar Contraseña</button>
+        </form>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+    <script>
+        document.getElementById('updatePasswordForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
+
+            const accountID = "<%= account.accountID %>";
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+
+            if (newPassword !== confirmPassword) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Las contraseñas no coinciden'
+                });
+                return;
+            }
+
+            try {
+                const response = await fetch(`/account/${accountID}`, {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ password: newPassword })
+                });
+
+                if (response.ok) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Éxito',
+                        text: 'Contraseña actualizada exitosamente.',
+                        timer: 2000,
+                        willClose: () => {
+                            window.location.href = '/login';
+                        }
+                    });
+                } else {
+                    const errorData = await response.json();
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: `Error al actualizar la contraseña: ${errorData.message}`,
+                        timer: 2000,
+                        willClose: () => {
+                            window.location.reload()
+                        }
+                    });
+                }
+            } catch (error) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error de red',
+                    text: 'Error de red. Inténtalo de nuevo más tarde.',
+                    timer: 2000,
+                    willClose: () => {
+                        window.location.reload()
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>

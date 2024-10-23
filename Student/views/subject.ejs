@@ -1,0 +1,85 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Materia</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="/student/css/subject.css">
+</head>
+<body>
+    <div class="btn_back" id="btn_back">
+        <i class="fa-solid fa-arrow-left"></i>
+    </div>
+    <div class="contenedor-principal">
+        <div class="contenedor-boletin">
+            <table>
+                <tr> 
+                    <td class="header" rowspan="3">Materias</td> 
+                    <td class="header">Primer cuatrimestre</td> 
+                    <td class="header" colspan="2">Segundo cuatrimestre</td> 
+                    <td class="header" rowspan="3">Cierre Anual</td>
+                    <td class="header" rowspan="3">Intensificación Diciembre</td>
+                    <td class="header" rowspan="3">Intensificación Febrero</td>
+                    <td class="header" rowspan="3">Intensificación Ampliatoria Marzo</td>
+                    <td class="header" rowspan="3">Nota Final</td> 
+                </tr> 
+                
+                <tr> 
+                    <td class="header" rowspan="2">Valoración Pedagógica</td> 
+                    <td class="header" rowspan="2">Intensificación Cuatrimestre 1</td> 
+                    <td class="header" rowspan="2">Valoración Pedagógica</td> 
+                </tr>
+
+                <tr></tr> 
+
+                <tr class="fila__dato">
+                    <td class="dato-boletin"><%=subject.name  %></td>
+                    <td class="dato-boletin">TEA</td>
+                    <td class="dato-boletin">-</td>
+                    <td class="dato-boletin">TEA</td>
+                    <td class="dato-boletin">-</td>
+                    <td class="dato-boletin">-</td>
+                    <td class="dato-boletin">-</td>
+                    <td class="dato-boletin">-</td>
+                    <td class="dato-boletin">TEA</td>
+                </tr>
+            </table>
+        </div>
+    
+        <div class="asistencias-contenedor">
+            <div id="cantidad-asistencias" class="presente">
+                <h1 class="numero">20</h1>
+                <h2 class="tipo-falta">Presentes</h2>
+            </div>
+
+            <div class="divisor"></div>
+            
+            <div id="cantidad-asistencias" class="ausente">
+                <h1 class="numero">7</h1>
+                <h2 class="tipo-falta">Ausentes</h2>
+            </div>
+            
+            <div class="divisor"></div>
+
+            <div id="cantidad-asistencias" class="faltas-justificadas">
+                <h1 class="numero">2</h1>
+                <h2 class="tipo-falta">Faltas Justificadas</h2>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var backButton = document.getElementById('btn_back')
+
+            backButton.addEventListener('click', function() {
+                if(window.history.length > 1) window.history.back()
+                else alert('No hay historial para volver')
+            })
+        })
+    </script>
+</body>
+</html>

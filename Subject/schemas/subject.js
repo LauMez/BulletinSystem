@@ -1,21 +1,13 @@
 import z from 'zod';
 
 const subjectSchema = z.object({
-  name: z.string({
-    invalid_type_error: 'Subject name must be a string',
-    required_error: 'Subject name is required'
-  }),
+  name: z.string().min(2, { messag: "El nombre de la materia es requerido." }),
+  course: z.string().min(2, { message: "El curso es requerido." })
 });
 
 const scheduleScheme = z.object({
-  day: z.string({
-    invalid_type_error: 'Schedule day must be a string',
-    required_error: 'Schedule day name is required'
-  }),
-  schedule: z.string({
-    invalid_type_error: 'Schedule must be a string',
-    required_error: 'Schedule is required'
-  })
+  day: z.string().min(2, { message: "El dia es requerido." }),
+  schedule: z.string().min(2, { message: "El horario es requerido." })
 });
 export function validateSchedule (input) {
   return scheduleScheme.safeParse(input);

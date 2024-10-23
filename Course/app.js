@@ -12,6 +12,8 @@ export const createApp = ({ courseModel }) => {
   app.use(corsMiddleware());
   app.disable('x-powered-by');
 
+  app.options('*', corsMiddleware());
+
   const __filename = fileURLToPath(import.meta.url);
   const __dirname = path.dirname(__filename);
 

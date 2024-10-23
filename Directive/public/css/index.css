@@ -1,0 +1,272 @@
+:root {
+    --color-dark: rgb(5, 57, 136);
+    --color-light: rgb(30, 111, 202);
+    --color-deafult: rgb(22, 96, 180);
+}
+
+* {
+    font-family: sans-serif;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+header {
+    padding: 5px;
+    width: 100%;
+    display: flex;
+    height: 5vh;
+    color: white;
+    justify-content: space-around;
+    align-items: end;
+    border-bottom: 3px solid var(--color-light);
+    color:var(--color-dark);
+}
+header h1{
+    font-size: 15px;
+    padding: 5px;
+    font-weight: 600;
+}
+.secciones{
+    display:flex;
+}
+.seccion-user{
+    display: flex;
+}
+.seccion-user h1{
+    font-weight: 700;
+    color: var(--color-light);
+}
+
+.container-principal {
+    display: flex;
+    width: 100%;
+    height: 90vh;
+    justify-content: space-between;
+}
+
+.container-preceptores {
+    margin: 0 10px; /* Margen a los lados de cada contenedor de tablas */
+    flex: 1; /* Hacer que cada contenedor ocupe el mismo espacio */
+}
+
+.table-wrapper {
+    max-width: 100%;
+    overflow: hidden; /* Evitar que toda la tabla se desplace */
+    border-radius: 10px 10px 0px 0px;
+
+}
+
+.content-table {
+    border-collapse: collapse;
+    margin: 25px 0;
+    font-size: 0.9em;
+    min-width: 400px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+    border-radius: 10px 10px 0px 0px;
+
+}
+.content-table tbody {
+    display: block;
+    max-height: 70vh; /* Ajusta según sea necesario */
+    overflow-y: auto;
+}
+
+
+.content-table thead tr {
+    background-color: var(--color-deafult);
+    color: #ffffff;
+    text-align: left;
+    font-weight: bold;
+}
+
+.tb_header{
+    border-radius: 10px 0px 0px 0px;
+}
+.th_buscador{
+    border-radius: 0px 10px 0px 0px;
+
+}
+.buscador{
+    border: 1px solid gray;
+    width: 100%;
+    height: 3vh;
+    padding: 5px;
+    border-radius: 10px;
+}
+.content-table th,
+.content-table td {
+    padding: 12px 15px; /* Padding dentro de las celdas */
+}
+
+.content-table tbody {
+    display: block;
+     /* Altura máxima del tbody para el scroll */
+    overflow-y: auto; /* Activar el scroll vertical en tbody */
+}
+
+.content-table thead, .content-table tbody tr {
+    display: table;
+    width: 100%;
+    table-layout: fixed; /* Hacer que las columnas sean del mismo tamaño */
+}
+
+.content-table tbody tr:nth-of-type(even) {
+    background-color: #f3f3f3;
+}
+
+.content-table tbody tr:nth-child(2n) {
+    font-weight: bold;
+    color: var(--color-deafult);
+}
+
+.content-table tbody tr:last-of-type {
+    border-bottom: 2px solid var(--color-light);
+}
+
+
+/*
+
+curso/materia 
+
+*/
+.curso-materia-container {
+    height: 95vh;
+    justify-content: space-between;
+    width: 100%;
+    overflow: hidden;
+    display: none; /* Asegúrate de que esté oculto por defecto */
+}
+.pantalla-presentacion{
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: var(--color-light);
+}
+.pantalla-presentacion:hover{
+    transform: scale(1.1);
+    cursor: pointer;
+    transition: all 0.4s ease;
+}
+.year{
+    background-color: rgb(252, 252, 252);
+    width: 100%;
+    display:flex;
+    justify-content: center;
+    align-items: center;
+    transition:all 0.4s ease;
+
+}
+.year:nth-child(2n){
+    background-color: rgb(243, 243, 243);
+}
+
+.no-hover {
+    pointer-events: none; /* Desactiva los eventos del mouse (incluido hover) */
+}
+.content-year {
+    position: fixed; /* Ocupa toda la pantalla */
+    top: 5vh;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgb(255, 255, 255); /* Fondo blanco semi-transparente */
+    z-index: 1000; /* Asegúrate de que esté por encima de otros elementos */
+    display: none; /* Ocultar por defecto */
+    overflow-y: auto; /* Desplazamiento vertical si el contenido es demasiado largo */   
+    
+}
+.back-button{
+    margin: 10px;
+    border: none;
+    width: 3vh;
+    height: 3vh;
+    position: fixed;
+    color: red;
+    font-size: 25px;
+}
+.course{
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+.course table {
+    display: table;
+    table-layout: fixed; /* Hacer que las columnas sean del mismo tamaño */
+
+    border-collapse: collapse;
+    font-family: sans-serif;
+    margin-top: 10px;
+    width:60%;
+    height: 100px;
+    box-sizing: border-box; /* Incluir padding y border en el ancho total */
+}
+
+.table-curso tr{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+}
+.table-curso th{
+    padding: 7px;
+    background-color: var(--color-deafult);
+    width: 100%;
+}
+
+
+.table-curso tbody tr:nth-child(2n) {
+    font-weight: bold;
+    color: var(--color-deafult);
+}
+
+.table-curso tbody tr:last-of-type {
+    border-bottom: 2px solid var(--color-light);
+}
+.table-curso tbody{
+    width: 100%;
+    display: table;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: 600;
+    font-size: 15px;
+    background-color: #ffffff;
+    text-align: center;
+    table-layout: fixed; /* Hacer que las columnas sean del mismo tamaño */
+}
+.table-curso tbody td{
+    width: 25%;
+    padding: 12px;
+    color: rgb(87, 87, 87);
+}
+.table-curso tbody tr:nth-child(2n){
+    background-color: rgb(243, 243, 243);
+    color: var(--color-deafult);
+}
+.table-curso tbody tr:nth-child(2n) td{
+    color: var(--color-light);
+}
+
+.table-curso thead{
+    color: white;
+}
+.curso{
+    border-radius: 10px 10px 0px 0px;
+    width: 100%;
+    height: 100%;
+}
+/*
+
+curso a partir de 4
+
+*/
+
+.course_{
+    padding-left: 25px;
+}
+.course_ .table-curso{
+    margin: 10px;
+}

@@ -1,0 +1,127 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+.btn_back{
+    position: fixed;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 35px;
+    height: 35px;
+    background-color: white;
+    border-radius: 50%;
+    color: red;
+    border: 1px solid gray;
+    margin: 10px;
+    transform: all 0.5 ease;
+
+}
+.btn_back:hover{
+    transform: scale(1.2);
+    background-color: red;
+    color: white;
+}
+
+.contenedor-principal{
+    background-color: #f7f9fc;
+    color: #333;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.contenedor-boletin {
+    width: 90%;
+    margin: 20px 0;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.header {
+    background-color: #003366;
+    color: white;
+    font-weight: 600;
+    text-align: center;
+    padding: 15px;
+}
+
+.fila__dato {
+    background-color: #f1f1f1;
+}
+
+.dato-boletin {
+    padding: 15px;
+    text-align: center;
+    font-size: 14px;
+    color: #333;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+tr:nth-child(even) .fila__dato {
+    background-color: #f9f9f9;
+}
+
+tr:hover .fila__dato {
+    background-color: #e6e6e6;
+}
+
+/* Asistencias */
+.asistencias-contenedor {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    width: 80%;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+#cantidad-asistencias {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.numero {
+    font-size: 50px;
+    font-weight: 700;
+}
+
+.tipo-falta {
+    font-size: 16px;
+    font-weight: 500;
+    color: #555;
+}
+
+.presente .numero {
+    color: #148716;
+}
+
+.ausente .numero {
+    color: #981515;
+}
+
+.faltas-justificadas .numero {
+    color: #1b0fc3;
+}
+
+.divisor {
+    width: 1px;
+    height: 100px;
+    background-color: #e0e0e0;
+    margin: 0 20px;
+}

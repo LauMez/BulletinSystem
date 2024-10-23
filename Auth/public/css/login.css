@@ -1,0 +1,169 @@
+*{
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+
+.container_principal{
+    width: 100%;
+    background-color: rgb(0, 38, 95);
+    display: flex;
+    justify-content: center;
+}
+.login__container{
+    width: 40%;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.login__content{
+    width: 50%;
+    height:100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+.login__header_container{
+    height: 40vh;
+    display: flex;
+    align-items: end;
+    padding-bottom: 20px;
+}
+.login__header{
+    font-size: 40px;
+    color:White;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+.login__form{
+    height: 60vh;
+}
+.login__form{
+    display: flex;
+    flex-direction: column;
+}
+.login__form_container{
+    display: flex;
+    flex-direction: column;
+}
+.login__form_container h1{
+    color:white;
+    font-size: 17px;
+    font-weight: 500;
+}
+.nombre{
+    display: flex;
+    margin: 5px;
+}
+.documento_etiqueta{
+    width: 15vh;
+}
+#login__documento, #login__contrasenia{
+    border: none;
+    border-bottom: 1px solid white;
+    background-color: rgb(0, 38, 95);
+    width: 30vh;
+    margin: 5px;
+    -webkit-appearance: none; /* Para navegadores basados en WebKit */
+    -moz-appearance: none;    /* Para Firefox */
+    appearance: none;
+    transition: all 0.4s ease;
+    color: white;   
+}
+
+#login__documento:focus, #login__contrasenia:focus{
+    transition: all 0.4s ease;
+   text-decoration: none;
+   border-bottom: 1px solid;
+   padding: 1px;
+   color:white;
+   outline: none; /* Elimina el borde de enfoque */
+}
+
+#login__documento:hover, #login__contrasenia:hover{
+    cursor: pointer;
+}
+.documento_etiqueta:hover{
+    color: rgb(126, 126, 126);
+}
+
+.login__password{
+    border: none;
+    border-bottom: 1px solid white;
+    background-color: rgb(69, 88, 69);
+    width: 30vh;
+    margin: 5px;
+    -webkit-appearance: none; /* Para navegadores basados en WebKit */
+    -moz-appearance: none;    /* Para Firefox */
+    appearance: none;
+    transition: all 0.4s ease;
+
+}
+.contrasenia{
+    display: flex;
+    margin: 5px;
+}
+.contra_etiqueta{
+    width: 15vh;
+}
+.login__enviar{
+    margin-top: 22px;
+    width: 46vh;
+    height: 4vh;
+    border: none;
+    background-color: rgb(0, 102, 255);
+    color: white;   
+}
+.login__enviar:hover{
+    background-color: rgb(50, 122, 255);
+}
+.login__crear_cuenta{
+    margin-top: 10px;
+    display: flex;
+    flex-direction: column;
+    color: white;
+}
+.login__crear_cuenta h1{
+    font-size: 14px;
+}
+.login__crear_cuenta a{
+    text-decoration: none;
+    color: #51abff;
+    font-size: 13px;
+    font-weight: 600;
+    margin: 2px;
+}
+.info_app{
+    width: 45%;
+    display: flex;
+    align-items: center;
+}
+.info_app_content{
+    height: 50vh;
+    width: 90%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+}
+
+.info_app{
+    color: white;
+    font-size: 15px;
+    font-family: Arial, Helvetica, sans-serif;
+}
+.info_app_content h1{
+    height: 2vh;
+}
+.info_app_content h2{
+    font-size: 17px;
+}
+.info_app h1{
+    color: rgb(0, 153, 255);
+}
+.parrafo{
+    line-height: 23px;
+}
+.parrafo-2{
+    color: rgb(248, 204, 123);
+}

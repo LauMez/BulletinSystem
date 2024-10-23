@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Estudiante</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="/student/css/index.css">
+</head>
+<body>
+    <div class="menu__container">
+        <div class="menu__content">
+
+            <div class="perfil">
+                <div class="log-out">
+                    <button onclick="logout()" class="logout-button">
+                        <i class="fa-solid fa-arrow-right-from-bracket">
+                            
+                            <p>Logout</p>
+                        </i>
+                    </button>
+                </div>
+                <a class="perfil_redireccion" href="<%= data.CUIL %>/profile">
+                    <i class="fa-solid fa-user"></i>
+                </a>
+           </div>
+
+            <div class="menu__bienvenida">
+                <h1 class="nombre__animation">Bienvenido <%= data.student.personalInformation.first_name %>!<span>&#160;</span></h1>
+            </div>
+
+
+            <div class="menu__opciones_container">
+
+                <div class="opciones">
+                    <a href="<%= data.student.CUIL %>/profile">
+                        <div class="opcion__item" style="background-color: rgb(71, 80, 182);"><i class="fas fa-user"></i></div>
+                        <div class="opcion__name">Informacion</div>
+                    </a>
+                </div>
+
+                <% if(data.subjects) { %>
+
+                    <div class="opciones">
+                        <a href="<%= data.student.CUIL %>/schedules">
+                            <div class="opcion__item" style="background-color: rgb(71, 80, 182);"><i class="fas fa-users"></i></div>
+                            <div class="opcion__name">Cronograma</div>
+                        </a>
+                    </div>
+
+                    <div class="opciones">
+                        <a href="<%= data.student.CUIL %>/bulletin">    
+                            <div class="opcion__item" style="background-color: rgb(71, 80, 182);"><i class="fas fa-school"></i></div>
+                            <div class="opcion__name">Boletin</div>
+                        </a>
+                    </div>
+
+                    <div class="opciones materias__container">
+                    
+                        <label for="view__subject">
+                            <div class="opcion__item item__change" style="background-color: rgb(71, 80, 182);"><i id="open__subject" class="fa-solid fa-address-book"></i></div>
+                            <div class="opcion__name">Materia</div>
+                        </label>
+    
+                        <input type="checkbox" name="" id="view__subject">
+    
+                        <div class="subject__container">
+                            <% data.subjects.forEach(function(subject) { %>
+                                <div class="subject">
+                                    <a href="<%= data.student.CUIL %>/subject/<%= subject.subjectID %>">
+                                        <div class="opcion__item" style="background-color: rgb(71, 80, 182);">
+                                            <i class="fa-solid fa-address-book"></i>
+                                        </div>
+                                        <div class="opcion__name"><%= subject.name %></div>
+                                    </a>
+                                </div>
+                            <% }) %>
+                        </div>
+                        <label for="view__subject" class="exit__subject"></label>
+                    </div>
+                <% } %>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        async function logout() {
+            try {
+                const response = await fetch('/logout', {
+                    method: 'POST',
+                    credentials: 'include'
+                });
+
+                if (response.ok) {
+                    window.location.href = '/login';
+                } else {
+                    console.error('Error during logout:', response.statusText);
+                }
+            } catch (error) {
+                console.error('Logout failed:', error);
+            }
+        }
+    </script>
+</body>
+</html>

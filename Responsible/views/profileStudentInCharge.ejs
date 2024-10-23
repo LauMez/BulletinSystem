@@ -1,0 +1,73 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Estudiante</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="/responsible/css/profile.css">
+</head>
+<body>
+    <!-- Btn back -->
+    <div class="btn_back" id="btn_back">
+        <i class="fa-solid fa-arrow-left"></i>
+    </div>
+    
+
+    <div class="alumno__container">
+        <section class="alumno__info_section">
+            <div class="alumno__header_info"> <h1>Informacion Personal</h1></div>
+
+            <div class="alumno__imagen_container">
+                <div class="alumno__imagen_container_secundario">
+                    <div class="alumno__imagen">
+                        <!-- imagen -->
+                        <i class="fa-solid fa-user"></i>
+                    </div>
+                    <div class="alumno__nombre">
+                        <% if(data.course || data.group) { %>
+                            <h1><%= data.student.personalInformation.first_name %> <%= data.student.personalInformation.last_name1 %> <%= data.course.year %>°<%= data.course.division %></h1>
+                        <% } else { %>
+                            <h1><%= data.student.personalInformation.first_name %> <%= data.student.personalInformation.last_name1 %> (sin curso)</h1>
+                        <% } %>
+                    </div>  
+                </div>
+                <div class="alumno__info_relevante">
+                    <ul class="alumno__datos_container">
+                        <li class="alumno__dato relevante"><span>Documento: </span><p><%= data.student.personalInformation.DNI %></p></li>
+                        <li class="alumno__dato relevante"><span>Direccion: </span><p><%= data.student.personalInformation.direction %></p></li>
+                        <% if(data.course && data.group) { %>
+                            <li class="alumno__dato relevante"><span>Turno: </span><p><%= data.course.entry_time %></p></li>
+                            <li class="alumno__dato relevante"><span>Grupo: </span><p><%= data.group.group %></p></li>
+                        <% } else { %>
+                            <li class="alumno__dato relevante"><span>Turno: </span><p>-</p></li>
+                            <li class="alumno__dato relevante"><span>Grupo: </span><p>-</p></li>
+                        <% } %>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="alumno__info_personal">
+                <ul class="alumno__datos_container">
+                    <li class="alumno__dato"><span>Obra social: </span><p><%= data.student.studentInformation.social_work %></p></li>
+                    <li class="alumno__dato"><span>Telefono fijo: </span><p><%= data.student.personalInformation.landline_phone_number || '-' %></p></li>
+                    <li class="alumno__dato"><span>Celular: </span><p><%= data.student.personalInformation.phone_number %></p></li>
+                </ul>
+            </div>
+        
+        </section>
+    </div>
+    <!-- fin contendor principal-->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var backButton = document.getElementById('btn_back')
+
+            backButton.addEventListener('click', function() {
+                if(window.history.length > 1) window.history.back()
+                else alert('No hay historial para volver')
+            })
+        })
+    </script>
+</body>
+</html>

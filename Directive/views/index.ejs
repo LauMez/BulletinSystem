@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Directivo</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="/directive/css/index.css">
+</head>
+<body>
+    <header>
+        <div class="secciones">
+            <h1 id="usuarios" style="cursor: pointer;">Usuarios</h1>
+            <h1 id="cursos-materias" style="cursor: pointer;">Cursos/materias</h1>
+        </div>
+        <div class="seccion-user">
+            <div class="log-out">
+                <button onclick="logout()" class="logout-button">
+                    <i class="fa-solid fa-arrow-right-from-bracket"><p>Logout</p></i>
+                </button>
+            </div>
+            <h1><a href="<%= data.CUIL %>/profile">Perfil</a></h1>
+        </div>
+    </header>
+    <div class="container-principal">
+        <div class="container-preceptores">
+            <div class="table-wrapper">
+                <table class="content-table">
+                    <thead>
+                        <tr>
+                            <th class="tb_header" colspan="1">Alumnos</th>
+                            <th class="th_buscador" colspan="4">
+                                <input id="buscador-1" class="buscador" type="text" placeholder="Buscar por DNI, nombre o apellido...">
+                            </th>
+                        </tr>
+                        <tr>
+                            <th>Año</th>
+                            <th>Grupo</th>
+                            <th>Dni</th>
+                            <th>Nombre</th>
+                            <th>Opciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabla-usuarios-1">
+                        <% data.students.forEach(studentData => { %>
+                            <tr>
+                                <td><%= studentData.course.year %>°<%= studentData.course.division %></td>
+                                <td><%= studentData.course.group %></td>
+                                <td><%= studentData.student.personalInformation.DNI %></td>
+                                <td>
+                                    <%= studentData.student.personalInformation.first_name %>
+                                    <%= studentData.student.personalInformation.second_name || '' %>
+                                    <%= studentData.student.personalInformation.last_name1 %>
+                                    <%= studentData.student.personalInformation.last_name2 || '' %>
+                                </td>
+                                <td>
+                                    <div onclick="editStudent('<%= data.CUIL %>', '<%= studentData.student.CUIL %>')">
+                                        <i class="fas fa-pen"></i>
+                                    </div>
+                                    <div onclick="deleteStudent('<%= data.CUIL %>', '<%= studentData.student.CUIL %>')">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </div>
+                                </td>
+                            </tr>
+                        <% }); %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="container-preceptores">
+            <div class="table-wrapper">
+                <table class="content-table">
+                    <thead>
+                        <tr>
+                            <th class="tb_header" colspan="1">Profesores</th>
+                            <th class="th_buscador" colspan="2">
+                                <input id="buscador-2" class="buscador" type="text" placeholder="Buscar por DNI, nombre o apellido...">
+                            </th>
+                        </tr>
+                        <tr>
+                            <th>Dni</th>
+                            <th>Nombre</th>
+                            <th>Opciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabla-usuarios-2">
+                        <% data.professors.forEach(professor => { %>
+                            <tr>
+                                <td><%= professor.personalInformation.DNI %></td>
+                                <td>
+                                    <%= professor.personalInformation.first_name %>
+                                    <%= professor.personalInformation.second_name || '' %>
+                                    <%= professor.personalInformation.last_name1 %>
+                                    <%= professor.personalInformation.last_name2 || '' %>
+                                </td>
+                                <td>
+                                    <div onclick="editProfessor('<%= data.CUIL %>', '<%= professor.CUIL %>')">
+                                        <i class="fas fa-pen"></i>
+                                    </div>
+                                    <div onclick="deleteProfessor('<%= data.CUIL %>', '<%= professor.CUIL %>')">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </div>
+                                </td>
+                            </tr>
+                        <% }); %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="container-preceptores">
+            <div class="table-wrapper">
+                <table class="content-table">
+                    <thead>
+                        <tr>
+                            <th class="tb_header" colspan="1">Alumnos</th>
+                            <th class="th_buscador" colspan="2">
+                                <input id="buscador-3" class="buscador" type="text" placeholder="Buscar por DNI, nombre o apellido...">
+                            </th>
+                        </tr>
+                        <tr>
+                            <th>Dni</th>
+                            <th>Nombre</th>
+                            <th>Opciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabla-usuarios-3">
+                        <% data.preceptors.forEach(preceptor => { %>
+                            <tr>
+                                <td><%= preceptor.personalInformation.DNI %></td>
+                                <td>
+                                    <%= preceptor.personalInformation.first_name %>
+                                    <%= preceptor.personalInformation.second_name || '' %>
+                                    <%= preceptor.personalInformation.last_name1 %>
+                                    <%= preceptor.personalInformation.last_name2 || '' %>
+                                </td>
+                                <td>
+                                    <div onclick="editPreceptor('<%= data.CUIL %>', '<%= preceptor.CUIL %>')">
+                                        <i class="fas fa-pen"></i>
+                                    </div>
+                                    <div onclick="deletePreceptor('<%= data.CUIL %>', '<%= preceptor.CUIL %>')">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </div>
+                                </td>
+                            </tr>
+                        <% }); %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="curso-materia-container" id="curso-materia-container" style="display: none;">
+
+        <div class="year" id="year1">
+            <div class="pantalla-presentacion">
+                <h2>1° Año</h2>
+            </div>
+            <div class="content-year" id="content-year-1" style="display: none;">
+                <button class="back-button"><i class="fas fa-times"></i></button>
+                <div class="course" id="course_1">
+                    <% data.courses.forEach(courseData => { %>
+                        <% if(courseData.course.year == 1) { %>
+                            <table class="table-curso">
+                                <thead>
+                                    <tr >
+                                        <th class="curso" colspan="4"><%= courseData.course.year %>°<%= courseData.course.division %></th>
+                                    </tr>
+                                    <tr>
+                                        <th>Tipo</th>
+                                        <th>Grupo</th>
+                                        <th>Materia</th>
+                                        <th>Profesor</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                <% courseData.subjects.forEach(subject => { %>
+                                    <%= console.log(subject)  %>
+                                    <tr>
+                                        <% if(subject.group === '') { %>
+                                            <td>Curricular</td>
+                                        <% } else { %>
+                                            <td>Taller</td>
+                                        <% } %>
+                                        <td><%= subject.group %></td>
+                                        <td><%= subject.name %></td>
+                                        <% if(subject.professor) { %>
+                                            <td>
+                                                <% subject.professor.first_name %>
+                                                <% subject.professor.second_name || '' %>
+                                                <% subject.professor.last_name1 %>
+                                                <% subject.professor.last_name2 || '' %>
+                                            </td>
+                                        <% } else { %>
+                                            <td>
+                                                Sin profesor
+                                            </td>
+                                        <% } %>
+                                    </tr>
+                                <% }); %>
+                                </tbody>
+                            </table>
+                    <%  } %>
+                    <% }); %>
+                </div>
+            </div>
+        </div>
+        <div class="year" id="year2">
+            <div class="pantalla-presentacion">
+                <h2>2° Año</h2>
+            </div>
+            <div class="content-year" id="content-year-2" style="display: none;">
+                <button class="back-button"><i class="fas fa-times"></i></button>
+                <div class="course" id="course_2">
+                    <% data.courses.forEach(courseData => { %>
+                        <% if(courseData.course.year == 2) { %>
+                            <table class="table-curso">
+                                <thead>
+                                    <tr >
+                                        <th class="curso" colspan="4"><%= courseData.course.year %>°<%= courseData.course.division %></th>
+                                    </tr>
+                                    <tr>
+                                        <th>Tipo</th>
+                                        <th>Grupo</th>
+                                        <th>Materia</th>
+                                        <th>Profesor</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                <% courseData.subjects.forEach(subject => { %>
+                                    <tr>
+                                        <% if(subject.group === '') { %>
+                                            <td>Curricular</td>
+                                        <% } else { %>
+                                            <td>Taller</td>
+                                        <% } %>
+                                        <td><%= subject.group %></td>
+                                        <td><%= subject.name %></td>
+                                        <% if(subject.professor) { %>
+                                            <td>
+                                                <% subject.professor.first_name %>
+                                                <% subject.professor.second_name || '' %>
+                                                <% subject.professor.last_name1 %>
+                                                <% subject.professor.last_name2 || '' %>
+                                            </td>
+                                        <% } else { %>
+                                            <td>
+                                                Sin profesor
+                                            </td>
+                                        <% } %>
+                                    </tr>
+                                <% }); %>
+                                </tbody>
+                            </table>
+                    <%  } %>
+                    <% }); %>
+                </div>
+            </div>
+        </div>
+        <div class="year" id="year3">
+            <div class="pantalla-presentacion">
+                <h2>3° Año</h2>
+            </div>
+            <div class="content-year" id="content-year-3" style="display: none;">
+                <button class="back-button"><i class="fas fa-times"></i></button>
+                <div class="course" id="course_3">
+                    <% data.courses.forEach(courseData => { %>
+                        <% if(courseData.course.year == 3) { %>
+                            <table class="table-curso">
+                                <thead>
+                                    <tr >
+                                        <th class="curso" colspan="4"><%= courseData.course.year %>°<%= courseData.course.division %></th>
+                                    </tr>
+                                    <tr>
+                                        <th>Tipo</th>
+                                        <th>Grupo</th>
+                                        <th>Materia</th>
+                                        <th>Profesor</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                <% courseData.subjects.forEach(subject => { %>
+                                    <tr>
+                                        <% if(subject.group === '') { %>
+                                            <td>Curricular</td>
+                                        <% } else { %>
+                                            <td>Taller</td>
+                                        <% } %>
+                                        <td><%= subject.group %></td>
+                                        <td><%= subject.name %></td>
+                                        <% if(subject.professor) { %>
+                                            <td>
+                                                <% subject.professor.first_name %>
+                                                <% subject.professor.second_name || '' %>
+                                                <% subject.professor.last_name1 %>
+                                                <% subject.professor.last_name2 || '' %>
+                                            </td>
+                                        <% } else { %>
+                                            <td>
+                                                Sin profesor
+                                            </td>
+                                        <% } %>
+                                    </tr>
+                                <% }); %>
+                                </tbody>
+                            </table>
+                    <%  } %>
+                    <% }); %>
+                </div>
+            </div>
+        </div>
+        <div class="year" id="year4">
+            <div class="pantalla-presentacion">
+                <h2>4° Año</h2>
+            </div>
+            <div class="content-year" id="content-year-4" style="display: none;">
+                <button class="back-button"><i class="fas fa-times"></i></button>
+                <div class="course course_" id="course_4">
+                    <% data.courses.forEach(courseData => { %>
+                        <% if(courseData.course.year == 4) { %>
+                            <table class="table-curso">
+                                <thead>
+                                    <tr >
+                                        <th class="curso" colspan="4"><%= courseData.course.year %>°<%= courseData.course.division %></th>
+                                    </tr>
+                                    <tr>
+                                        <th>Tipo</th>
+                                        <th>Grupo</th>
+                                        <th>Materia</th>
+                                        <th>Profesor</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                <% courseData.subjects.forEach(subject => { %>
+                                    <tr>
+                                        <% if(subject.group === '') { %>
+                                            <td>Curricular</td>
+                                        <% } else { %>
+                                            <td>Taller</td>
+                                        <% } %>
+                                        <td><%= subject.group %></td>
+                                        <td><%= subject.name %></td>
+                                        <% if(subject.professor) { %>
+                                            <td>
+                                                <% subject.professor.first_name %>
+                                                <% subject.professor.second_name || '' %>
+                                                <% subject.professor.last_name1 %>
+                                                <% subject.professor.last_name2 || '' %>
+                                            </td>
+                                        <% } else { %>
+                                            <td>
+                                                Sin profesor
+                                            </td>
+                                        <% } %>
+                                    </tr>
+                                <% }); %>
+                                </tbody>
+                            </table>
+                    <%  } %>
+                    <% }); %>
+                </div>
+            </div>
+        </div>
+        
+        <div class="year" id="year5">
+            <div class="pantalla-presentacion">
+                <h2>5° Año</h2>
+            </div>
+            <div class="content-year" id="content-year-5" style="display: none;">
+                <button class="back-button"><i class="fas fa-times"></i></button>
+                <div class="course course_" id="course_5">
+                    <% data.courses.forEach(courseData => { %>
+                        <% if(courseData.course.year == 5) { %>
+                            <table class="table-curso">
+                                <thead>
+                                    <tr >
+                                        <th class="curso" colspan="4"><%= courseData.course.year %>°<%= courseData.course.division %></th>
+                                    </tr>
+                                    <tr>
+                                        <th>Tipo</th>
+                                        <th>Grupo</th>
+                                        <th>Materia</th>
+                                        <th>Profesor</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                <% courseData.subjects.forEach(subject => { %>
+                                    <tr>
+                                        <% if(subject.group === '') { %>
+                                            <td>Curricular</td>
+                                        <% } else { %>
+                                            <td>Taller</td>
+                                        <% } %>
+                                        <td><%= subject.group %></td>
+                                        <td><%= subject.name %></td>
+                                        <% if(subject.professor) { %>
+                                            <td>
+                                                <% subject.professor.first_name %>
+                                                <% subject.professor.second_name || '' %>
+                                                <% subject.professor.last_name1 %>
+                                                <% subject.professor.last_name2 || '' %>
+                                            </td>
+                                        <% } else { %>
+                                            <td>
+                                                Sin profesor
+                                            </td>
+                                        <% } %>
+                                    </tr>
+                                <% }); %>
+                                </tbody>
+                            </table>
+                    <%  } %>
+                    <% }); %>
+                </div>
+            </div>
+        </div>
+        <div class="year" id="year6">
+            <div class="pantalla-presentacion">
+                <h2>6° Año</h2>
+            </div>
+            <div class="content-year" id="content-year-6" style="display: none;">
+                <button class="back-button"><i class="fas fa-times"></i></button>
+                <div class="course course_" id="course_6">
+                    <% data.courses.forEach(courseData => { %>
+                        <% if(courseData.course.year == 6) { %>
+                            <table class="table-curso">
+                                <thead>
+                                    <tr >
+                                        <th class="curso" colspan="4"><%= courseData.course.year %>°<%= courseData.course.division %></th>
+                                    </tr>
+                                    <tr>
+                                        <th>Tipo</th>
+                                        <th>Grupo</th>
+                                        <th>Materia</th>
+                                        <th>Profesor</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                <% courseData.subjects.forEach(subject => { %>
+                                    <tr>
+                                        <% if(subject.group === '') { %>
+                                            <td>Curricular</td>
+                                        <% } else { %>
+                                            <td>Taller</td>
+                                        <% } %>
+                                        <td><%= subject.group %></td>
+                                        <td><%= subject.name %></td>
+                                        <% if(subject.professor) { %>
+                                            <td>
+                                                <% subject.professor.first_name %>
+                                                <% subject.professor.second_name || '' %>
+                                                <% subject.professor.last_name1 %>
+                                                <% subject.professor.last_name2 || '' %>
+                                            </td>
+                                        <% } else { %>
+                                            <td>
+                                                Sin profesor
+                                            </td>
+                                        <% } %>
+                                    </tr>
+                                <% }); %>
+                                </tbody>
+                            </table>
+                    <%  } %>
+                    <% }); %>
+                </div>
+            </div>
+        </div>
+        <div class="year" id="year7">
+            <div class="pantalla-presentacion">
+                <h2>7° Año</h2>
+            </div>
+            <div class="content-year" id="content-year-7" style="display: none;">
+                <button class="back-button"><i class="fas fa-times"></i></button>
+                <div class="course course_" id="course_7">
+                    <% data.courses.forEach(courseData => { %>
+                        <% if(courseData.course.year == 7) { %>
+                            <table class="table-curso">
+                                <thead>
+                                    <tr >
+                                        <th class="curso" colspan="4"><%= courseData.course.year %>°<%= courseData.course.division %></th>
+                                    </tr>
+                                    <tr>
+                                        <th>Tipo</th>
+                                        <th>Grupo</th>
+                                        <th>Materia</th>
+                                        <th>Profesor</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                <% courseData.subjects.forEach(subject => { %>
+                                    <tr>
+                                        <% if(subject.group === '') { %>
+                                            <td>Curricular</td>
+                                        <% } else { %>
+                                            <td>Taller</td>
+                                        <% } %>
+                                        <td><%= subject.group %></td>
+                                        <td><%= subject.name %></td>
+                                        <% if(subject.professor) { %>
+                                            <td>
+                                                <%= subject.professor.first_name %>
+                                                <%= subject.professor.second_name || '' %>
+                                                <%= subject.professor.last_name1 %>
+                                                <%= subject.professor.last_name2 || '' %>
+                                            </td>
+                                        <% } else { %>
+                                            <td>
+                                                Sin profesor
+                                            </td>
+                                        <% } %>
+                                    </tr>
+                                <% }); %>
+                                </tbody>
+                            </table>
+                    <%  } %>
+                    <% }); %>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        async function editStudent(CUIL, studentCUIL) {
+            try {
+                window.location.href = `${CUIL}/editStudent/${studentCUIL}`;
+            } catch(error) {
+                console.error('Error in course redirection:', error);
+            }
+        }
+        async function editProfessor(CUIL, professorCUIL) {
+            try {
+                window.location.href = `${CUIL}/editProfessor/${professorCUIL}`;
+            } catch(error) {
+                console.error('Error in course redirection:', error);
+            }
+        }
+        async function editPreceptor(CUIL, preceptorCUIL) {
+            try {
+                window.location.href = `${CUIL}/editPreceptor/${preceptorCUIL}`;
+            } catch(error) {
+                console.error('Error in course redirection:', error);
+            }
+        }
+
+        async function deleteStudent(CUIL, studentCUIL) {
+            try {
+                const response = await fetch(`http://localhost:9457/${CUIL}/deleteStudent/${studentCUIL}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+                });
+
+                if (response.ok) {
+                window.location.href = '/';
+                } else {
+                console.error('Failed to delete student:', response.statusText);
+                }
+            } catch (error) {
+                console.error('Error in delete student request:', error);
+            }
+        }
+
+        async function deleteProfessor(CUIL, professorCUIL) {
+            try {
+                const response = await fetch(`http://localhost:9457/${CUIL}/deleteProfessor/${professorCUIL}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+                });
+
+                if (response.ok) {
+                window.location.href = '/';
+                } else {
+                console.error('Failed to delete professor:', response.statusText);
+                }
+            } catch (error) {
+                console.error('Error in delete professor request:', error);
+            }
+        }
+
+        async function deletePreceptor(CUIL, preceptorCUIL) {
+            try {
+                const response = await fetch(`http://localhost:9457/${CUIL}/deletePreceptor/${preceptorCUIL}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+                });
+
+                if (response.ok) {
+                window.location.href = '/';
+                } else {
+                console.error('Failed to delete professor:', response.statusText);
+                }
+            } catch (error) {
+                console.error('Error in delete professor request:', error);
+            }
+        }
+        // Función de filtrado
+        function filterTable(inputId, tableId) {
+            const input = document.getElementById(inputId);
+            const filter = input.value.toLowerCase();
+            const table = document.getElementById(tableId);
+            const rows = table.getElementsByTagName('tr');
+
+            // Recorre todas las filas y oculta aquellas que no coinciden con el filtro
+            for (let i = 0; i < rows.length; i++) {
+                const cells = rows[i].getElementsByTagName('td');
+                let match = false;
+
+                // Recorre todas las celdas de la fila
+                for (let j = 0; j < cells.length; j++) {
+                    const cellText = cells[j]?.textContent?.toLowerCase() || '';
+                    if (cellText.includes(filter)) {
+                        match = true;
+                        break;
+                    }
+                }
+
+                // Si alguna celda coincide, muestra la fila; de lo contrario, ocúltala
+                rows[i].style.display = match ? '' : 'none';
+            }
+        }
+
+        // Eventos de filtrado para cada buscador
+        document.getElementById('buscador-1').addEventListener('input', function() {
+            filterTable('buscador-1', 'tabla-usuarios-1');
+        });
+
+        document.getElementById('buscador-2').addEventListener('input', function() {
+            filterTable('buscador-2', 'tabla-usuarios-2');
+        });
+
+        document.getElementById('buscador-3').addEventListener('input', function() {
+            filterTable('buscador-3', 'tabla-usuarios-3');
+        });
+
+        async function logout() {
+            try {
+                const response = await fetch('/logout', {
+                    method: 'POST',
+                    credentials: 'include'
+                });
+
+                if (response.ok) {
+                    window.location.href = '/login';
+                } else {
+                    console.error('Error during logout:', response.statusText);
+                }
+            } catch (error) {
+                console.error('Logout failed:', error);
+            }
+        }
+
+        // Funcionalidad para ocultar y mostrar contenedores
+        document.addEventListener("DOMContentLoaded", function() {
+            const cursosMaterias = document.getElementById("cursos-materias");
+            const usuarios = document.getElementById("usuarios");
+            const containerPrincipal = document.querySelector(".container-principal");
+            const cursoMateriaContainer = document.getElementById("curso-materia-container");
+
+            // Mostrar el contenedor de cursos y materias
+            cursosMaterias.addEventListener("click", function() {
+                containerPrincipal.style.display = "none";
+                cursoMateriaContainer.style.display = "flex";
+                cursosMaterias.style.color = "var(--color-light)";
+                cursosMaterias.style.fontWeight = "700";
+
+                usuarios.style.fontSize = "15px";
+                usuarios.style.padding = "5px";
+                usuarios.style.fontWeight = "600";
+                usuarios.style.color = "color:var(--color-dark)";
+                usuarios.style.textShadow = "none";
+            });
+
+            // Mostrar el contenedor principal
+            usuarios.addEventListener("click", function() {
+                cursoMateriaContainer.style.display = "none";
+                containerPrincipal.style.display = "flex";
+                usuarios.style.color = "var(--color-light)";
+                usuarios.style.fontWeight = "700";
+
+                cursosMaterias.style.fontSize = "15px";
+                cursosMaterias.style.padding = "5px";
+                cursosMaterias.fontWeight = "600";
+                cursosMaterias.style.color = "color:var(--color-dark)";
+                cursosMaterias.style.textShadow = "none";
+            });
+        });
+    
+        document.addEventListener('DOMContentLoaded', () => {
+            const cursosMateriasHeader = document.getElementById('cursos-materias');
+            const cursoMateriaContainer = document.getElementById('curso-materia-container');
+            const yearElements = document.querySelectorAll('.year');
+
+            // Mostrar el contenedor de cursos/materias
+            if (cursosMateriasHeader) {
+                cursosMateriasHeader.addEventListener('click', () => {
+                    cursoMateriaContainer.style.display = 'flex';
+
+                    // Ocultar el contenedor de usuarios si es necesario
+                    const usuariosContainer = document.getElementById("usuarios-container"); // Asegúrate de que este ID exista en tu HTML
+                    if (usuariosContainer) {
+                        usuariosContainer.style.display = 'none';
+                    }
+                });
+            }
+
+            yearElements.forEach(year => {
+                const pantallaPresentacion = year.querySelector('.pantalla-presentacion');
+                const contentYear = year.querySelector('.content-year');
+                const backButton = contentYear.querySelector('.back-button');
+
+                // Evento de clic para mostrar el contenido
+                if (pantallaPresentacion) {
+                    pantallaPresentacion.addEventListener('click', () => {
+                        // Ocultar el contenido de todos los años
+                        yearElements.forEach(y => {
+                            const content = y.querySelector('.content-year');
+                            const pantalla = y.querySelector('.pantalla-presentacion');
+                            if (content) {
+                                content.style.display = 'none'; // Ocultar el contenido
+                            }
+                            pantalla.style.display = 'none'; // Ocultar la pantalla de presentación
+                        });
+
+                        // Mostrar el contenido del año seleccionado
+                        contentYear.style.display = 'flex';
+                        // Desactivar hover para el año seleccionado
+                        pantallaPresentacion.style.pointerEvents = 'none'; // Desactivar hover
+                        pantallaPresentacion.style.background = 'none'; // Opcional: quitar el fondo
+                    });
+                }
+
+                // Evento de clic para volver
+                if (backButton) {
+                    backButton.addEventListener('click', () => {
+                        contentYear.style.display = 'none'; // Ocultar el contenido
+                        // Mostrar nuevamente las pantallas de presentación
+                        yearElements.forEach(y => {
+                            const pantalla = y.querySelector('.pantalla-presentacion');
+                            pantalla.style.display = 'flex'; // Mostrar la pantalla de presentación
+                            pantalla.style.pointerEvents = 'auto'; // Reactivar hover
+                            pantalla.style.background = ''; // Restablecer el fondo
+                        });
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>

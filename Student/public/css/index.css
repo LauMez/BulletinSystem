@@ -1,0 +1,215 @@
+
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+.perfil{
+    position: fixed;
+    top: 10px;
+    right: 20px;
+    display: flex;
+}
+.perfil a{
+    text-decoration: none;
+    padding: 5px;
+    margin: 5px;
+    transition: all 0.4s ease;
+
+}
+.perfil i{
+    color:rgb(255, 255, 255);
+    font-size: 25px;
+    transition: all 0.4s ease;
+}
+.perfil_redireccion:hover{
+    transform: scale(1.1);
+}
+.log-out{
+    transition: all 0.2s ease;
+
+}
+.log-out:hover{
+    transform: scale(1.1);
+
+}
+.logout-button{
+    width: 100px;
+    margin: 5px;
+    display: flex;
+    background-color: rgb(71, 80, 182);    padding: 5px;
+    border: 1px solid rgb(110, 117, 219); /* Borde transparente para que solo el gradiente sea visible */
+    border-radius: 30px;
+    color: white;
+    font-weight: 600;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+}
+.log-out i{
+    color: white;
+    font-size: 15px;
+    margin: 5px;
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+}
+/* menu container*/
+.menu__container{
+    width: 100%;
+    height: 100vh;
+    background-color: rgb(12, 39, 103);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+/* fin menu container*/
+
+/* menu content */
+.menu__content{
+    width: 35%;
+    height: 15vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    /* background-color: pink; */
+    
+}
+/* fin menu contnt*/
+
+/* contenido */
+.menu__opciones_container{
+    width: 70%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    
+}
+.opciones{
+    padding-top: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: start ;
+    width: 11vh;
+    height: 12vh;
+    margin: 10px;
+    /* background-color: green; */
+    transition: all 0.4s ease;
+    z-index: 1;
+}
+.opciones a{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+.opciones:hover .opcion__item{
+    transform: scale(1.1);
+}
+.opcion__item{
+    height: 7vh;
+    width: 7vh;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    transition: all 0.3s ease;
+
+}
+.opcion__item i{
+    transition:all 0.1s ease;
+
+}
+.opcion__name{
+    font-family: monospace;
+    font-size: 13px;
+    font-weight: 600;
+    color: white;
+    text-align: center;
+    white-space: nowrap;
+
+}
+
+/* fin contenido */
+
+/* inicio view materias*/
+
+.exit__subject {
+    width: 100%;
+    height: 100vh;
+    position: fixed;
+    z-index: 1000;
+    background-color: rgba(0, 0, 0, 0);
+    top: 0;
+    left: 0;
+    display: none;
+}
+#view__subject{
+    display:none;
+}
+
+.subject__container{
+    position: relative;
+    top: 1vh;
+    list-style: none;
+    display: none;
+    /* background-color: red; */
+    z-index: 1100;
+}
+.subject{
+    padding: 5px;
+    transition:all 0.4s ease;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+#view__subject:checked ~.subject__container{
+    display: flex;
+}
+#view__subject:checked ~.exit__subject{
+    display: block;
+}
+
+/*fin view materias*/
+.menu__opciones_container .opciones .opcion__item:hover{
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.519);
+}
+/* animacion binevenida */
+.menu__bienvenida {
+	margin: auto;
+    margin-bottom: 5px;
+    width: 30vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.nombre__animation { 
+    font-family: monospace;
+    position: relative; 
+	float: left;
+	background: rgba(255, 255, 255, 0);
+	color: #ffffff;
+	font-size: 18px;
+}
+
+.nombre__animation span {
+    position:absolute;
+    right:0;
+    width:0;
+    background-color: rgb(12, 39, 103);
+    border-left: 2px solid #e7e7e7;
+    animation: escribir 1.5s steps(30)alternate;
+}
+
+@keyframes escribir {
+    from { width: 100% }
+    to { width:0 }
+}
+/* fin aniacion*/
