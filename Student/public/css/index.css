@@ -4,6 +4,56 @@
     padding: 0;
     box-sizing: border-box;
 }
+.perfil{
+    position: fixed;
+    top: 10px;
+    right: 20px;
+    display: flex;
+}
+.perfil a{
+    text-decoration: none;
+    padding: 5px;
+    margin: 5px;
+    transition: all 0.4s ease;
+
+}
+.perfil i{
+    color:rgb(255, 255, 255);
+    font-size: 25px;
+    transition: all 0.4s ease;
+}
+.perfil_redireccion:hover{
+    transform: scale(1.1);
+}
+.log-out{
+    transition: all 0.2s ease;
+
+}
+.log-out:hover{
+    transform: scale(1.1);
+
+}
+.logout-button{
+    width: 100px;
+    margin: 5px;
+    display: flex;
+    background-color: rgb(71, 80, 182);    padding: 5px;
+    border: 1px solid rgb(110, 117, 219); /* Borde transparente para que solo el gradiente sea visible */
+    border-radius: 30px;
+    color: white;
+    font-weight: 600;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+}
+.log-out i{
+    color: white;
+    font-size: 15px;
+    margin: 5px;
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+}
 /* menu container*/
 .menu__container{
     width: 100%;

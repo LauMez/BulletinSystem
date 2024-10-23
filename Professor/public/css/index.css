@@ -27,13 +27,19 @@
     font-size: 25px;
     transition: all 0.4s ease;
 }
-.log-out:hover{
-    transform: scale(1.1);
-}
 .perfil_redireccion:hover{
     transform: scale(1.1);
 }
 .log-out{
+    transition: all 0.2s ease;
+
+}
+.log-out:hover{
+    transform: scale(1.1);
+
+}
+.logout-button{
+    width: 100px;
     margin: 5px;
     display: flex;
     background: linear-gradient(45deg, #5e57b4, #6959c5, #7a7aad); /* Degradado lineal */
@@ -45,13 +51,14 @@
     align-items: center;
     justify-content: space-between;
     cursor: pointer;
-    transition: all 0.4s ease;
-
 }
 .log-out i{
     color: white;
     font-size: 15px;
     margin: 5px;
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
 }
 /*
 
@@ -180,22 +187,23 @@
 .anio_curso{
     width: 100%;
     height: 20%;
-    background-color: white;
     display: flex;
     align-items: center;
-    justify-content: flex-end;
     padding: 10px;
     border-radius: 5px 5px 0px 0px;
 }
-.anio_curso h1{
+.anio-materia{
     margin-right: 0px;
+}
+.nombre-materia{
+    margin-left: 0px;
+}
+.anio_curso h1{
     padding: 5px;
     font-size: 11px;
-    width: 15%;
     background-color: rgb(15, 49, 112);
     color: white;
     display: flex;
-    justify-content: center;
     align-items: center;
     border-radius: 5px;
 }
@@ -211,10 +219,20 @@
     color: rgb(69, 58, 167);
     font-size: 14vh;
 }
+.horario{
+    display: flex;
+    width: 80%;
+    justify-content: center;
+}
+.horario p{
+    font-weight: bold;
+    font-size: 12px;
+    font-family: sans-serif;
+    color: black;
+}
 .preceptor_curso{
     height: 20%;
     width: 100%;
-    padding: 5px;
     color: white;
     display: flex;
     align-items: center;
