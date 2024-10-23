@@ -12,11 +12,19 @@
     <div class="menu__container">
         <div class="menu__content">
 
-            <div class="log-out">
-                <button onclick="logout()" class="logout-button">
-                    <i class="fa-solid fa-arrow-right-from-bracket"><p>Logout</p></i>
-                </button>
-            </div>
+            <div class="perfil">
+                <div class="log-out">
+                    <button onclick="logout()" class="logout-button">
+                        <i class="fa-solid fa-arrow-right-from-bracket">
+                            
+                            <p>Logout</p>
+                        </i>
+                    </button>
+                </div>
+                <a class="perfil_redireccion" href="<%= data.CUIL %>/profile">
+                    <i class="fa-solid fa-user"></i>
+                </a>
+           </div>
 
             <div class="menu__bienvenida">
                 <h1 class="nombre__animation">Bienvenido <%= data.student.personalInformation.first_name %>!<span>&#160;</span></h1>
@@ -61,7 +69,9 @@
                             <% data.subjects.forEach(function(subject) { %>
                                 <div class="subject">
                                     <a href="<%= data.student.CUIL %>/subject/<%= subject.subjectID %>">
-                                        <div class="opcion__item" style="background-color: rgb(71, 80, 182);"><i class="fa-solid fa-address-book"></i></div>
+                                        <div class="opcion__item" style="background-color: rgb(71, 80, 182);">
+                                            <i class="fa-solid fa-address-book"></i>
+                                        </div>
                                         <div class="opcion__name"><%= subject.name %></div>
                                     </a>
                                 </div>
