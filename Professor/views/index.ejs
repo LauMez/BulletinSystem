@@ -12,7 +12,10 @@
     <div class="perfil">
         <div class="log-out">
             <button onclick="logout()" class="logout-button">
-                <i class="fa-solid fa-arrow-right-from-bracket"><p>Logout</p></i>
+                <i class="fa-solid fa-arrow-right-from-bracket">
+                    
+                    <p>Logout</p>
+                </i>
             </button>
         </div>
         <a class="perfil_redireccion" href="<%= data.CUIL %>/profile">
@@ -24,14 +27,19 @@
         <div class="profesor__contenedor_cursos">
             <% data.subjects.forEach(subjectData => { %>
                 <div class="tarjeta__curso" onclick="getSubjectURL('<%= data.CUIL %>', '<%= subjectData.subject.subjectID %>')">
-                    <div class="anio_curso"><h1><%= subjectData.course.year %>°<%= subjectData.course.division %></h1></div>
+                    <div class="anio_curso">
+                        <h1 class="nombre-materia"><%= subjectData.subject.name %></h1>
+
+                        <h1 class="anio-materia"><%= subjectData.course.year %>°<%= subjectData.course.division %></h1>
+                    </div>
                     <div class="imagen_curso">
                         <i class="fa-solid fa-users"></i>
-                        <h1><%= subjectData.subject.name %></h1>
                     </div>
-                    <% subjectData.subject.schedules.forEach(schedule => { %>
-                        <p><%= schedule.entry_schedule %>hs - <%= schedule.finish_schedule %>hs</p>
-                    <% }); %>
+                    <div class="horario">
+                        <% subjectData.subject.schedules.forEach(schedule => { %>
+                            <p style=""><%= schedule.entry_schedule %>hs - <%= schedule.finish_schedule %>hs</p>
+                        <% }); %>
+                    </div>
                     <div class="preceptor_curso">
                         <% if(subjectData.preceptor) { %>
                             <h1><%= subjectData.preceptor.first_name %> 
