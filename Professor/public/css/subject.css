@@ -26,6 +26,11 @@
     background-color: red;
     color: white;
 }
+.info-materia{
+    width: 100%;
+    background-color: rebeccapurple;
+    
+}
 /* Contenedor principal del boletín */
 .contenedor-boletin {
     display: flex;
