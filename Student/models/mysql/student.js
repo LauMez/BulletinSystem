@@ -233,7 +233,7 @@ export class StudentModel {
 
   static async create ({ input }) {
     const {
-      CUIL, blood_type, social_work, first_name, second_name, last_name1, last_name2, phone_number, landline_phone_number,direction, course
+      CUIL, blood_type, social_work, first_name, second_name, last_name1, last_name2, phone_number, landline_phone_number,direction, course, group
     } = input;
 
     const DNI = CUIL.slice(2, -1);
@@ -247,10 +247,10 @@ export class StudentModel {
         },
         body: JSON.stringify({ DNI }),
       });
-      const user = await response.json();
+      const userResponse = await response.json();
   
-      // const userArray = userResponse.data.user;
-      const firstObject = user[0][0];
+      const userArray = userResponse.user;
+      const firstObject = userArray[0][0];
       accountID = Buffer.from(firstObject.accountID).toString('hex');
     } catch {
       throw new Error('Error creating user');
@@ -283,7 +283,7 @@ export class StudentModel {
       await executeQuery(`INSERT INTO Account (CUIL, accountID) VALUES (?, UUID_TO_BIN("${accountID}"));`, [CUIL]);
 
       try {
-        await fetch(`http://localhost:1234/course/${course}/inscription`, {
+        await fetch(`http://localhost:1234/course/${course}/inscription/${group}`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

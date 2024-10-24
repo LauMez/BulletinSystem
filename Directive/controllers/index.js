@@ -29,6 +29,94 @@ export class IndexController {
     }
   }
 
+  getCreateStudent = async(req, res) => {
+    try {
+      const { CUIL } = req.params;
+
+      const data = await this.indexModel.getCreateStudent();
+
+      return res.render('createStudent', { data, CUIL });
+    } catch (error) {
+      console.error('Error fetching data:', error.message);
+      return res.status(500).send(error.message);
+    }
+  };
+
+  createStudent = async(req, res) => {
+    try {
+      const data = req.body;
+
+      const createdStudent = await this.indexModel.createStudent({data});
+
+      if(!createdStudent || createdStudent.errorData) {
+        console.log(createdStudent.status, createdStudent.errorData);
+        return res.status(createdStudent.status).json({ message: createdStudent.errorData });
+      } 
+
+      return res.status(200).json({ message: 'Student created correctly.' });
+    } catch(error) {
+      console.error('Error creating student:', error.message);
+      return res.status(500).send(error.message);
+    }
+  };
+
+  getCreateProfessor = async(req, res) => {
+    try {
+      const { CUIL } = req.params;
+
+      const data = await this.indexModel.getCreateProfessor();
+
+      return res.render('createProfessor', { data, CUIL });
+    } catch (error) {
+      console.error('Error fetching data:', error.message);
+      return res.status(500).send(error.message);
+    }
+  };
+
+  createProfessor = async(req, res) => {
+    try {
+      const data = req.body;
+
+      const createdProfessor = await this.indexModel.createProfessor({data});
+
+      if(!createdProfessor || createdProfessor.errorData) {
+        console.log(createdProfessor.status, createdProfessor.errorData);
+        return res.status(createdProfessor.status).json({ message: createdProfessor.errorData });
+      } 
+
+      return res.status(200).json({ message: 'Professor created correctly.' });
+    } catch(error) {
+      console.error('Error creating professor:', error.message);
+      return res.status(500).send(error.message);
+    }
+  };
+
+  getCreatePreceptor = async(req, res) => {
+    try {
+      const { CUIL } = req.params;
+
+      const data = await this.indexModel.getCreatePreceptor();
+
+      return res.render('createPreceptor', { data, CUIL });
+    } catch (error) {
+      console.error('Error fetching data:', error.message);
+      return res.status(500).send(error.message);
+    }
+  };
+
+  createPreceptor = async(req, res) => {
+    try {
+      const createdPreceptor = await this.indexModel.createPreceptor();
+
+      if(!createdPreceptor) return res.status(500).json({ message: 'El preceptor no se pudo crear' });
+
+      return res.status(200).json({ message: 'Preceptor created correctly.' });
+    } catch(error) {
+      console.error('Error creating preceptor:', error.message);
+      return res.status(500).send(error.message);
+    }
+  };
+
   getEditStudent = async(req, res) => {
     try {
       const { CUIL, studentCUIL } = req.params;

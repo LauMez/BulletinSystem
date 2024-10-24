@@ -12,10 +12,6 @@ export const createStudentRouter = ({ studentModel }) => {
 
   studentRouter.get('/:CUIL/account', studentController.getAccount); 
   studentRouter.get('/register', studentController.getCreate);
-  
-  studentRouter.post('/', studentController.create); 
-
-  studentRouter.delete('/:CUIL', studentController.delete); 
 
   studentRouter.get('/:CUIL', studentController.getByCUIL); //
 
@@ -28,7 +24,5 @@ export const createStudentRouter = ({ studentModel }) => {
   studentRouter.patch('/:CUIL', studentController.update); //
   studentRouter.patch('/:CUIL/account', studentController.updateAccount); //
 
-  studentRouter.patch('/:CUIL', studentController.update); 
-  studentRouter.patch('/:CUIL/account', studentController.updateAccount); 
   return studentRouter;
 };  

@@ -328,11 +328,11 @@ export class CourseModel {
     }
   }
 
-  static async createInscription({ courseID, CUIL }) {
+  static async createInscription({ courseID, groupID, CUIL }) {
     try {
       const [[{inscriptionID}]] = await db.promise().execute('SELECT UUID() AS inscriptionID')
 
-      await db.promise().execute('INSERT INTO Inscription (inscriptionID, courseID, CUIL) VALUES (UUID_TO_BIN(?), UUID_TO_BIN(?), ?)', [inscriptionID, courseID, CUIL]
+      await db.promise().execute('INSERT INTO Inscription (inscriptionID, courseID, courseGroupID, CUIL) VALUES (UUID_TO_BIN(?), UUID_TO_BIN(?), UUID_TO_BIN(?), ?)', [inscriptionID, courseID, groupID, CUIL]
       )
 
       return { message: "Course inscription created successfully" }

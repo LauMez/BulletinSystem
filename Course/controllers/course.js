@@ -220,11 +220,11 @@ export class CourseController {
   }
 
   createInscription = async (req, res) => {
-    const { courseID } = req.params
+    const { courseID, groupID } = req.params
     const { CUIL } = req.body
     
     try {
-      await this.courseModel.createInscription({ courseID, CUIL })
+      await this.courseModel.createInscription({ courseID, groupID, CUIL })
       return res.json({ message: "Inscription created" })
     } catch(error) {
       console.log('Error occurred while fetching inscriptions: ', error)

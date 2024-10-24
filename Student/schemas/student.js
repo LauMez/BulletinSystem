@@ -26,7 +26,8 @@ const studentScheme = z.object({
   landline_phone_number: z.string().optional(),
   direction: z.string()
               .min(2, { message: 'La Dirección es requerida.'} ),
-  course: z.string().min(2, { message: 'El curso es requerido.' })
+  course: z.string().min(2, { message: 'El curso es requerido.' }),
+  group: z.string().min(1, { message: 'El grupo es requerido.' })
 });
 
 const studentPartialScheme = z.object({

@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro</title>
+    <link rel="stylesheet" href="/directive/css/create.css">
+</head>
+<body>
+    <div class="register-container">
+        <h2>Registro</h2>
+        <form id="createForm">
+            <div id="section-1" class="form-section">
+                <div class="input-group">
+                    <label for="CUIL">CUIL:</label>
+                    <input type="text" id="CUIL" name="CUIL">
+                </div>
+                <div class="input-group">
+                    <label for="first_name">Primer Nombre:</label>
+                    <input type="text" id="first_name" name="first_name">
+                </div>
+                <div class="input-group">
+                    <label for="second_name">Segundo Nombre:</label>
+                    <input type="text" id="second_name" name="second_name">
+                </div>
+                <div class="input-group">
+                    <label for="last_name1">Primer Apellido:</label>
+                    <input type="text" id="last_name1" name="last_name1">
+                </div>
+                <div class="input-group">
+                    <label for="last_name2">Segundo Apellido:</label>
+                    <input type="text" id="last_name2" name="last_name2">
+                </div>
+                <button type="button" id="next-section" onclick="nextSection(2)">Siguiente</button>
+            </div>
+
+            <div id="section-2" class="form-section" style="display: none;">
+                <div class="input-group">
+                    <label for="phone_number">Número de Teléfono:</label>
+                    <input type="text" id="phone_number" name="phone_number">
+                </div>
+                <div class="input-group">
+                    <label for="landline_phone_number">Número de Teléfono Fijo:</label>
+                    <input type="text" id="landline_phone_number" name="landline_phone_number">
+                </div>
+                <div class="input-group">
+                    <label for="direction">Dirección:</label>
+                    <input type="text" id="direction" name="direction">
+                </div>
+                <div class="input-group">
+                    <label for="social_work">Obra social:</label>
+                    <input type="text" id="social_work" name="social_work">
+                </div>
+                <div class="input-group">
+                    <label for="blood_type">Grupo Sanguíneo:</label>
+                    <select id="blood_type" name="blood_type">
+                        <option value="" disabled selected>Selecciona tu grupo sanguíneo</option>
+                        <option value="A+">A+</option>
+                        <option value="A-">A-</option>
+                        <option value="B+">B+</option>
+                        <option value="B-">B-</option>
+                        <option value="AB+">AB+</option>
+                        <option value="AB-">AB-</option>
+                        <option value="O+">O+</option>
+                        <option value="O-">O-</option>
+                    </select>
+                </div>
+                <button type="button" id="next-section" onclick="prevSection(1)">Previo</button>
+                <button type="button" id="next-section" onclick="nextSection(3)">Siguiente</button>
+            </div>
+
+            <div id="section-3" class="form-section" style="display:none;">
+                <label for="subject">Select subject:</label>
+                <select id="subject" name="subject">
+                    <option values="">Seleccionar una materia</option>
+                    <% data.subjects.forEach(subject => { %>
+                        <option value="<%= subject.subjectID %>">
+                            <%= subject.name %> <%= subject.year %>°<%= subject.division %>
+                        </option>
+                    <% }) %>
+                </select>
+                <button type="button" id="next-section" onclick="prevSection(2)">Previo</button>
+                <button type="submit">Register</button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const errorPopup = document.getElementById('error-popup');
+            const errorMessageElem = document.getElementById('error-message');
+            const closePopupButton = document.getElementById('close-popup');
+
+            const errorMessage = localStorage.getItem('errorMessage');
+            if (errorMessage) {
+                errorMessageElem.textContent = errorMessage;
+                errorPopup.style.display = 'block';
+                localStorage.removeItem('errorMessage');
+            }
+
+            if (closePopupButton) {
+                closePopupButton.addEventListener('click', function() {
+                    errorPopup.style.display = 'none';
+                });
+            }
+        });
+
+        function nextSection(section) {
+            document.getElementById(`section-${section - 1}`).style.display = 'none';
+            document.getElementById(`section-${section}`).style.display = 'block';
+        }
+
+        function prevSection(section) {
+            document.getElementById(`section-${section + 1}`).style.display = 'none';
+            document.getElementById(`section-${section}`).style.display = 'block';
+        }
+
+        const form = document.getElementById('createForm');
+        const CUIL = '<%= CUIL %>';
+
+        form.addEventListener('submit', async (event) => {
+            event.preventDefault(); // Evita el envío tradicional del formulario.
+
+            const formData = {
+                CUIL: document.getElementById('CUIL').value,
+                first_name: document.getElementById('first_name').value,
+                second_name: document.getElementById('second_name').value,
+                last_name1: document.getElementById('last_name1').value,
+                last_name2: document.getElementById('last_name2').value,
+                phone_number: document.getElementById('phone_number').value,
+                landline_phone_number: document.getElementById('landline_phone_number').value,
+                direction: document.getElementById('direction').value,
+                social_work: document.getElementById('social_work').value,
+                blood_type: document.getElementById('blood_type').value,
+                subject: document.getElementById('subject').value
+            };
+
+            try {
+                const response = await fetch(`http://localhost:9457/${CUIL}/createProfessor`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formData)
+                });
+
+
+                if (!response.ok || response.status == 400 || response.status == 409) {
+                const errorData = await response.json();
+                console.error('Error en la creacion de profesor:', errorData);
+                } 
+                else {
+                window.location.href = '/';
+                }
+            } catch (error) {
+                console.error('Error en la solicitud:', error);
+            }
+        });
+    </script>
+</body>
+</html>

@@ -73,6 +73,101 @@ export class IndexModel {
         return directive;
     };
 
+    static async getCreateStudent() {
+        const coursesResponse = await fetch(`http://localhost:1234/course`, { method: 'GET' });
+  
+        if (!coursesResponse.ok) {
+            throw new Error('Error fetching courses data');
+        };
+
+        const courses = await coursesResponse.json();
+
+        return { courses };
+    };
+
+    static async createStudent({ data }) {
+        const response = await fetch(`http://localhost:4567/student`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify( data )
+        })
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            const error = errorData.error;
+
+            return { errorData: error, status: errorData.status };
+        }
+
+        return true;
+    };
+
+    static async getCreateProfessor() {
+  
+        const subjectsResponse = await fetch(`http://localhost:4321/subject`, { method: 'GET' });
+  
+        if (!subjectsResponse.ok) {
+            throw new Error('Error fetching subjects data');
+        };
+
+        const subjects = await subjectsResponse.json();
+
+        const availableSubjects = subjects.filter(subject => subject.impartition === null);
+
+        return { subjects: availableSubjects };
+    };
+
+    static async createProfessor({ data }) {
+        const response = await fetch(`http://localhost:8734/professor`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify( data )
+        })
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            const error = errorData.error;
+
+            return { errorData: error, status: errorData.status };
+        }
+
+        return true;
+    };
+
+    static async getCreatePreceptor() {  
+        const coursesResponse = await fetch(`http://localhost:1234/course`, { method: 'GET' });
+  
+        if (!coursesResponse.ok) {
+            throw new Error('Error fetching courses data');
+        };
+  
+        const courses = await coursesResponse.json();
+
+        const availableCourses = courses.filter(course => course.impartition === null);
+
+        return { courses: availableCourses };
+    };
+
+    static async createPreceptor() {
+        const response = await fetch(`http://localhost:4567/preceptor`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                
+            })
+        })
+
+        if (!response.ok) return null;
+
+        return true;
+    };
+
     static async getEditStudent({ studentCUIL }) {
         const studentResponse = await fetch(`http://localhost:4567/student/${studentCUIL}`, { method: 'GET' });
 
