@@ -9,7 +9,7 @@
 <body>
     <div class="register-container">
         <h2>Registro</h2>
-        <form action="/student/register" method="POST">
+        <form id="createForm">
             <div id="section-1" class="form-section">
                 <div class="input-group">
                     <label for="CUIL">CUIL:</label>
@@ -70,10 +70,14 @@
             </div>
 
             <div id="section-3" class="form-section" style="display:none;">
-                <label for="course">Select Course:</label>
+                <label for="course">Curso:</label>
                 <select id="course" name="course">
-                    <option values="">Seleccionar un curso</option>
-                  
+                    <option selected>Seleccione una materia</option>
+                    <% data.courses.forEach(course => { %>
+                        <option value="<%= course.courseID %>">
+                            <%= course.year %>°<%= course.division %>
+                        </option>
+                    <% }) %>
                 </select>
                 <button type="button" id="next-section" onclick="prevSection(2)">Previo</button>
                 <button type="submit">Register</button>
@@ -110,6 +114,48 @@
             document.getElementById(`section-${section + 1}`).style.display = 'none';
             document.getElementById(`section-${section}`).style.display = 'block';
         }
+
+        const form = document.getElementById('createForm');
+        const CUIL = '<%= CUIL %>';
+
+        form.addEventListener('submit', async (event) => {
+            event.preventDefault(); // Evita el envío tradicional del formulario.
+
+            const formData = {
+                CUIL: document.getElementById('CUIL').value,
+                first_name: document.getElementById('first_name').value,
+                second_name: document.getElementById('second_name').value,
+                last_name1: document.getElementById('last_name1').value,
+                last_name2: document.getElementById('last_name2').value,
+                phone_number: document.getElementById('phone_number').value,
+                landline_phone_number: document.getElementById('landline_phone_number').value,
+                direction: document.getElementById('direction').value,
+                social_work: document.getElementById('social_work').value,
+                blood_type: document.getElementById('blood_type').value,
+                course: document.getElementById('course').value
+            };
+
+            try {
+                const response = await fetch(`http://localhost:9457/${CUIL}/createPreceptor`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formData)
+                });
+
+
+                if (!response.ok || response.status == 400 || response.status == 409) {
+                const errorData = await response.json();
+                console.error('Error en la creacion de preceptor:', errorData);
+                } 
+                else {
+                window.location.href = '/';
+                }
+            } catch (error) {
+                console.error('Error en la solicitud:', error);
+            }
+        });
     </script>
 </body>
 </html>

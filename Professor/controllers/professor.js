@@ -123,7 +123,6 @@ export class ProfessorController {
 
     if (existingProfessor) return res.status(409).json({ error: 'Ya hay un usuario registrado con ese CUIL.', status: 409 });
 
-    console.log(processedData);
     const newProfessor = await this.professorModel.create({ input: processedData });
     return res.status(201).json(newProfessor);
   }

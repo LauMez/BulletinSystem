@@ -106,9 +106,14 @@ export class IndexController {
 
   createPreceptor = async(req, res) => {
     try {
-      const createdPreceptor = await this.indexModel.createPreceptor();
+      const data = req.body;
 
-      if(!createdPreceptor) return res.status(500).json({ message: 'El preceptor no se pudo crear' });
+      const createdPreceptor = await this.indexModel.createPreceptor({data});
+
+      if(!createdPreceptor || createdPreceptor.errorData) {
+        console.log(createdPreceptor.status, createdPreceptor.errorData);
+        return res.status(createdPreceptor.status).json({ message: createdPreceptor.errorData });
+      } 
 
       return res.status(200).json({ message: 'Preceptor created correctly.' });
     } catch(error) {

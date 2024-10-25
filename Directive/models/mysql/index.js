@@ -152,18 +152,21 @@ export class IndexModel {
         return { courses: availableCourses };
     };
 
-    static async createPreceptor() {
-        const response = await fetch(`http://localhost:4567/preceptor`, {
+    static async createPreceptor({ data }) {
+        const response = await fetch(`http://localhost:6534/preceptor`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({
-                
-            })
+            body: JSON.stringify( data )
         })
 
-        if (!response.ok) return null;
+        if (!response.ok) {
+            const errorData = await response.json();
+            const error = errorData.error;
+
+            return { errorData: error, status: errorData.status };
+        }
 
         return true;
     };
