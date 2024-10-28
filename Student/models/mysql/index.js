@@ -74,7 +74,7 @@ export class IndexModel {
         
         const course = await courseResponse.json();
     
-        const subjectsResponse = await fetch(`http://localhost:4321/subject/course/${course.course.courseID}`);
+        const subjectsResponse = await fetch(`http://localhost:4321/subject/course/${course.course.courseID}/group/${course.group.courseGroupID}`);
     
         if (!subjectsResponse.ok) return null;
     
