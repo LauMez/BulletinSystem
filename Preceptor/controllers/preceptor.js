@@ -130,14 +130,14 @@ export class PreceptorController {
   create = async (req, res) => {
     const preceptor = validatePreceptor(req.body);
     if (!preceptor.success) {
-      const firstError = preceptor.error.issues[0].message;
-      return this.getCreate(req, res, firstError);
+      const error = preceptor.error.issues[0].message;
+      return res.status(400).json({ error: error, status: 400 });
     }
 
     const processedData = convertEmptyStringsToNull(preceptor.data);
     const existingPreceptor = await this.preceptorModel.findOne({ CUIL: preceptor.data.CUIL });
 
-    if (existingPreceptor) return this.getCreate(req, res, 'Ya hay un usuario registrado con ese CUIL.');
+    if (existingPreceptor) return res.status(409).json({ error: 'Ya hay un usuario registrado con ese CUIL.', status: 409 });
 
     const newPreceptor = await this.preceptorModel.create({ input: processedData });
     return res.status(201).json(newPreceptor);

@@ -28,10 +28,13 @@
             <div class="table-wrapper">
                 <table class="content-table">
                     <thead>
-                        <tr>
+                        <tr class="header-tabla">
                             <th class="tb_header" colspan="1">Alumnos</th>
-                            <th class="th_buscador" colspan="4">
+                            <th class="th_buscador" colspan="3">
                                 <input id="buscador-1" class="buscador" type="text" placeholder="Buscar por DNI, nombre o apellido...">
+                            </th>
+                            <th class="agregar">
+                                <i class="far fa-plus-square" onclick="createStudent('<%= data.CUIL %>')"></i>
                             </th>
                         </tr>
                         <tr>
@@ -54,7 +57,7 @@
                                     <%= studentData.student.personalInformation.last_name1 %>
                                     <%= studentData.student.personalInformation.last_name2 || '' %>
                                 </td>
-                                <td>
+                                <td class="opciones-user">
                                     <div onclick="editStudent('<%= data.CUIL %>', '<%= studentData.student.CUIL %>')">
                                         <i class="fas fa-pen"></i>
                                     </div>
@@ -75,13 +78,17 @@
                     <thead>
                         <tr>
                             <th class="tb_header" colspan="1">Profesores</th>
-                            <th class="th_buscador" colspan="2">
+                            <th class="th_buscador" colspan="3">
                                 <input id="buscador-2" class="buscador" type="text" placeholder="Buscar por DNI, nombre o apellido...">
+                            </th>
+                            <th class="agregar">
+                                <i class="far fa-plus-square" onclick="createProfessor('<%= data.CUIL %>')"></i>
                             </th>
                         </tr>
                         <tr>
                             <th>Dni</th>
-                            <th>Nombre</th>
+                            <th></th>
+                            <th colspan="2">Nombre</th>
                             <th>Opciones</th>
                         </tr>
                     </thead>
@@ -89,13 +96,17 @@
                         <% data.professors.forEach(professor => { %>
                             <tr>
                                 <td><%= professor.personalInformation.DNI %></td>
+                                <td></td>
+
                                 <td>
                                     <%= professor.personalInformation.first_name %>
                                     <%= professor.personalInformation.second_name || '' %>
                                     <%= professor.personalInformation.last_name1 %>
                                     <%= professor.personalInformation.last_name2 || '' %>
                                 </td>
-                                <td>
+                                <td></td>
+
+                                <td class="opciones-user">
                                     <div onclick="editProfessor('<%= data.CUIL %>', '<%= professor.CUIL %>')">
                                         <i class="fas fa-pen"></i>
                                     </div>
@@ -115,28 +126,35 @@
                 <table class="content-table">
                     <thead>
                         <tr>
-                            <th class="tb_header" colspan="1">Alumnos</th>
-                            <th class="th_buscador" colspan="2">
-                                <input id="buscador-3" class="buscador" type="text" placeholder="Buscar por DNI, nombre o apellido...">
+                            <th class="tb_header" colspan="1">Profesores</th>
+                            <th class="th_buscador" colspan="3">
+                                <input id="buscador-2" class="buscador" type="text" placeholder="Buscar por DNI, nombre o apellido...">
+                            </th>
+                            <th class="agregar">
+                                <i class="far fa-plus-square" onclick="createPreceptor('<%= data.CUIL %>')"></i>
                             </th>
                         </tr>
                         <tr>
                             <th>Dni</th>
-                            <th>Nombre</th>
+                            <th></th>
+                            <th colspan="2">Nombre</th>
                             <th>Opciones</th>
                         </tr>
                     </thead>
                     <tbody id="tabla-usuarios-3">
                         <% data.preceptors.forEach(preceptor => { %>
                             <tr>
+                                
                                 <td><%= preceptor.personalInformation.DNI %></td>
+                                <td></td>
                                 <td>
                                     <%= preceptor.personalInformation.first_name %>
                                     <%= preceptor.personalInformation.second_name || '' %>
                                     <%= preceptor.personalInformation.last_name1 %>
                                     <%= preceptor.personalInformation.last_name2 || '' %>
                                 </td>
-                                <td>
+                                <td></td>
+                                <td class="opciones-user">
                                     <div onclick="editPreceptor('<%= data.CUIL %>', '<%= preceptor.CUIL %>')">
                                         <i class="fas fa-pen"></i>
                                     </div>
@@ -144,6 +162,7 @@
                                         <i class="fas fa-trash-alt"></i>
                                     </div>
                                 </td>
+
                             </tr>
                         <% }); %>
                     </tbody>
@@ -523,6 +542,28 @@
     </div>
     
     <script>
+        async function createStudent(CUIL) {
+            try {
+                window.location.href = `${CUIL}/createStudent`;
+            } catch(error) {
+                console.error('Error in course redirection:', error);
+            }
+        }
+        async function createProfessor(CUIL) {
+            try {
+                window.location.href = `${CUIL}/createProfessor`;
+            } catch(error) {
+                console.error('Error in course redirection:', error);
+            }
+        }
+        async function createPreceptor(CUIL) {
+            try {
+                window.location.href = `${CUIL}/createPreceptor`;
+            } catch(error) {
+                console.error('Error in course redirection:', error);
+            }
+        }
+
         async function editStudent(CUIL, studentCUIL) {
             try {
                 window.location.href = `${CUIL}/editStudent/${studentCUIL}`;

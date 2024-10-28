@@ -10,6 +10,14 @@ export const createIndexRouter = ({ indexModel }) => {
 
   indexRouter.get('/:CUIL/profile', indexController.profile);
 
+  indexRouter.get('/:CUIL/createStudent', indexController.getCreateStudent);
+  indexRouter.get('/:CUIL/createProfessor', indexController.getCreateProfessor);
+  indexRouter.get('/:CUIL/createPreceptor', indexController.getCreatePreceptor);
+
+  indexRouter.post('/:CUIL/createStudent', indexController.createStudent);
+  indexRouter.post('/:CUIL/createProfessor', indexController.createProfessor);
+  indexRouter.post('/:CUIL/createPreceptor', indexController.createPreceptor);
+
   indexRouter.get('/:CUIL/editStudent/:studentCUIL', indexController.getEditStudent);
   indexRouter.get('/:CUIL/editProfessor/:professorCUIL', indexController.getEditProfessor);
   indexRouter.get('/:CUIL/editPreceptor/:preceptorCUIL', indexController.getEditPreceptor);

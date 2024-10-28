@@ -86,18 +86,14 @@ export class StudentController {
   create = async (req, res) => {
     const student = validateStudent(req.body);
     if (!student.success) {
-      const firstError = student.error.issues[0].message;
-      return { errorMessage: firstError }
-      // return this.getCreate(req, res, firstError);
+      const error = student.error.issues[0].message;
+      return res.status(400).json({ error: error, status: 400 });
     }
 
     const processedData = convertEmptyStringsToNull(student.data);
     const existingStudent = await this.studentModel.findOne({ CUIL: student.data.CUIL });
 
-    if (existingStudent) {
-      return { errorMessage: "Ya hay un usuario registrado con ese CUIL." }
-      // return this.getCreate(req, res, 'Ya hay un usuario registrado con ese CUIL.');
-    }
+    if (existingStudent) return res.status(409).json({ error: 'Ya hay un usuario registrado con ese CUIL.', status: 409 });
 
     const newStudent = await this.studentModel.create({ input: processedData });
     return res.status(201).json(newStudent);

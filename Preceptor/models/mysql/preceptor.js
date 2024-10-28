@@ -244,9 +244,10 @@ export class PreceptorModel {
         },
         body: JSON.stringify({ DNI }),
       });
-      const user = await response.json();
+      const userResponse = await response.json();
   
-      const firstObject = user[0][0];
+      const userArray = userResponse.user;
+      const firstObject = userArray[0][0];
       accountID = Buffer.from(firstObject.accountID).toString('hex');
     } catch {
       throw new Error('Error creating user');

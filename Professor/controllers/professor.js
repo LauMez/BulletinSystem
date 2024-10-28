@@ -114,14 +114,14 @@ export class ProfessorController {
   create = async (req, res) => {
     const professor = validateProfessor(req.body);
     if (!professor.success) {
-      const firstError = professor.error.issues[0].message;
-      return this.getCreate(req, res, firstError);
+      const error = professor.error.issues[0].message;
+      return res.status(400).json({ error: error, status: 400 });
     }
 
     const processedData = convertEmptyStringsToNull(professor.data);
     const existingProfessor = await this.professorModel.findOne({ CUIL: professor.data.CUIL });
 
-    if (existingProfessor) return this.getCreate(req, res, 'Ya hay un usuario registrado con ese CUIL.');
+    if (existingProfessor) return res.status(409).json({ error: 'Ya hay un usuario registrado con ese CUIL.', status: 409 });
 
     const newProfessor = await this.professorModel.create({ input: processedData });
     return res.status(201).json(newProfessor);
