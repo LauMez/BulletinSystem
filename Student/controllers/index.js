@@ -37,8 +37,6 @@ export class IndexController {
 
       if(!subjects) return res.status(500).json({ message: 'Materias no encontradas' });
 
-      console.log('schedules subject: ', subjects);
-
       return res.render('schedules', { subjects });
     } catch (error) {
       console.error('Error fetching data:', error.message);
@@ -53,8 +51,6 @@ export class IndexController {
       const subjects = await this.indexModel.bulletin({ CUIL });
 
       if(!subjects) return res.status(500).json({ message: 'Materias no encontradas' });
-
-      console.log('bulletin subject: ', subjects);
       
       return res.render('bulletin', { subjects });
     } catch (error) {
@@ -70,8 +66,6 @@ export class IndexController {
       const subject = await this.indexModel.subject({ CUIL, subjectID });
 
       if(!subject) return res.status(500).json({ message: 'Materia no encontradas' });
-
-      console.log('subject subject: ', subject);
 
       return res.render('subject', { subject });
     } catch (error) {
